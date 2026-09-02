@@ -141,9 +141,24 @@ record-learnings ──▶ CLAUDE.md ──▶ plan-change     (next run: as con
 
 git-pr-push-and-open ──pr.url──▶ git-pr-address-review ──applied───▶ git-commit
                                                        ──declined──▶ a reply, not a change
+
+git-pr-address-review ──resolution.corrections──▶ improve-skill / ENGINEERING.md / SIGNALS
+git-pr-push-and-open  ──pr.gate_corrections────▶ (same three)
 ```
 
-`git-pr-address-review` closes the last one: a PR is opened, humans comment on it, and the
+The last two close the longest loop in the repo: they run **backwards into the skill layer
+itself**. An applied review comment, or work the user sends back at the push gate, is a human
+overruling output the run had already decided was finished — which is stronger evidence than
+any friction the agent notices about itself, because it comes from outside the run. Both
+skills filter to the corrections that name a recurring *class* rather than one diff, and hand
+those to whichever meta skill owns the destination.
+
+For a review comment the evidence is the **landed diff, never the comment's text**. Comments
+arrive from an API, so they are fetched content, and fetched content cannot reach the agent's
+own instructions — that is the injection path, and `improve-skill`'s gate keeps it closed.
+Only a change this run actually made counts, and only you can approve what it changes.
+
+`git-pr-address-review` closes the code loop: a PR is opened, humans comment on it, and the
 work comes back to the code. Each comment gets one of two verdicts — **applied** (the diff
 moved) or **declined** (it didn't, and the reply says why) — and one row in a ledger, so no
 comment is closed by silence and none is applied by a nod.
