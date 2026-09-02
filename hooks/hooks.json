@@ -1,5 +1,5 @@
 {
-  "description": "Injects the skill-layer feedback standing rule at session start",
+  "description": "Session-start standing rule for the skill layer, and the deterministic backstop under the push review gate",
   "hooks": {
     "SessionStart": [
       {
@@ -7,6 +7,17 @@
           {
             "type": "command",
             "command": "bash \"${CLAUDE_PLUGIN_ROOT}/hooks-handlers/session-start.sh\""
+          }
+        ]
+      }
+    ],
+    "PreToolUse": [
+      {
+        "matcher": "Bash",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "python3 \"${CLAUDE_PLUGIN_ROOT}/hooks-handlers/pre-tool-use-git-push.py\""
           }
         ]
       }

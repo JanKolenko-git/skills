@@ -4,6 +4,17 @@
 
 SKILLS_REPO="${JANKOLENKO_SKILLS_REPO:-$HOME/Developer/skills}"
 
+# The working copy is the good source — it is what improve-skill edits. But a session
+# can run where it does not exist (an eval sandbox, another machine, a cloud agent),
+# and both clauses below name paths inside it. Fall back to the plugin cache, which
+# ships the same two files, and stay silent rather than point at a path that is not
+# there: a rule telling the agent to read a missing file costs turns and teaches it
+# to ignore the rule.
+if [ ! -f "$SKILLS_REPO/ENGINEERING.md" ]; then
+  SKILLS_REPO="${CLAUDE_PLUGIN_ROOT:-$SKILLS_REPO}"
+fi
+[ -f "$SKILLS_REPO/ENGINEERING.md" ] || exit 0
+
 cat << EOF
 {
   "hookSpecificOutput": {
