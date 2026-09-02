@@ -188,9 +188,18 @@ rewrites the whole page — so `update_page.py` writes only between its own mark
 when the page moved under it (`409`), and refuses when a section looks like it already exists
 without markers. `--dry-run` shows the change before anything is written.
 
-**Pushing always stops for a human.** `git-pr-push-and-open` shows the full diff and waits for an explicit
-yes before `git push`. The gate lives in the same skill as the push so nothing can compose
-around it, and it repeats every round of changes. Only you, in chat, can waive it.
+**Pushing always stops for a human — and a hook enforces it.** `git-pr-push-and-open` shows
+the full diff and waits for an explicit yes before `git push`. The gate lives in the same
+skill as the push so nothing can compose around it, and it repeats every round of changes.
+Only you, in chat, can waive it.
+
+That much is advisory: it holds while a session actually invokes the skill. So the plugin
+also ships a `PreToolUse` hook ([`hooks-handlers/pre-tool-use-git-push.py`](./hooks-handlers/pre-tool-use-git-push.py))
+that intercepts `git push` in **any** Bash call and returns `ask`, so the harness itself
+demands an answer — including from a session that never loaded the skill, or whose context
+was compacted past the gate. It returns `ask` rather than `deny` because the gate exists to
+be answered by a person, not to make pushing impossible; `--dry-run` passes through, and a
+force-push says so in the prompt.
 
 ## Installation
 
@@ -370,6 +379,14 @@ Validate the manifests before pushing:
 
 ```bash
 claude plugin validate .
+```
+
+Neither that nor `list-skills.sh` checks **behaviour** — a reword that quietly drops a gate
+passes both. [`evals/`](./evals) covers that: one case per expensive refusal, run before any
+version bump. See [`evals/README.md`](./evals/README.md).
+
+```bash
+CLAUDE_CODE_WALNUT_SPIRE=1 claude plugin eval . --allow-tools Bash Write Edit
 ```
 
 Working on the skills locally, without reinstalling on every edit:
