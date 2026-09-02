@@ -1,0 +1,24 @@
+{
+  "name": "jankolenko",
+  "owner": {
+    "name": "Jan Kolenko",
+    "url": "https://github.com/JanKolenko-git"
+  },
+  "description": "Jan Kolenko's portable agent skills — composable atoms for shipping ticketed work, packaged as a Claude Code plugin.",
+  "plugins": [
+    {
+      "name": "jankolenko-skills",
+      "source": "./",
+      "description": "Implement a ticket end-to-end — read Jira and Confluence Data Center, branch, test, commit and open a PR — from composable skills that reuse each other.",
+      "category": "engineering",
+      "keywords": [
+        "jira",
+        "confluence",
+        "atlassian",
+        "data-center",
+        "git",
+        "pull-request"
+      ]
+    }
+  ]
+}

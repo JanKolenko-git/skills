@@ -1,0 +1,8 @@
+node_modules
+__pycache__/
+*.pyc
+.DS_Store
+
+# Never commit credentials. Tokens belong in ~/.zshenv, not in this repo.
+.env
+*.token

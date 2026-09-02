@@ -1,0 +1,45 @@
+{
+  "name": "jankolenko-skills",
+  "version": "4.0.0",
+  "description": "Composable, portable agent skills — read and update any Jira and Confluence Data Center instance, plus reusable atoms for finding a repo, planning a change, clarifying a blocked goal, branching, testing, critiquing the diff against the plan, committing, opening a PR, resolving its review comments and recording what the run learned, wired together by implement-ticket — explain and draft-reply, which need no repo open at all — and a self-improving skill layer: a session-start rule that notices friction, improve-skill to fix a skill in whichever repo owns it, and find-skill-gaps to propose new skills from a cross-session evidence ledger. Nothing here is bound to one employer or programme; team-specific workflows live in the companion jankolenko-projects plugin.",
+  "author": {
+    "name": "Jan Kolenko",
+    "url": "https://github.com/JanKolenko-git"
+  },
+  "homepage": "https://github.com/JanKolenko-git/skills",
+  "repository": "https://github.com/JanKolenko-git/skills",
+  "license": "MIT",
+  "keywords": [
+    "jira",
+    "confluence",
+    "atlassian",
+    "data-center",
+    "skills",
+    "git",
+    "pull-request",
+    "self-improving",
+    "meta-skills",
+    "explain"
+  ],
+  "skills": [
+    "./skills/engineering/atlassian-jira",
+    "./skills/engineering/atlassian-confluence",
+    "./skills/engineering/find-repository",
+    "./skills/engineering/plan-change",
+    "./skills/engineering/clarify-goal",
+    "./skills/engineering/git-create-branch",
+    "./skills/engineering/write-tests",
+    "./skills/engineering/critique-plan",
+    "./skills/engineering/git-commit",
+    "./skills/engineering/git-pr-push-and-open",
+    "./skills/engineering/git-pr-address-review",
+    "./skills/engineering/record-learnings",
+    "./skills/engineering/implement-ticket",
+    "./skills/productivity/explain",
+    "./skills/productivity/draft-reply",
+    "./skills/meta/improve-skill",
+    "./skills/meta/find-skill-gaps",
+    "./skills/meta/record-engineering-rule",
+    "./skills/meta/find-session-improvements"
+  ]
+}
