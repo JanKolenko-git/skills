@@ -87,12 +87,29 @@ On approval, own the whole loop — an improvement that stops at "file edited" i
 to every future session (see `.agents/authoring.md` → Deployment reality):
 
 1. Apply the diff at `$skill_md`, in the repo Step 1 resolved.
-2. Commit via **`jankolenko-skills:git-commit`** — `type=docs`, subject naming the skill and
+2. **Run the evals that cover this skill**, before committing. A reword is a behaviour
+   change to every future run, and the gates are exactly what a reword breaks quietly —
+   `evals/` in `jankolenko-skills` exists to catch that. See
+   [`evals/README.md`](../../../evals/README.md) for what is covered.
+
+   ```bash
+   CLAUDE_CODE_WALNUT_SPIRE=1 claude plugin eval . \
+     --allow-tools Bash Write Edit --case '<glob matching this skill>'
+   ```
+
+   - **Green** — carry on to 3.
+   - **Red** — 🛑 **stop and show the user the failing case.** Do not bump a red suite.
+     Either the diff broke the gate and needs redoing, or the eval encodes behaviour the
+     improvement deliberately changed — and that second case is the user's call, not
+     yours, because it means rewriting the case that was protecting it.
+   - **No case covers this skill** — say so in one line rather than skipping silently.
+     An uncovered gate is worth a `evals/` case of its own; offer it, don't build it here.
+3. Commit via **`jankolenko-skills:git-commit`** — `type=docs`, subject naming the skill and
    the friction. Commit in `$repo`; if the session also touched the other repo, that is a
    separate commit there.
-3. Bump the **patch** version in `$manifest` — one bump per repo per session, however many
+4. Bump the **patch** version in `$manifest` — one bump per repo per session, however many
    improvements that repo carried — and amend or commit alongside.
-4. Quote `$update` back to the user verbatim. It is the one step that must happen outside
+5. Quote `$update` back to the user verbatim. It is the one step that must happen outside
    this session for the change to go live, and its `@marketplace` suffix differs per repo,
    so paste it rather than retyping it.
 

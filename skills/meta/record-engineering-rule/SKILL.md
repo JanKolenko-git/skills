@@ -105,11 +105,20 @@ On approval, own the whole loop — see `.agents/authoring.md` → Deployment re
    regenerated on update and silently discards edits. This file is single-copy and always
    lives there, so unlike `jankolenko-skills:improve-skill` this skill needs no repo
    resolution.
-2. Commit via **`jankolenko-skills:git-commit`**, `type=docs`, subject naming the rule and
+2. **Offer to encode the rule as an eval case.** A Rules entry is bought with one observed
+   failure — which is the same thing as an eval case with a known-bad outcome. Written
+   down in `ENGINEERING.md` the rule is advisory and holds only while a run remembers to
+   read it; as a case in `evals/` it is checked. Propose one case: a prompt that sets up the
+   situation and invites the failure, and a grader that fails on it. See
+   [`evals/README.md`](../../../evals/README.md).
+
+   This is an offer, not a step — the user decides. Skip it for a Baseline entry, which by
+   definition has no observed failure to reproduce.
+3. Commit via **`jankolenko-skills:git-commit`**, `type=docs`, subject naming the rule and
    the run behind it.
-3. Bump the **patch** version in `.claude-plugin/plugin.json` — one bump per session,
+4. Bump the **patch** version in `.claude-plugin/plugin.json` — one bump per session,
    however many changes it carried.
-4. Tell the user to run `claude plugin update jankolenko-skills@jankolenko`, the one step
+5. Tell the user to run `claude plugin update jankolenko-skills@jankolenko`, the one step
    that has to happen outside this session for the rule to reach the next one.
 
 ## Notes
