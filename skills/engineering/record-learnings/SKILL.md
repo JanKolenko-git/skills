@@ -29,7 +29,7 @@ and it makes the next run's context worse, not better.
 
 ## Step 1 — Filter hard
 
-Keep an entry only if **all three** hold:
+Keep an entry only if **all four** hold:
 
 1. **It would have changed the plan.** Knowing it at the start would have led somewhere
    different. If it only made the work slower, it is not a constraint.
@@ -37,9 +37,29 @@ Keep an entry only if **all three** hold:
    flaky test on one branch is not; "this suite needs `TZ=UTC` or date assertions drift" is.
 3. **It is not already written down** where the next run would read it. Re-stating what
    `CLAUDE.md`, the README or the spec already says is pure dilution.
+4. **It is a principle, not a patch.** This is the one that decides whether `CLAUDE.md` gets
+   smarter or merely longer. A patch encodes the case you just hit; a principle names the
+   rule that case was an instance of. Ask: **does this tell the next run what to do in a
+   situation nobody has hit yet?** If it only recognises this exact file, symbol or ticket
+   again, it is a patch.
+
+   Failing test 4 usually means *rewrite*, not *discard* — the fact is real, the wording is
+   too narrow. Climb one level and check the claim still holds:
+
+   ```
+   patch      "pass tz: 'UTC' to formatDate in CartSummary.test.tsx"
+   principle  "date assertions need TZ=UTC — CI runs UTC, local machines do not"
+   ```
+
+   Climb too far and you get a platitude ("be careful with dates") that constrains nothing.
+   The right altitude is the highest one where the entry still tells you what to *do*.
 
 Most candidates fail at least one. Expect to keep one or two entries from a full run, and
 often none — say so plainly rather than manufacturing a lesson.
+
+A `CLAUDE.md` that grows by a patch per run stops being read, and an unread file constrains
+nothing. If a section has drifted into a list of special cases, say so — collapsing five
+patches into the one principle they share is a better outcome than adding a sixth.
 
 Write each keeper as an imperative constraint, not a story. Not *"we spent an hour on the
 mock returning undefined"* but *"`fetchCart` must be mocked at the module boundary — the
