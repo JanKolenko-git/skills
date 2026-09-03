@@ -23,6 +23,8 @@ outcome.
 
 <!-- append below this line -->
 
+- 2026-09-03 · monthly work report · Rebuilt "what did I do last month" by hand from git logs, PR lists and session transcripts across 11 repos; the same request was made on 2026-08-03 for July.
+
 ## Resolved
 
 <!-- moved here by find-skill-gaps, with outcome -->
