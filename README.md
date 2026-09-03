@@ -203,34 +203,14 @@ rewrites the whole page — so `update_page.py` writes only between its own mark
 when the page moved under it (`409`), and refuses when a section looks like it already exists
 without markers. `--dry-run` shows the change before anything is written.
 
-**Pushing always stops for a human — and a hook enforces it.** `git-pr-push-and-open` shows
-the full diff and waits for an explicit yes before `git push`. The gate lives in the same
-skill as the push so nothing can compose around it, and it repeats every round of changes.
-Only you, in chat, can waive it.
+**Pushing always stops for a human.** `git-pr-push-and-open` shows the full diff and waits
+for an explicit yes before `git push`. The gate lives in the same skill as the push so nothing
+can compose around it, and it repeats every round of changes. Only you, in chat, can waive it.
 
-That much is advisory: it holds while a session actually invokes the skill. So the plugin
-also ships a `PreToolUse` hook ([`hooks-handlers/pre-tool-use-git-push.py`](./hooks-handlers/pre-tool-use-git-push.py))
-that inspects `git push` in **any** Bash call, so the harness itself demands an answer —
-including from a session that never loaded the skill, or whose context was compacted past
-the gate. It returns `ask` rather than `deny`, because the gate exists to be answered by a
-person, not to make pushing impossible.
-
-It is scoped to the pushes that are expensive to undo:
-
-| Push | Hook |
-| --- | --- |
-| A feature branch | **silent** — the skill's own gate covers it |
-| The default branch (resolved from `origin/HEAD`, or `main`/`master`) | asks |
-| `--force` / `--force-with-lease` | asks |
-| `--delete` a remote branch | asks |
-| `--all`, `--mirror`, `--tags` | asks |
-| A refspec it cannot parse | asks — an unreadable target is treated as the dangerous case |
-| `--dry-run` | silent — reaches no remote |
-
-`git push origin HEAD:main` asks, because the destination is resolved from the refspec
-rather than read off the command. Prompting on *every* push was the first version, and it
-was wrong: a gate that fires constantly trains you to approve without reading, which costs
-more than it protects.
+This is an **advisory** control: it holds while a session actually invokes the skill. A
+`PreToolUse` hook briefly backed it deterministically, and was removed — it asked on every
+push, and a gate that fires on routine work trains you to approve without reading, which
+costs more than it protects. If you want it back, `git log -- hooks-handlers/` has it.
 
 ## Installation
 
