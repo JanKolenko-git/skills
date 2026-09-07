@@ -1,6 +1,6 @@
 ---
 name: plan-change
-description: Turn a goal into a concrete implementation plan grounded in the code — which files change, in what order, what could break, and whether the work splits into independent lanes or has to be built serially. Decides up front when no code change is warranted at all. Use when the user or another skill (e.g. jankolenko-skills:implement-ticket) needs a plan before implementing, or asks to "plan this", "how would you approach this", or "work out what needs changing".
+description: Turn a goal into a concrete implementation plan grounded in the code — which files change, in what order, what could break, and whether the work splits into independent lanes or has to be built serially. Decides up front when no code change is warranted at all, and weighs more than one approach before committing, so a suggested solution is treated as a candidate rather than a given. Use when the user or another skill (e.g. jankolenko-skills:implement-ticket) needs a plan before implementing, or asks to "plan this", "how would you approach this", or "work out what needs changing".
 ---
 
 # Plan Change
@@ -28,6 +28,7 @@ result — so this skill is biased toward reading more and committing later.
 | Field | Contents |
 | --- | --- |
 | `plan.verdict` | `ready` / `blocked` / `no-change-needed` |
+| `plan.approach` | The approach chosen, the ones rejected, and the fact that decided |
 | `plan.summary` | The approach, one paragraph |
 | `plan.files` | Each file to touch, with what changes in it |
 | `plan.steps` | Ordered steps, each independently checkable |
@@ -60,7 +61,36 @@ Before planning a change, rule out that no change is warranted:
 > evidence — cite files, commits, or the failed repro. Stop there. What to do about it is the
 > caller's decision, not this skill's.
 
-## Step 3 — Write the plan
+## Step 3 — Weigh a second approach before committing to the first
+
+The approach that arrives with the goal — the ticket's "proposed change", the obvious fix,
+the one already in your head — is a **candidate, not the plan**. Name at least one more.
+
+Two is usually enough, and they have to differ in mechanism: if the only difference is a
+constant, that is one approach and a tuning question, not two.
+
+Compare them on what actually decides it:
+
+- **Does it solve the whole problem**, or the symptom noticed first?
+- **What does it assume?** An approach resting on an unmeasured assumption is a guess in a
+  plan's clothing. Where the assumption is cheap to check, check it now; where it is not, it
+  belongs in `plan.risks` with its detector.
+- **What breaks it later** — a caller you have not met, an environment that behaves
+  differently, a value someone retunes.
+
+Then take the **simplest approach that fully solves it**, in that order. Simple and
+predictable is usually right, and an approach that fits in your head is one the next person
+can debug — but simplicity breaks ties between approaches that work, it never excuses one
+that half-works.
+
+Record it in `plan.approach`: what you chose, what you rejected, and the fact that decided
+between them. A reader who disagrees needs the alternative to argue with.
+
+> 🛑 **GATE:** If the only approach you can name is the one the goal arrived with, say so in
+> `plan.approach`, and why nothing else fits. That is a fair answer for a small change — but
+> writing it down is what stops "the ticket said so" from passing as a decision.
+
+## Step 4 — Write the plan
 
 Name real paths and real functions. "Update the cart logic" is not a plan; "add VAT rounding
 in `cart/totals.ts:calcTax`, and widen the fixture in `cart/totals.test.ts`" is.
@@ -75,7 +105,7 @@ A risk with nothing that would catch it is an open question, not a risk.
 > `plan.verdict = blocked` with the **specific** question that would unblock it. Do not write
 > a plausible-sounding plan over a gap.
 
-## Step 4 — Partition into lanes, or refuse to
+## Step 5 — Partition into lanes, or refuse to
 
 Only then, ask whether the work splits. A lane split is real only if **all four** hold:
 
