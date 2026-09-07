@@ -75,6 +75,40 @@ _Source: first half observed — this file's founding entry. Second half: Ouster
 Philosophy of Software Design› §14; Kernighan & Pike, ‹The Practice of Programming› §1 —
 surfaced by ‹7 Coding Laws of Senior Developer› (law 2)._
 
+## A stylesheet is unused only if the rendered markup says so
+
+```scss
+.app {
+  // no — the JS that imported the barrel is gone, so the sheet must be dead too
+- @import '@adl/collection-v6/css';
+  @include meta.load-css('@adl/collection/style.css');
+}
+```
+
+```js
+// yes — ask the rendered screen which classes it uses, then diff the sheets
+const used = new Set([...document.querySelectorAll('*')].flatMap((el) => [...el.classList]));
+// anything `used` that the old sheet styles and the new one does not is a silent regression
+```
+
+Removing or narrowing a stylesheet is invisible to every automated check. Types, lint,
+tests and the production build all pass, because nothing connects a class name in markup
+to a rule in a sheet — the coupling is a string, resolved by the browser at runtime. The
+component whose JS you deleted is not the only thing that sheet was dressing.
+
+Checking one screen is not the audit. A ported modal renders correctly while the controls
+inside it fall back to browser defaults, which is exactly how this shipped. A quick tell
+for that failure: `getComputedStyle(el).appearance === 'auto'` on a control that should be
+custom-styled is the native widget showing through.
+
+Exception: a sheet whose classes you have confirmed absent from the rendered DOM in every
+state the component has — and a modal has more states than the one you opened.
+
+_Source: glass-cookie-consent-mf #79 — dropping v6's sheet with its JS barrel cost ten
+classes their rules and shipped native checkboxes; fixed in 4be37d8. The same removal was
+proposed a week earlier in glass-cprs-form-mf #33, where running this audit found 24 broken
+classes and it was reverted before merge._
+
 ## Generated artifacts ship in the commit that changed their source
 
 ```

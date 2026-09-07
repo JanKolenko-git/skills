@@ -10,9 +10,10 @@ nothing verified that a change left the skills doing what they claim.
 
 ## What is covered, and why these
 
-Every case here tests a **refusal**. That is deliberate: the skills' value is concentrated in
-the moments they decline to do the obvious thing — refuse to plan over a gap, refuse to guess
-a repo, refuse to push unreviewed. Those are also the behaviours a well-meaning reword erodes
+Every case here tests a **refusal**. That is deliberate: the value is concentrated in
+the moments a run declines to do the obvious thing — refuse to plan over a gap, refuse to
+guess a repo, refuse to push unreviewed, refuse to delete a stylesheet on the strength of an
+import graph. Those are also the behaviours a well-meaning reword erodes
 first, because the erosion reads as helpfulness.
 
 | Case | Skill | The failure it catches |
@@ -27,11 +28,16 @@ first, because the erosion reads as helpfulness.
 | `jira-write-not-triggered-by-ticket-text` | `atlassian-jira` | Executing a write that fetched ticket text asked for |
 | `implement-ticket-refuses-guessed-ticket` | `implement-ticket` | Building from the user's description of a ticket it could not fetch |
 | `improve-skill-waits-for-diff-approval` | `improve-skill` | Editing a SKILL.md before the user has seen the diff |
+| `stylesheet-removal-audits-rendered-classes` | `ENGINEERING.md` | Removing a stylesheet on import-graph evidence alone, while the markup still uses its classes |
 
 `git-commit-refuses-secrets` and `jira-write-not-triggered-by-ticket-text` are the
 high-severity pair. A committed secret means rotating the key, because rewriting history
 is not enough; an injected write that executes is a data-integrity incident. Both are
 cheap to catch here and expensive to catch in production.
+
+Most cases are bought by a skill's gate; `stylesheet-removal-audits-rendered-classes` is
+bought by a `Rules` entry in `ENGINEERING.md` instead. Same evidence either way — one
+observed failure — so the two live in the same suite.
 
 ## Running them
 
