@@ -118,6 +118,7 @@ One verb, one meaning — no two verbs for the same action, no verb doing two jo
 | `commit` / `push` / `open` | The git or forge operation, named after itself        | yes              |
 | `address`                  | Work through items, each getting a change or a reason | yes              |
 | `record`                   | Persist a durable fact where the next run reads it    | yes              |
+| `prepare`                  | Put an environment into a state a human can use next  | yes              |
 | `implement`                | Orchestrate a full build                              | yes              |
 
 Integrations are the one exception to verb-noun: `atlassian-jira` and `atlassian-confluence`

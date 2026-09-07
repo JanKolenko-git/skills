@@ -67,6 +67,7 @@ ticket key on their own only if `atlassian-jira` happens to be installed.
 | **[git-pr-push-and-open](./skills/engineering/git-pr-push-and-open/SKILL.md)** | Show the diff, **stop for human approval**, then push and open the PR |
 | **[git-pr-address-review](./skills/engineering/git-pr-address-review/SKILL.md)** | Work the review comments on a PR — apply the ones that earn a change, decline the rest with a reason, one ledger row each |
 | **[record-learnings](./skills/engineering/record-learnings/SKILL.md)** | Write durable constraints back to `CLAUDE.md`, a spec section or the ticket — and drop everything that wasn't durable |
+| **[prepare-local-environment](./skills/engineering/prepare-local-environment/SKILL.md)** | Install, build and start whatever this repo runs on — then prove the app rendered before handing you the URL |
 
 #### Orchestrators — workflows
 

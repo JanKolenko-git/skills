@@ -50,6 +50,9 @@ instead of guessing.
   PR: apply the ones that earn a change, decline the rest with a reason, one ledger row each.
 - **[record-learnings](./record-learnings/SKILL.md)** — Write durable constraints back to
   `CLAUDE.md`, a spec section or the ticket — and drop everything that wasn't durable.
+- **[prepare-local-environment](./prepare-local-environment/SKILL.md)** — Get the repo to the
+  state where you can exercise it by hand: work out how it runs, install, build, start,
+  then prove the app *rendered* before handing back a URL.
 
 ## Orchestrators
 
