@@ -18,5 +18,5 @@ done; ls repos
 `checkout-web` is the storefront checkout flow; `checkout-api` is the checkout service
 backend. Treat the `repos` directory as the only place repositories live.
 
-Now work out which repository this task belongs to: "Checkout total is wrong when a
-discount code is applied."
+Now use find-repository to work out which repository this task belongs to: "Checkout
+total is wrong when a discount code is applied."
