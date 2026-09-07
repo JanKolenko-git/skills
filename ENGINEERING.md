@@ -109,6 +109,35 @@ classes their rules and shipped native checkboxes; fixed in 4be37d8. The same re
 proposed a week earlier in glass-cprs-form-mf #33, where running this audit found 24 broken
 classes and it was reverted before merge._
 
+## Generate an artifact with the toolchain the repo pins
+
+```bash
+node -v                # v24.18.0, while .nvmrc says 20.19.2
+npm install            # no — 1008 lockfile lines of npm-11 re-hoisting
+
+nvm use                # 20.19.2
+npm install            # yes — 21 lines, one version actually changed
+```
+
+A repo pins its toolchain because the generator's output differs between versions. Run it
+on the wrong one and you get an artifact that is valid, passes tests, and is wrong in bulk:
+the same dependency graph re-expressed, burying the one line you meant to change.
+
+This is the rare failure with no signal at the point of action. The command succeeds, the
+JSON parses, nothing warns. The only tell is a diff far larger than the change deserves —
+and that is easy to wave away as the tool being noisy. So the check belongs *before* the
+generator runs, not after: read the pin (`.nvmrc`, `.tool-versions`, `engines`, a pinned
+Python for `poetry.lock`, a pinned protoc for a generated client) and match it.
+
+Exception: a repo that pins nothing — then any supported version is fine, though if the
+artifact is large, say which version produced it. And generators whose output genuinely
+does not vary by toolchain version.
+
+_Source: observed — regenerating `package-lock.json` in glass-plp (DXP-10836) under Node 24
+/ npm 11 against a repo pinning Node 20.19.2 changed 1008 version lines while exactly one
+package changed version; under the pinned Node it was 21 lines. The bad lockfile was
+committed before the churn was noticed._
+
 ## Generated artifacts ship in the commit that changed their source
 
 ```

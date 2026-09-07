@@ -62,6 +62,14 @@ on every refactor and protect nothing.
 
 Do not test framework internals, third-party libraries, or generated code.
 
+A test also leaves the environment as it found it. Anything it acquires that outlives it — a
+listener on a shared `document`, a redefined global, an env var, a monkeypatch, a temp file,
+a row — is consumed or restored before the test returns. Module-level resets are the usual
+false comfort: `vi.resetModules` and its equivalents reset *your* module, not the environment
+your module touched. The tell is a test that passes alone and fails once the file is
+reordered, which is why a leak costs nothing on the day it is written and a confusing failure
+weeks later.
+
 ## Step 3 — Run them
 
 ```bash

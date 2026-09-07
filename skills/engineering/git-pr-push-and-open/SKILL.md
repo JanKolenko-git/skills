@@ -36,6 +36,11 @@ through the gate.
 git status --short
 git log --oneline <base>..HEAD
 git diff --stat <base>..HEAD
+
+# Best effort. A base that was never fetched has no origin/<base> to compare against,
+# and a forge the CLI cannot reach answers nothing — both are normal.
+git rev-list --count HEAD..origin/<base> 2>/dev/null   # how far behind base?
+gh pr list --head <branch> --state all 2>/dev/null     # already had a PR?
 ```
 
 Everything must already be committed — this skill does not commit; use `jankolenko-skills:git-commit`. If the
@@ -43,6 +48,15 @@ working tree is dirty, stop and say so.
 
 If there are no commits against `<base>`, there is nothing to open a PR for. Say that
 instead of pushing an empty branch.
+
+Stop the same way when the branch is **behind** `<base>`, or when a PR for it has **already
+merged**. After a squash-merge its commits are never ancestors of base, so `<base>..HEAD` keeps
+listing them and the branch looks perpetually ahead — while its diff now proposes undoing
+everything base has merged since. Say how far behind it is, name the PR that already merged,
+and let the user choose between a rebase and a fresh branch off current base.
+
+Both are best effort: when they answer nothing — no fetched base, no forge access — that is no
+signal rather than a finding. Note it in one line and carry on.
 
 ## Step 2 — 🛑 The review gate
 
