@@ -117,6 +117,14 @@ app mounted. In rough order of what actually catches things:
 > 🛑 **GATE:** Do not report a URL you have not watched render. The user's next move is to
 > open it and believe it, and a URL handed over on the strength of a status code moves the
 > debugging onto them — which is the errand they asked you to run.
+>
+> Nor does preparing an environment stretch to editing application or server source until
+> the page renders. A component the branch has not written yet, a module that does not
+> resolve — that is the user's own work in progress, and supplying your guess at it converts
+> a visible failure into an invisible one: the page renders, they believe it, and what they
+> are looking at is yours. Offering to write the missing piece and waiting is the move;
+> writing it and reporting the app as working is not. Say what is missing and let them
+> decide.
 
 ## Step 7 — Hand over the URL, not the port
 
