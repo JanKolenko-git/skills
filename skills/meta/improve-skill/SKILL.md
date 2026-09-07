@@ -102,6 +102,11 @@ to every future session (see `.agents/authoring.md` → Deployment reality):
      Either the diff broke the gate and needs redoing, or the eval encodes behaviour the
      improvement deliberately changed — and that second case is the user's call, not
      yours, because it means rewriting the case that was protecting it.
+   - **Cannot run** — every case scoring `0.00` at `$0.00` in seconds, with an auth or
+     harness error where a grader verdict should be, is no signal rather than a bad
+     one. Report it as such, let the user decide whether to land unverified, and say
+     so in the commit body if they do. The distinction holds both ways: a real Red
+     waved through as "evals are broken again" ships what the gate exists to catch.
    - **No case covers this skill** — say so in one line rather than skipping silently.
      An uncovered gate is worth a `evals/` case of its own; offer it, don't build it here.
 3. Commit via **`jankolenko-skills:git-commit`** — `type=docs`, subject naming the skill and
