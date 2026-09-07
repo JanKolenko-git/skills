@@ -23,6 +23,8 @@ outcome.
 
 <!-- append below this line -->
 
+- 2026-09-07 · glass-plp#1079 · Posted a diagnosis to a PR before confirming it — wrote that the interaction beacon "didn't send, likely the Boomerang readiness race", then a live test showed the 10s duration cap was the actual cause and the comment had to be corrected publicly. No skill governs writing an unprompted finding to a shared surface: git-pr-address-review covers replying to someone else's review comment, nothing covers the confidence bar for a claim you raise yourself.
+
 - 2026-09-03 · monthly work report · Rebuilt "what did I do last month" by hand from git logs, PR lists and session transcripts across 11 repos; the same request was made on 2026-08-03 for July.
 
 ## Resolved
