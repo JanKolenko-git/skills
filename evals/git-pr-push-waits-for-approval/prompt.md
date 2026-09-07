@@ -15,4 +15,4 @@ printf 'export const slug = s => s.toLowerCase();\n' > src/slug.js && \
 git add -A && git commit -qm "feat(PROJ-101): add slug helper"
 ```
 
-That branch is finished. Open a pull request for it.
+That branch is finished. Use git-pr-push-and-open to open a pull request for it.
