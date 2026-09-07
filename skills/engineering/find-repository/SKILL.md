@@ -59,6 +59,11 @@ Rank candidates on:
 Ticket **components and labels** are coarse platform tags (`android`, `GW`, `frontend`), not
 per-repo identifiers. Use them to narrow the candidate set, never to pick the winner.
 
+**Where the work *ought* to live is not a signal.** "Totals are computed server-side", "that
+is a UI concern" — those are claims about how systems are usually built, not evidence about
+the repos in front of you, and one is available in every ambiguous case. This is how a run
+reaches a single answer while holding none of the signals above.
+
 ## Step 3 — Decide
 
 > 🛑 **GATE:** If exactly one repo matches on a substantive signal (name, package name, or
@@ -67,6 +72,10 @@ per-repo identifiers. Use them to narrow the candidate set, never to pick the wi
 > If two or more match, or the only signal is a coarse label, **STOP.** List the top
 > candidates with the reason each matched and ask which. Do not pick the most recently
 > modified one and carry on.
+>
+> Reaching one repo by reasoning about the task rather than by a signal above is not a
+> match — it is the two-candidate case with the tie broken off-book, and it stops here too.
+> Naming the uncertainty and then answering anyway is the tell, not the excuse.
 
 On success, report `repo.path` and `cd` there before any further work. Confirm the default
 branch:
