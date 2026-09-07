@@ -33,7 +33,7 @@ passed down — nothing refetches.
 | --- | --------- | -------------------------------- | ---------------------------------------------------------------------------------- |
 | 1   | Context   | `jankolenko-skills:atlassian-jira` (+ `jankolenko-skills:atlassian-confluence`)          | → `ticket.*`                                                                       |
 | 2   | Repo      | `jankolenko-skills:find-repository`                      | `ticket.title/description` → `hints`; → `repo.path`                                |
-| 3   | Plan      | `jankolenko-skills:plan-change` (+ `jankolenko-skills:clarify-goal`) | `ticket.*` → `goal`/`criteria`; → `plan.*`; `blocked` → `jankolenko-skills:clarify-goal` 🛑 **gate** |
+| 3   | Plan      | `jankolenko-skills:plan-change` (+ `jankolenko-skills:clarify-goal`) | `ticket.*` → `goal`/`criteria`/`candidates`; → `plan.*`; `blocked` → `jankolenko-skills:clarify-goal` 🛑 **gate** |
 | 4   | Branch    | `jankolenko-skills:git-create-branch`                  | `ticket.type/priority` → `type`; `ticket.title` → `slug`                           |
 | 5   | Start     | `jankolenko-skills:atlassian-jira`                           | `mode=transition`, `target_status="In Progress"`                                   |
 | 6   | Build     | _(inline)_ + `jankolenko-skills:write-tests`       | `plan.steps`/`plan.lanes`; `criteria` → `jankolenko-skills:write-tests`                              |
@@ -89,9 +89,20 @@ and passing the key would make it refetch.
 
 ## Step 3 — Plan
 
-Invoke **`jankolenko-skills:plan-change`**, passing `ticket.description` as `goal`,
-`ticket.acceptance_criteria` as `criteria`, and `repo.path`. Do **not** pass `ticket_key` —
-you already hold the ticket.
+Invoke **`jankolenko-skills:plan-change`** with `repo.path`, `ticket.acceptance_criteria` as
+`criteria`, and the ticket's description split in two:
+
+- `goal` — the outcome the ticket wants: what is wrong now, and what "fixed" looks like.
+- `candidates` — any mechanism the ticket proposes.
+
+Tickets routinely carry a "proposed change" section, and passing the description whole makes
+that mechanism the goal — so the plan reasons about how to build it rather than whether to,
+and a plausible-but-wrong approach survives all the way to a merged PR. Splitting them lets
+`jankolenko-skills:plan-change` weigh the ticket's idea against alternatives instead of
+inheriting it.
+
+A ticket that names only a mechanism still has an outcome behind it. State it, and say in the
+final report that you inferred it. Do **not** pass `ticket_key` — you already hold the ticket.
 
 If the repo's `CLAUDE.md` carries a `## Learned constraints` section — written by
 `jankolenko-skills:record-learnings` on an earlier run — pass it as `constraints`. That is the back edge from

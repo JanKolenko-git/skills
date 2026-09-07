@@ -17,6 +17,8 @@ result — so this skill is biased toward reading more and committing later.
   sentence from the user.
 - `criteria` — acceptance criteria, or a bug's reproduction case. Sharpens the plan and is
   passed on to `jankolenko-skills:write-tests` later.
+- `candidates` — approaches somebody has already proposed, e.g. a ticket's "proposed
+  change". They enter Step 3's comparison as entries, never as the decision.
 - `constraints` — known constraints from earlier runs (see `jankolenko-skills:record-learnings`), house rules,
   anything already ruled out.
 - `repo.path` — optional. Defaults to the current repository.
