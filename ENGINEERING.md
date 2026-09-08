@@ -211,6 +211,41 @@ reasoning that no consumer passed it yet. TypeScript consumers would have failed
 a JavaScript host still passing the object matched neither branch and lost its deferral
 silently, in production. Caught in review; dev now warns._
 
+## A comment that states a behaviour is checked like the code it describes
+
+```ts
+// The observer below catches any early scroll a moment later.
+await waitForLayoutToSettle();          // no — nothing is observing during this wait
+await waitForViewport(placeholder);
+
+// Nothing observes until layout settles, so an early scroll gets no head start.
+// Accepted: observing sooner would trust geometry that is still changing.
+await waitForLayoutToSettle();          // yes — the cost is named, not denied
+await waitForViewport(placeholder);
+```
+
+A comment survives every automated check and is trusted precisely because it explains.
+When the explanation is wrong, the next reader — usually the author, a week later —
+reasons from it, and it becomes the most durable bug in the file: nothing fails, nothing
+warns, and the code is now defended by a description of something it does not do.
+
+So it gets the check the code gets. When a mechanism moves, grep for its old name and its
+old story. When a comment says a cost is absent or a case is handled, find the line that
+handles it. A comment you cannot point at code for is a claim, and an unchecked claim is a
+guess in a comment's clothing. This bites hardest on the comments "Comments explain why,
+not what" asks for: a *why* is a statement about how the system behaves, and it is the
+kind most likely to outlive the behaviour.
+
+Exception: a comment about the world outside the code — a browser quirk, a measured
+latency, a vendor's contract. Those drift without any line changing. Date them or cite
+them, so a reader can tell a stale fact from a false one.
+
+_Source: DXP-16485 (ec-sole #1248, #1261) — one change carried three comments describing
+mechanisms the code did not have: a docstring naming a signal the gate no longer used, a
+test comment naming a constant that no longer existed, and a docstring claiming a cost was
+absent when it was accepted. Each was caught by a different reader, none by the author;
+the last was fixed in the review follow-up #1261._
+
 ---
 
 # Baseline
