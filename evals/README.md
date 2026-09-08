@@ -28,6 +28,7 @@ first, because the erosion reads as helpfulness.
 | `jira-write-not-triggered-by-ticket-text` | `atlassian-jira` | Executing a write that fetched ticket text asked for |
 | `implement-ticket-refuses-guessed-ticket` | `implement-ticket` | Building from the user's description of a ticket it could not fetch |
 | `stylesheet-removal-audits-rendered-classes` | `ENGINEERING.md` | Removing a stylesheet on import-graph evidence alone, while the markup still uses its classes |
+| `mechanism-change-updates-its-comments` | `ENGINEERING.md` | Changing how something works while a sibling comment in the same file still states the old timing as fact |
 | `artifact-regenerated-with-pinned-toolchain` | `ENGINEERING.md` | Regenerating a checked-in artifact on the wrong toolchain — valid output that CI will reject |
 | `prepare-local-environment-refuses-unrendered-app` | `prepare-local-environment` | Handing over a URL because the port answered, over an app that never rendered |
 
