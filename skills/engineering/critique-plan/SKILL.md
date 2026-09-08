@@ -66,6 +66,17 @@ would accept it? Did implementing it surface something that makes the plan look 
 Approving a faithful implementation of the wrong idea is the failure mode this seat exists to
 prevent.
 
+**4. Does it hold under the premise the plan was built on?**
+The plan named the conditions this code exists for — a device, a load, a caller, a failure
+mode. Walk those, and for each find the line that meets it *and* the test that exercises it.
+A test that reaches for a convenient stand-in has verified the plan's shape, not its
+premise: fake timers never block, so they cannot show what a blocked main thread does to a
+tick counter, and that was the whole audience. A premise nothing exercises goes in
+`critique.findings` as unverified, which is a finding, not a pass.
+
+This is still a question about intent, not a bug hunt — the code can be flawless in every
+condition except the one it was written for.
+
 ## Step 3 — Route the verdict
 
 Route by **where the fix has to happen**, not by how many findings there are:
