@@ -168,6 +168,49 @@ unregenerated, which the repo's API Extractor check would have failed. Verificat
 been scoped to the two changed files, so the package's own `document` script never ran;
 review caught it._
 
+## Parse at the boundary; trust the types inside it
+
+```ts
+const user = await res.json() as User            // no — a cast is a wish, not a check
+const user = UserSchema.parse(await res.json())  // yes
+
+function retry(times: number) { … }              // no — -1 and NaN both type-check
+function retry(times: number) {
+  if (!Number.isInteger(times) || times < 0) {
+    throw new RangeError(`retry times must be a non-negative integer, got ${times}`)
+  }
+  …                                              // yes
+}
+
+if (strategy === 'when-near-viewport') defer()   // no — a host still sending the old
+                                                 //   `{ type: … }` shape matches nothing
+                                                 //   and loads eagerly, in silence
+if (strategy !== 'immediate' && strategy !== 'when-near-viewport') {
+  warn(`unrecognised strategy`, strategy)        // yes — the boundary says so
+}
+```
+
+TypeScript checks what you wrote, not what arrives. Every API response, env var, URL
+param, `postMessage` payload and file read enters as `unknown` wearing a type you
+asserted. `as` does not verify — it instructs the compiler to stop asking. The failure
+lands far from the boundary, in code that had every right to trust its inputs.
+
+Validate once, where data enters. Past that line, the types are real and code stops
+defending itself — that is the payoff, and it is why the line has to be a line.
+
+A public prop or option on a library is a boundary as much as a URL param is. The compiler
+checks the TypeScript hosts; the JavaScript ones arrive as `unknown` like everything else,
+and the shape you stopped accepting is precisely the one they will keep sending.
+
+Exception: internal calls already behind a validated boundary. Re-checking there is
+noise that trains readers to skim the checks that matter.
+
+_Source: Power of 10 §5 and §7 (callee validates its parameters). Promoted by DXP-16485
+(ec-sole #1261) — `loadStrategy` went from an object to a string, shipped as a minor on the
+reasoning that no consumer passed it yet. TypeScript consumers would have failed to compile;
+a JavaScript host still passing the object matched neither branch and lost its deferral
+silently, in production. Caught in review; dev now warns._
+
 ---
 
 # Baseline
@@ -222,34 +265,6 @@ Exception: fire-and-forget telemetry, which still gets a `.catch()` — a swallo
 rejection is a choice, and choices are written down.
 
 _Source: Power of 10 §7; `no-floating-promises: "error"` in ma-mf-confirmed._
-
-## Parse at the boundary; trust the types inside it
-
-```ts
-const user = await res.json() as User            // no — a cast is a wish, not a check
-const user = UserSchema.parse(await res.json())  // yes
-
-function retry(times: number) { … }              // no — -1 and NaN both type-check
-function retry(times: number) {
-  if (!Number.isInteger(times) || times < 0) {
-    throw new RangeError(`retry times must be a non-negative integer, got ${times}`)
-  }
-  …                                              // yes
-}
-```
-
-TypeScript checks what you wrote, not what arrives. Every API response, env var, URL
-param, `postMessage` payload and file read enters as `unknown` wearing a type you
-asserted. `as` does not verify — it instructs the compiler to stop asking. The failure
-lands far from the boundary, in code that had every right to trust its inputs.
-
-Validate once, where data enters. Past that line, the types are real and code stops
-defending itself — that is the payoff, and it is why the line has to be a line.
-
-Exception: internal calls already behind a validated boundary. Re-checking there is
-noise that trains readers to skim the checks that matter.
-
-_Source: Power of 10 §5 and §7 (callee validates its parameters)._
 
 ## Strict from the first commit; a suppression carries its reason
 
