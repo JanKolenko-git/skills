@@ -71,8 +71,12 @@ Stop whatever is already on the port before installing, in that order. An instal
 replaces `node_modules` under a running dev server leaves that server holding files that no
 longer exist, and its errors will not look like the cause.
 
-- **`npm ci`** when the lockfile is authoritative. It is the only install that reproduces
-  what CI and production see, and the only one to use before measuring anything.
+- **`npm ci`** unless `node_modules` provably matches the lockfile. "This branch did not
+  touch dependencies" is not that proof — the base branch moves under a checkout, and a
+  stale install surfaces two steps later as a 500 that looks like the app's fault.
+  `npm ls --depth=0` answers in seconds: an `invalid` or `missing` line means reinstall.
+  `npm ci` is the only install that reproduces what CI and production see, and the only
+  one to use before measuring anything.
 - **`npm install`** when this branch edited the manifest and the lockfile has to catch up —
   then say so, because the lockfile is now part of the diff.
 - **`fresh`** additionally clears the caches that survive a dependency change and quietly
