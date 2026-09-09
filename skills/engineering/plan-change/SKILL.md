@@ -78,7 +78,9 @@ Compare them on what actually decides it:
   plan's clothing. Where the assumption is cheap to check, check it now; where it is not, it
   belongs in `plan.risks` with its detector.
 - **What breaks it later** — a caller you have not met, an environment that behaves
-  differently, a value someone retunes.
+  differently, a value someone retunes. And for shared code, **the same caller ten times
+  over**: a cost that is fine for one adopter is paid once per adopter, so ask what the
+  approach costs at N before the second one arrives.
 
 Then take the **simplest approach that fully solves it**, in that order. Simple and
 predictable is usually right, and an approach that fits in your head is one the next person

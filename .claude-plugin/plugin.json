@@ -1,6 +1,6 @@
 {
   "name": "jankolenko-skills",
-  "version": "4.3.3",
+  "version": "4.3.4",
   "description": "Composable, portable agent skills — read and update any Jira and Confluence Data Center instance, plus reusable atoms for finding a repo, planning a change, clarifying a blocked goal, branching, testing, critiquing the diff against the plan, committing, opening a PR, resolving its review comments and recording what the run learned, wired together by implement-ticket — explain and draft-reply, which need no repo open at all — and a self-improving skill layer: a session-start rule that notices friction, improve-skill to fix a skill in whichever repo owns it, and find-skill-gaps to propose new skills from a cross-session evidence ledger. Nothing here is bound to one employer or programme; team-specific workflows live in the companion jankolenko-projects plugin.",
   "author": {
     "name": "Jan Kolenko",
