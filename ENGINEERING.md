@@ -246,6 +246,35 @@ test comment naming a constant that no longer existed, and a docstring claiming 
 absent when it was accepted. Each was caught by a different reader, none by the author;
 the last was fixed in the review follow-up #1261._
 
+## An edit is verified by reading it back, not by the tool that applied it
+
+```bash
+python3 patch.py                  # prints "patched", exits 0
+git commit -m "fix assertion"     # no — nothing has looked at the result
+
+python3 patch.py
+git diff -- spec.ts               # yes — the change, not the report of one
+```
+
+A patch script, a `sed`, a codemod, an editor macro: each reports its own success, and
+each can succeed while changing nothing — an anchor that matched but was never replaced,
+a pattern that hit zero lines, a file written back as it was. The exit code is a fact
+about the tool. The diff is the fact about the code, and only the diff gets committed.
+
+Read the diff of every file the tool touched before calling the change made. This binds
+hardest where nothing else will look: a test the session cannot run, a config no build
+loads, a comment. There a bad edit has no second line of defence — the next reader is a
+reviewer, or production.
+
+Exception: an edit followed by a check that exercises it — the test that now passes, the
+build that now compiles. The check is the read-back. Where no such check runs, the diff
+is the only one there is.
+
+_Source: observed — glass-pdp #1098 (DXP-19294): a patch script asserted the old block
+was present, never replaced it, and printed "patched"; the run reported the review
+finding fixed, and the Playwright spec it lived in could not be run locally. The matcher
+error shipped in the first push and was caught by Copilot review; fixed in aa7a8f44._
+
 ---
 
 # Baseline
@@ -477,10 +506,18 @@ comment — and deleting it would reintroduce a bug that only appears after a bu
 
 Write the comment for whoever arrives after the context is gone. That is usually you.
 
+Say it once, where the reason lives. A rationale that belongs to a component goes on the
+component; a call site gets a pointer at most, or nothing when the name already says it.
+Three copies of one *why* are three places for it to go stale, and a reader who meets the
+second copy reads it as leftover text.
+
 Exception: docblocks on a public API, where describing what it does _is_ the job.
 
 _Source: Google, Apple and kernel style guides converge here; specimen from openclaude
-`utils/errors.ts`._
+`utils/errors.ts`. Sharpened by glass-pdp #1098 (DXP-19294): the same rationale was
+written on `WithGooglePlacesAPI` and repeated at three call sites, review flagged the
+copies, the run kept them, and a reviewer then asked for one as leftover — removed in
+ea8b8137._
 
 ## The change includes the deletion
 
