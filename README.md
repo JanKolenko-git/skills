@@ -4,10 +4,12 @@ Composable, **portable** agent skills for shipping ticketed work, packaged as a
 [Claude Code plugin](https://code.claude.com/docs/en/plugins).
 
 Everything here works against any Jira/Confluence Data Center instance and any git repo —
-nothing is bound to one employer or programme. The workflows that *are* bound to one live in
-the companion [`jankolenko-projects`](https://github.com/JanKolenko-git/JanKolenko-Skills)
-plugin, which depends on this one and not the other way round
-([`adr/0004`](./.agents/adr/0004-two-repos.md)).
+nothing tracked in this repository is bound to one employer, programme or codebase, and
+[`scripts/check-portable.py`](./scripts/check-portable.py) keeps it that way. The workflows
+and rules that *are* bound to one live beside them in an untracked
+[`projects/`](./projects/README.md) folder, shipped as the `jankolenko-projects` plugin,
+which depends on this one and not the other way round
+([`adr/0005`](./.agents/adr/0005-projects-folder.md)).
 
 The unit of design here is the **atom**: a small skill that does one thing and declares its
 inputs and outputs by name, so other skills can call it. `implement-ticket` is not a monolith —
@@ -16,13 +18,14 @@ it is the wiring between atoms that are each useful on their own.
 ## The skills
 
 Skills sort into **buckets** by what they are about — `engineering/`, `productivity/` and
-`meta/` here, `projects/` in the companion plugin — each at exactly
-`skills/<bucket>/<skill-name>/SKILL.md`.
+`meta/` — each at exactly `skills/<bucket>/<skill-name>/SKILL.md`. What only one team can
+use is not a bucket; it sits in the untracked `projects/` folder, one subfolder per
+repository.
 
 What a skill *does in a pipeline* is a separate axis, and it is the one that matters for
 composing them. Every skill declares one of three **roles**, and read in that order they are
 the dataflow: **integrations** feed **atoms**, atoms compose into **orchestrators**,
-orchestrators specialise into the project workflows in the companion plugin, and `meta/`
+orchestrators specialise into the project workflows under `projects/`, and `meta/`
 watches all of it. Roles are
 deliberately not folders — see
 [`.agents/adr/0002-domain-buckets.md`](./.agents/adr/0002-domain-buckets.md).
@@ -85,12 +88,15 @@ were three, not after.
 | **[explain](./skills/productivity/explain/SKILL.md)** | Explain the thing you're stuck on — code, a principle, a metric, or how to build X in Y — in plain words that stay technically accurate, closed with an everyday analogy |
 | **[draft-reply](./skills/productivity/draft-reply/SKILL.md)** | Turn a pasted thread, and usually a rough draft of the answer, into a reply that is short, checks out, and answers everything that was actually asked — the tightening is the easy part; the value is catching a number quoted from memory and the second question the draft never answered |
 
-### `projects/` — not here
+### `projects/` — untracked, one folder per repository
 
-Instance-specific workflows — wired to one programme, one repo, one Confluence space — live
-in [`jankolenko-projects`](https://github.com/JanKolenko-git/JanKolenko-Skills). They build on
-the integrations above and declare this plugin as a hard dependency. Install it only if you
-work on that programme; nothing here needs it.
+Instance-specific material — a workflow wired to one programme, one repo, one Confluence
+space; a rule that holds in one codebase and not in one you have never seen; the ticket, PR
+and commit behind a general rule — lives in [`projects/`](./projects/README.md), gitignored
+except for the README that documents its shape. Skills there ship as the
+`jankolenko-projects` plugin, rooted at that folder and declaring this plugin as a hard
+dependency; rules there are injected by the session-start hook only inside their own
+repository. Nothing here needs any of it.
 
 ### `meta/` — the skill layer improving itself
 
@@ -101,9 +107,9 @@ the run** — never mid-pipeline.
 
 | Skill | What it does |
 | --- | --- |
-| **[improve-skill](./skills/meta/improve-skill/SKILL.md)** | Fix one of this repo's skills from an observed friction — shows the exact diff, 🛑 stops for approval, then commits, bumps the version and tells you to `plugin update` so the fix actually ships |
+| **[improve-skill](./skills/meta/improve-skill/SKILL.md)** | Fix one of your own skills, in either plugin, from an observed friction — shows the exact diff, 🛑 stops for approval, then commits, bumps the version and tells you to `plugin update` so the fix actually ships |
 | **[find-skill-gaps](./skills/meta/find-skill-gaps/SKILL.md)** | Read the cross-session ledger in [`observations/SIGNALS.md`](./observations/SIGNALS.md) and propose a **new** skill only on two independent signals — 🛑 gated on the idea before drafting, and on the draft before it lands |
-| **[record-engineering-rule](./skills/meta/record-engineering-rule/SKILL.md)** | Decide whether a coding run learned something that belongs in [`ENGINEERING.md`](./ENGINEERING.md) — routes most candidates to `record-learnings` or `improve-skill` instead, and 🛑 gates the rest |
+| **[record-engineering-rule](./skills/meta/record-engineering-rule/SKILL.md)** | Decide where a convention a coding run learned belongs — the general [`ENGINEERING.md`](./ENGINEERING.md), which names the shape of a failure and never a repo or ticket, or one repository's `projects/<repository>/ENGINEERING.md` — routes most candidates to `record-learnings` or `improve-skill` instead, and 🛑 gates the rest |
 | **[find-session-improvements](./skills/meta/find-session-improvements/SKILL.md)** | Sweep a finished session for what the skill layer should have learned from it and route each finding to the skill that owns it, behind one 🛑 triage gate — re-derives findings from the transcript, because in a long session noticing depends on recall and recall is what compaction drops |
 
 All four are bound by [`.agents/authoring.md`](./.agents/authoring.md) — the written-down conventions every
@@ -316,7 +322,7 @@ find PROJ tickets in review that mention caching
 move PROJ-1234 to In Review and comment with the PR link
 which repo is PROJ-1234 about?
 what is INP, and what actually moves it?
-explain how akamai caching decides a hit from a miss
+explain how CDN caching decides a hit from a miss
 open a PR for this branch
 address the review comments on <pr-url>
 ```
@@ -358,10 +364,11 @@ Exit codes distinguish the cases for scripting: `1` setup or bad input, `2` HTTP
 
 Skills live in [`skills/`](./skills) under a **bucket**, sorted by domain: `engineering/`
 for anything that moves a change toward a merged PR, `productivity/` for skills useful with
-no repo open, `meta/` for skills that operate on the skill layer itself. The fourth bucket,
-`projects/` — one team's conventions — is the whole of the companion `jankolenko-projects`
-repo, so **the bucket also decides which repo a skill ships from**
-([`adr/0004`](./.agents/adr/0004-two-repos.md)). Every skill sits at exactly
+no repo open, `meta/` for skills that operate on the skill layer itself. What encodes
+conventions only one team recognises is not a bucket — it leaves `skills/` for the untracked
+[`projects/`](./projects/README.md) folder, one subfolder per repository, and ships from
+there as the `jankolenko-projects` plugin
+([`adr/0005`](./.agents/adr/0005-projects-folder.md)). Every skill sits at exactly
 `skills/<bucket>/<skill-name>/SKILL.md`: one bucket level, never two, and the folder name is
 the skill's `name` verbatim. Grouping a bucket still wants — a set of integrations, a
 programme — goes in its [`README.md`](./skills), not in another folder; see
@@ -383,14 +390,16 @@ all four and exits non-zero on drift:
 New skills follow [`.agents/authoring.md`](./.agents/authoring.md) — most importantly
 `## Inputs` and `## Output` with named fields, which is what makes a skill callable by
 another skill instead of only by a human, and the rule that a skill refers to another as
-`plugin:name`. That file is canonical for **both** repos; the projects repo keeps no copy.
-[`CLAUDE.md`](./CLAUDE.md) has the layout contract and what must stay in sync;
+`plugin:name`. That file governs the project skills under `projects/` too; there is no
+second copy. [`CLAUDE.md`](./CLAUDE.md) has the layout contract and what must stay in sync;
 [`.agents/adr/`](./.agents/adr) has the structural decisions and their rejected alternatives.
 
-Validate the manifests before pushing:
+Validate the manifests before pushing, and check that nothing tracked names a project — a
+ticket key, a PR or commit in a provenance line, a private package scope:
 
 ```bash
 claude plugin validate .
+./scripts/check-portable.py
 ```
 
 Neither that nor `list-skills.sh` checks **behaviour** — a reword that quietly drops a gate
@@ -405,11 +414,13 @@ Working on the skills locally, without reinstalling on every edit:
 
 ```bash
 claude plugin marketplace add ~/Developer/skills
+claude plugin marketplace add ~/Developer/skills/projects   # the project plugin, if you keep one
 ```
 
-That registers a **Directory** marketplace pointing at your clone, so the plugin is rebuilt
-from the local working tree. A commit is enough to ship a change to yourself — no push
-needed. Sessions still load from the versioned cache, so bump `plugin.json`'s `version`, then:
+That registers **Directory** marketplaces pointing at your working tree, so each plugin is
+rebuilt from the local files. A commit is enough to ship a general change to yourself — no
+push needed — and a project change is not even that, since the folder is untracked. Sessions
+still load from the versioned cache, so bump the plugin's `version`, then:
 
 ```bash
 claude plugin update jankolenko-skills@jankolenko
@@ -419,15 +430,16 @@ The `@jankolenko` suffix is **required** — the bare name fails with "Plugin no
 because `update` resolves against the qualified `plugin@marketplace` id it was installed
 under. Restart Claude afterwards; the running session keeps its old cache.
 
-The companion repo has its **own** marketplace, so its id is
+The project plugin has its **own** marketplace, so its id is
 `jankolenko-projects@jankolenko-projects`. Rather than remembering which is which, ask:
 
 ```bash
 ./scripts/which-plugin.sh <skill-name>
 ```
 
-It prints the repo, the `plugin.json` to bump and the exact `update` command for whichever
-repo owns that skill. `jankolenko-skills:improve-skill` uses it for the same reason.
+It prints the source path, the `plugin.json` to bump, the exact `update` command for
+whichever plugin ships that skill, and whether the path is tracked — a project skill is not,
+so there is nothing to commit. `jankolenko-skills:improve-skill` uses it for the same reason.
 
 ## Security
 

@@ -6,3 +6,9 @@ __pycache__/
 # Never commit credentials. Tokens belong in ~/.zshenv, not in this repo.
 .env
 *.token
+
+# Project material — one team's rules and skills, named after the repositories they belong
+# to — is machine-local. Only the README that documents the structure is tracked.
+# See .agents/adr/0005-projects-folder.md.
+projects/*
+!projects/README.md

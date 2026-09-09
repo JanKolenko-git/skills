@@ -8,7 +8,7 @@ argument-hint: <skill-name> — <what happened / what should change>
 
 Close the loop for the skill layer itself: the friction one run hits becomes the fix every
 later run inherits. `jankolenko-skills:record-learnings` does this for work repos; this skill
-does it for the skills — in either repo that ships them.
+does it for the skills — in either plugin that ships them.
 
 The value is in the evidence bar. An improvement is grounded in **what a run actually
 observed** — a step that misled, an input that was missing, a gate that fired for the wrong
@@ -30,12 +30,14 @@ and proposing it anyway erodes the user's trust in the loop. No friction → no 
 | `improve.version` | The new plugin version, once bumped |
 | `improve.status` | `applied` / `declined` / `out-of-scope` |
 
-## Step 1 — Resolve which repo owns the skill
+## Step 1 — Resolve which plugin owns the skill
 
-Our skills ship from two plugins, so the source repo is not a constant. Ask, don't assume:
+Our skills ship from two plugins out of one working tree — the general one, and the project
+one rooted at the untracked `projects/` folder — so the source path is not a constant. Ask,
+don't assume:
 
 ```bash
-eval "$(scripts/which-plugin.sh <skill>)"   # sets repo, skill_md, manifest, plugin, update
+eval "$(scripts/which-plugin.sh <skill>)"   # sets repo, skill_md, manifest, plugin, update, tracked
 ```
 
 Edit `$skill_md`. Never the plugin cache under `~/.claude/plugins/cache/`, which is
@@ -60,7 +62,7 @@ Read `.agents/authoring.md`, then the whole target SKILL.md. Classify the fricti
 | Scope | The skill does two jobs, or the run needed half of it | Propose a split — along a real seam only |
 | Drift | The skill violates a convention in `.agents/authoring.md` | Bring it back in line |
 
-`.agents/authoring.md` lives in `jankolenko-skills` and governs **both** repos, so a projects
+`.agents/authoring.md` lives in `jankolenko-skills` and governs **both** plugins, so a project
 skill is held to it too.
 
 ## Step 3 — Draft the minimal diff
@@ -118,12 +120,13 @@ to every future session (see `.agents/authoring.md` → Deployment reality):
    - **No case covers this skill** — say so in one line rather than skipping silently.
      An uncovered gate is worth a `evals/` case of its own; offer it, don't build it here.
 3. Commit via **`jankolenko-skills:git-commit`** — `type=docs`, subject naming the skill and
-   the friction. Commit in `$repo`; if the session also touched the other repo, that is a
-   separate commit there.
-4. Bump the **patch** version in `$manifest` — one bump per repo per session, however many
-   improvements that repo carried — and amend or commit alongside.
+   the friction — when `$tracked` is 1. A project skill (`$tracked` is 0) lives in the
+   untracked `projects/` folder: there is nothing to commit, and the edit is live on the
+   next plugin update.
+4. Bump the **patch** version in `$manifest` — one bump per plugin per session, however many
+   improvements that plugin carried — and, when tracked, amend or commit alongside.
 5. Quote `$update` back to the user verbatim. It is the one step that must happen outside
-   this session for the change to go live, and its `@marketplace` suffix differs per repo,
+   this session for the change to go live, and its `@marketplace` suffix differs per plugin,
    so paste it rather than retyping it.
 
 ## Notes

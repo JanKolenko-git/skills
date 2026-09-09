@@ -106,7 +106,8 @@ untrue — is evidence.
 | How a skill instructs — wording, a missing input, a step | that `SKILL.md`, or `.agents/authoring.md` | `jankolenko-skills:improve-skill` |
 | A capability nothing covers | one dated line in `observations/SIGNALS.md` | the ledger, then `jankolenko-skills:find-skill-gaps` |
 | How code should be written anywhere | `ENGINEERING.md` | `jankolenko-skills:record-engineering-rule` |
-| How **one repo** behaves | that repo's `CLAUDE.md` | `jankolenko-skills:record-learnings` — **out of scope here.** Name it and stop |
+| How code should be written in repositories you can list | `projects/<repository>/ENGINEERING.md` | `jankolenko-skills:record-engineering-rule` — it decides the scope, not this skill |
+| A fact about how **one repo** builds or runs that teammates should see | that repo's own `CLAUDE.md` | `jankolenko-skills:record-learnings` — **out of scope here.** Name it and stop |
 
 A lead survives only if it would change a *future* run:
 
@@ -159,15 +160,17 @@ one item per invocation. Several findings for one destination are several invoca
 
 ## Step 6 — Close the loop once
 
-Each owner wants to bump the version. They must not each do it: **one bump per repo the
-retrospective actually touched**, patch for wording and behaviour, minor if that repo's skill
-set changed. Most retrospectives touch one repo and end with one line; a retrospective that
-improved a skill in each ends with two, and skipping either leaves half the findings
-undeployed.
+Each owner wants to bump the version. They must not each do it: **one bump per plugin the
+retrospective actually touched**, patch for wording and behaviour, minor if that plugin's
+skill set changed. Most retrospectives touch one plugin and end with one line; a
+retrospective that improved a skill in each ends with two, and skipping either leaves half
+the findings undeployed. The project plugin's manifest is untracked — bump it in place,
+there is nothing to commit — and a `projects/<repository>/ENGINEERING.md` edit needs no
+bump at all, because the hook reads that folder directly.
 
 ```bash
-claude plugin update jankolenko-skills@jankolenko             # if this repo changed
-claude plugin update jankolenko-projects@jankolenko-projects  # if that one did
+claude plugin update jankolenko-skills@jankolenko             # if a general skill or ENGINEERING.md changed
+claude plugin update jankolenko-projects@jankolenko-projects  # if a project skill did
 ```
 
 A retrospective that stops at "files edited" changed nothing — sessions load from the

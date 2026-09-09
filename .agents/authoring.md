@@ -4,9 +4,10 @@ The conventions that make these skills compose. `jankolenko-skills:improve-skill
 `jankolenko-skills:find-skill-gaps` **must** read this file before touching any SKILL.md;
 humans get the same rules.
 
-This file is canonical for **both** skill repos. `jankolenko-skills` — this one — holds
-everything portable. `jankolenko-projects` holds the workflows bound to one programme, keeps
-no copy of these conventions, and points here instead.
+This file governs **both** plugins. `jankolenko-skills` — this repo — holds everything
+portable. `jankolenko-projects` — the untracked `projects/` folder inside it — holds the
+workflows bound to one team, keeps no copy of these conventions, and is held to them all
+the same.
 
 > **Generic mechanics live elsewhere.** For how to write a skill _at all_ — frontmatter
 > fields, triggering, evals, description optimisation — follow
@@ -24,14 +25,15 @@ in a pipeline. Only the first is a folder.
 | --------------- | --------------------------------------------- | ------------------------------------------------------------------- |
 | `engineering/`  | Skills that move a change toward a merged PR  | The output is a diff, a branch, a PR, or a ticket updated about one |
 | `productivity/` | Skills whose value is not a commit            | Useful with no repo open at all                                     |
-| `projects/`     | Instance-specific workflows                   | Encodes conventions only one team recognises                        |
-| `meta/`         | Skills that operate on the skill layer itself | Reads or edits this repo, never a work repo                         |
+| `meta/`         | Skills that operate on the skill layer itself | Reads or edits the skill layer, never a work repo                   |
 
-**The bucket decides the repo.** `engineering/`, `productivity/` and `meta/` live here in
-`jankolenko-skills`; `projects/` is the entirety of `jankolenko-projects`. A skill crosses
-to the projects repo at exactly the moment it starts encoding conventions only one team
-recognises — the same membership test above, applied at the repo boundary
-(see [`adr/0004-two-repos.md`](./adr/0004-two-repos.md)).
+**What fails all three is not a bucket.** A skill that encodes conventions only one team
+recognises leaves `skills/` altogether for the untracked `projects/` folder, at
+`projects/<repository>/skills/<skill>/`, and ships from there as `jankolenko-projects`. The
+membership test is the one the old `projects/` bucket applied — *could someone who has never
+seen this team's repositories run it?* — now applied at the tracked/untracked boundary
+instead of at a folder (see [`adr/0005-projects-folder.md`](./adr/0005-projects-folder.md)).
+The same question decides where a *rule* goes; `ENGINEERING.md` states that ladder.
 
 A new skill that fits none of these rows is a signal the taxonomy needs a decision, not a
 guess — ask, don't invent a bucket.
@@ -91,7 +93,7 @@ and what makes typing `/git-` return a family rather than a guess.
 | `atlassian-` | An Atlassian Data Center instance and a per-product PAT | `atlassian-jira`, `atlassian-confluence`        |
 | `git-`       | A git working copy                                      | `git-commit`, `git-create-branch`               |
 | `git-pr-`    | A forge — GitHub or Bitbucket — reached through git     | `git-pr-push-and-open`, `git-pr-address-review` |
-| `ML11-2-`    | One programme's conventions                             | both `projects/` skills                         |
+| `<programme>-` | One programme's conventions                           | every skill under `projects/`                   |
 
 `git-pr-` is a **two-level namespace**, not a claim that a pull request is a git object — it
 isn't; git has no PRs. `git-` is the version-control family and `pr-` the forge sub-family
@@ -143,7 +145,7 @@ ours plus whatever else is installed, and a bare name is unambiguous only by luc
 | The skill you are referring to | Write                                                                 |
 | ------------------------------ | --------------------------------------------------------------------- |
 | One in this plugin             | `jankolenko-skills:git-commit`                                        |
-| One in the projects repo       | `jankolenko-projects:ML11-2-ticket-to-confluence`                     |
+| One under `projects/`          | `jankolenko-projects:<programme>-<verb>-<object>`                     |
 | Someone else's plugin          | `mattpocock-skills:codebase-design`, `anthropic-skills:skill-creator` |
 | Built into Claude Code         | `/code-review`, `/simplify`, `/run` — no plugin, so no prefix         |
 
@@ -155,10 +157,12 @@ row in the naming tables above, an example of a good verb — stays bare; prefix
 be noise.
 
 The cost is real and deliberate: a qualified reference fails loudly when a plugin is renamed
-or missing, where a bare name would have degraded quietly. Across the repo boundary the
-standing rule **Optional dependencies degrade, never fail** still wins — `jankolenko-projects`
-names `jankolenko-skills:` skills as optional dependencies and says once what it does without
-them.
+or missing, where a bare name would have degraded quietly. Across the plugin boundary the
+direction is fixed: a `jankolenko-projects` skill names `jankolenko-skills:` skills as a
+**hard** dependency — without the Atlassian integrations there is no ticket to read and no
+page to write, so the standing rule *optional dependencies degrade, never fail* does not
+apply to them ([`adr/0004-two-repos.md`](./adr/0004-two-repos.md)) — and nothing tracked in
+`jankolenko-skills` ever refers to a project skill.
 
 ## The atom contract
 
@@ -197,47 +201,57 @@ verifiable alone, each substantial).
 - **Refuse rather than guess** when a choice is ambiguous and wrong is expensive — and say
   precisely what input would unblock.
 - **No secrets** in any output surface: no tokens, credentialed URLs, or customer data.
-- **Engineering rules live in `ENGINEERING.md`.** Conventions for the _code_ a skill
-  produces are collected there and pointed at from the session-start hook. Do not restate
-  them in a SKILL.md, and add to them only through
-  `jankolenko-skills:record-engineering-rule`.
+- **Tracked text names no project.** A SKILL.md, a rule, an eval or a ledger line describes
+  the shape of a situation — never a repository, ticket, PR, commit, person or private
+  package; placeholders (`PROJ-123`, `example.com`, `@scope/package`) stand in.
+  `scripts/check-portable.py` enforces the shapes it can. The identifiers belong under
+  `projects/`, which is untracked for exactly this reason.
+- **Engineering rules live in `ENGINEERING.md`; project rules in
+  `projects/<repository>/ENGINEERING.md`.** Conventions for the _code_ a skill produces are
+  collected there and pointed at from the session-start hook. Do not restate them in a
+  SKILL.md, and add to either only through `jankolenko-skills:record-engineering-rule`,
+  which decides the scope.
 
 ## Deployment reality
 
 Sessions load skills from the **versioned plugin cache**, never from a working tree. An edit
-is invisible until that repo's `plugin.json` version is bumped and the plugin re-cached. Any
-skill or person landing a change owns the whole loop — edit → commit → bump → tell the user
-to update — and batches one session's edits into one bump. Patch for wording and behaviour,
-minor when the `skills` array changes.
+is invisible until that plugin's `plugin.json` version is bumped and the plugin re-cached.
+Any skill or person landing a change owns the whole loop — edit → commit → bump → tell the
+user to update — and batches one session's edits into one bump. Patch for wording and
+behaviour, minor when the `skills` array changes.
 
-### Two repos, two plugins
+### One tree, two plugins
 
-| Repo                               | Env override                | Plugin                | Marketplace           | Holds                                                                        |
-| ---------------------------------- | --------------------------- | --------------------- | --------------------- | ---------------------------------------------------------------------------- |
-| `~/Developer/skills`               | `$JANKOLENKO_SKILLS_REPO`   | `jankolenko-skills`   | `jankolenko`          | `engineering/`, `productivity/`, `meta/`, and every shared file in this list |
-| `~/Developer/ai-jankolenko-skills` | `$JANKOLENKO_PROJECTS_REPO` | `jankolenko-projects` | `jankolenko-projects` | `projects/`, and nothing else                                                |
+| Source                        | Env override               | Plugin                | Marketplace           | Holds                                                                     | Tracked                            |
+| ----------------------------- | -------------------------- | --------------------- | --------------------- | ------------------------------------------------------------------------- | ---------------------------------- |
+| `~/Developer/skills`          | `$JANKOLENKO_SKILLS_REPO`  | `jankolenko-skills`   | `jankolenko`          | `skills/`, and every shared file in this list                             | yes                                |
+| `~/Developer/skills/projects` | `$JANKOLENKO_PROJECTS_DIR` | `jankolenko-projects` | `jankolenko-projects` | `<repository>/skills/`, `<repository>/ENGINEERING.md`, its own manifest   | no — gitignored except `README.md` |
 
 Shared infrastructure — this file, the ADRs, `ENGINEERING.md`, `observations/SIGNALS.md`, the
-session-start hook, `scripts/` — is **single-copy and lives here**. The projects repo carries
-a `CLAUDE.md` that points at these rather than a second copy that drifts from them.
+session-start hook, `scripts/` — is **single-copy and tracked**. The project folder carries
+no copy of any of it; `projects/README.md` says what shape the folder has and points here.
 
-### Never guess which repo you are in
+### Never guess which plugin you are editing
 
-Both plugins can be installed at once, so "the source repo" is no longer a constant. Resolve
-it from the skill's own name:
+Both plugins can be installed at once, so "the source path" is not a constant. Resolve it
+from the skill's own name:
 
 ```bash
 eval "$(scripts/which-plugin.sh git-commit)"
-echo "$repo"      # /Users/jankolenko/Developer/skills
+echo "$repo"      # ~/Developer/skills
 echo "$manifest"  # the plugin.json to bump
 echo "$update"    # claude plugin update jankolenko-skills@jankolenko
+echo "$tracked"   # 1 — commit the edit. 0 for a project skill: nothing to commit
 ```
 
 It also sets `skill_md`, `plugin` and `marketplace`. It exits non-zero when the skill is in
-neither repo — which is the honest answer for a skill belonging to somebody else's plugin —
-and when it is somehow in both. Edit the file at `$skill_md`, bump `$manifest`, and quote
+neither — which is the honest answer for a skill belonging to somebody else's plugin — and
+when it is somehow in both. Edit the file at `$skill_md`, bump `$manifest`, and quote
 `$update` back to the user verbatim. Never the plugin cache under `~/.claude/plugins/cache/`:
 it is regenerated on every update and silently discards edits.
+
+A `projects/<repository>/ENGINEERING.md` edit needs none of this: no plugin ships it, the
+session-start hook reads the folder directly.
 
 ### The suffix is required
 
@@ -245,12 +259,13 @@ it is regenerated on every update and silently discards edits.
 against the qualified `plugin@marketplace` id the plugin was installed under, which is why
 `$update` carries the suffix and why you should paste it rather than retype it.
 
-Both marketplaces are **Directory** sources pointing at their working tree, so a commit is
-enough to ship a change to yourself and no push is needed. Pushing matters for the GitHub
-install path other machines use, not for this loop.
+Both marketplaces are **Directory** sources — this repo, and `projects/` inside it — so a
+commit is enough to ship a general change to yourself and a manifest bump is enough for a
+project one; no push is needed. Pushing matters for the GitHub install path other machines
+use, not for this loop.
 
-One marketplace listing both plugins was the obvious alternative and it does not work: a
-marketplace may only source plugins from inside its own root — `../ai-jankolenko-skills` and
-absolute paths are both rejected by `claude plugin validate`, and the one form that does
-validate, a `github` source, would cost the commit-only loop above for half the skills. Two
-Directory marketplaces keep it for both ([`adr/0004-two-repos.md`](./adr/0004-two-repos.md)).
+One marketplace listing both plugins was the obvious alternative and it still is not one. A
+marketplace may only source plugins from inside its own root, which `./projects` now
+satisfies — but the public marketplace has to validate on a machine where `projects/` does
+not exist, so the project plugin keeps its own
+([`adr/0005-projects-folder.md`](./adr/0005-projects-folder.md)).

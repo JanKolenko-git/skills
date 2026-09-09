@@ -78,6 +78,11 @@ On `ask`, propose one with a reason and let the user choose.
 Repo-shaped learnings are the common case, and the cheapest to act on — they land in the
 context of every future session in that repo automatically.
 
+A learning that is a *convention* rather than a fact about this codebase — how code should
+be written, here or anywhere — has no destination in this table. Hand it to
+`jankolenko-skills:record-engineering-rule`, which decides whether it is general or belongs
+to this repository's own rules under `projects/`.
+
 ## Step 3 — Write it
 
 **Repo.** Append under a `## Learned constraints` heading in `CLAUDE.md`, creating the

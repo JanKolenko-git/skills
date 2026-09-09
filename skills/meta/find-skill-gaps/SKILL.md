@@ -72,18 +72,20 @@ mechanics. Give it named inputs and outputs so the orchestrators can wire it, an
 
 Show the complete file. On approval:
 
-1. Place it in the taxonomy — and the bucket decides the repo. `engineering/`,
-   `productivity/` and `meta/` land in `jankolenko-skills`; a `projects/` skill lands in
-   `jankolenko-projects`. Add its path to that repo's `.claude-plugin/plugin.json` `skills`,
-   and confirm with `scripts/which-plugin.sh <new-name>` that it resolves to the repo you
-   meant before committing.
-2. Commit via **`jankolenko-skills:git-commit`**, bump the **minor** version (a new skill is
-   a feature) in that repo's manifest.
+1. Place it — and the placement decides the plugin. A skill that would be useful in a
+   repository you have never seen goes under `skills/<bucket>/` in `jankolenko-skills`; one
+   that encodes conventions only one team recognises goes to
+   `projects/<repository>/skills/<name>/`, untracked (see `projects/README.md`). Add its path
+   to that plugin's `.claude-plugin/plugin.json` `skills`, and confirm with
+   `scripts/which-plugin.sh <new-name>` that it resolves where you meant before going on.
+2. Commit via **`jankolenko-skills:git-commit`** and bump the **minor** version (a new skill
+   is a feature) in that plugin's manifest. A project skill has no commit — the folder is
+   untracked — only the bump.
 3. Move the cluster's ledger lines to `## Resolved` with the outcome and date.
-   `observations/SIGNALS.md` is single-copy in `jankolenko-skills`, so this edit lands there
-   even when the new skill did not — which makes it a second commit when the two differ.
+   `observations/SIGNALS.md` is tracked in `jankolenko-skills`, so this edit is a commit there
+   even when the new skill was a project one.
 4. Quote the `update` line `scripts/which-plugin.sh` printed back to the user; the
-   `@marketplace` suffix differs per repo.
+   `@marketplace` suffix differs per plugin.
 
 A declined draft also resolves its lines — outcome `declined`, so the ledger does not
 re-propose it next month.

@@ -1,20 +1,27 @@
 # 0004 — Portable skills and programme skills live in separate repos
 
 **Status:** accepted · 2026-09-02 · refines the `projects/` bucket introduced in
-[`0002-domain-buckets.md`](./0002-domain-buckets.md)
+[`0002-domain-buckets.md`](./0002-domain-buckets.md) · **superseded in part by
+[`0005-projects-folder.md`](./0005-projects-folder.md)**
+
+> The split into two *plugins* stands. The split into two *repositories* does not: project
+> material now lives in an untracked `projects/` folder inside this repo, and the repository
+> table below describes a layout that no longer exists. The reasoning about shared
+> infrastructure, `meta/` and qualified references is unchanged.
 
 ## Context
 
 One repo shipped one plugin holding all 21 skills. Nineteen were portable — the Atlassian
 integrations authenticate against whatever instance `$JIRA_URL` names, and the atoms know
-nothing about any employer. Two were `projects/` skills encoding adidas ML11.2 conventions:
-a specific Confluence page shape, a specific gateway repo, a specific programme's vocabulary.
+nothing about any employer. Two were `projects/` skills encoding one employer's programme
+conventions: a specific Confluence page shape, a specific gateway repo, a specific
+programme's vocabulary.
 
 Shipping them together forced one decision on both halves. The portable skills are worth
 publishing and reusing; the programme skills are worth neither, and their presence makes the
-repo read as one team's tooling rather than as a general skill layer. A reader landing on
-`ML11-2-ticket-to-confluence` cannot tell which of the other twenty are equally specific
-without opening each one.
+repo read as one team's tooling rather than as a general skill layer. A reader landing on a
+programme-prefixed skill cannot tell which of the other twenty are equally specific without
+opening each one.
 
 The `projects/` bucket already drew this line — [ADR 0002](./0002-domain-buckets.md) defines
 its membership test as *"encodes conventions only one team recognises"*. What it did not do
@@ -27,7 +34,7 @@ was let the two halves ship, version or install independently.
 | Repo | Plugin | Marketplace | Buckets |
 | --- | --- | --- | --- |
 | `JanKolenko-git/skills` | `jankolenko-skills` | `jankolenko` | `engineering/`, `productivity/`, `meta/` |
-| `JanKolenko-git/JanKolenko-Skills` | `jankolenko-projects` | `jankolenko-projects` | `projects/` |
+| `JanKolenko-git/jankolenko-projects` | `jankolenko-projects` | `jankolenko-projects` | `projects/` |
 
 Three consequences follow, and each was a decision of its own:
 
@@ -69,7 +76,7 @@ moved out from under it, and every existing reference to `jankolenko-skills:git-
 point at a plugin that no longer contains it.
 
 **Splitting by public/private instead of by portability.** Both repos are public, so this was
-never the real axis — the ML11.2 skills contain no secrets, only conventions nobody outside
+never the real axis — the programme skills contain no secrets, only conventions nobody outside
 the programme can use. Sorting by *"could someone else run this?"* keeps the test identical
 to the one `projects/` already applies, which means no skill needs a second judgement call to
 be placed.
