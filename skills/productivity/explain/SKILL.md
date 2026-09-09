@@ -50,7 +50,7 @@ for `term`, or a one-line definition for `build`.
 
 ## Step 2 — Ground it before writing a word
 
-- **Named product, API, version or config flag** (mPulse custom timers, an Akamai cache
+- **Named product, API, version or config flag** (a RUM tool's custom timers, a CDN's cache
   key, a library option) — look it up. These change between versions and a wrong property
   name costs an implementation attempt. Record what you read in `explanation.sources`.
 - **Stable fundamental** (LCP, hydration, TCP, cache invalidation) — from knowledge. A

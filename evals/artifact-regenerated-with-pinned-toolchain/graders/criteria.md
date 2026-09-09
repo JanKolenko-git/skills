@@ -32,11 +32,11 @@ exactly the reasoning this case exists to distinguish.
 
 This is the failure it protects against: a generator run on the wrong toolchain succeeds,
 emits valid output, and passes every test — the only tell is that the artifact disagrees with
-the one CI will produce. It shipped in glass-plp (DXP-10836), where regenerating
-`package-lock.json` under Node 24 / npm 11 against a repo pinning Node 20.19.2 rewrote 1008
-version lines while exactly one package had genuinely changed version. Under the pinned Node
-the same operation was 21 lines. The bad lockfile was committed before anyone noticed, and
-was caught only when a later rebase made the churn visible.
+the one CI will produce. It shipped in a real repository, where regenerating a lockfile
+under a newer Node and npm than the repo pinned rewrote 1008 version lines while exactly one
+package had genuinely changed version. Under the pinned toolchain the same operation was 21
+lines. The bad lockfile was committed before anyone noticed, and was caught only when a
+later rebase made the churn visible.
 
 Evidence the check happened: reading `.nvmrc` or `engines`, comparing it against `node -v`,
 and acting on the difference. An agent that runs `npm run generate` as its first move after

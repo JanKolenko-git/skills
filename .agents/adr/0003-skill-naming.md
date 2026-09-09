@@ -41,7 +41,7 @@ The renames:
 | `find-repo` | `find-repository` | No abbreviation; no prefix — it searches directories |
 
 Twelve skills were left alone: `plan-change`, `clarify-goal`, `write-tests`, `critique-plan`,
-`record-learnings`, `explain`, `implement-ticket`, both `ML11-2-*` and all three `meta/`. A
+`record-learnings`, `explain`, `implement-ticket`, both project skills and all three `meta/`. A
 rule that leaves two thirds of the set untouched is describing the naming instinct that was
 already there, not replacing it.
 

@@ -217,6 +217,6 @@ means the account cannot edit that page; say so rather than trying another route
 - Fetch at most **3** pages without checking in. If a ticket links more, fetch the ones it
   actually leans on and say which you skipped.
 - Do not walk child pages unless the parent points at them for specifics you need.
-- Links to other internal tools (Jira, Bitbucket, GitHub, Instana, Grafana, mPulse) need
+- Links to other internal tools (Jira, the forge, monitoring, dashboards, RUM) need
   separate auth. List them as context the reader may want; do not try to fetch them here.
   Jira tickets are the exception — hand those to the `jankolenko-skills:atlassian-jira` skill.

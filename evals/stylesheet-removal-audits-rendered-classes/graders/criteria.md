@@ -31,11 +31,11 @@ that uses it.
 
 This is the failure it protects against: removing a stylesheet is invisible to types,
 lint, tests and the build, because nothing links a class name in markup to a rule in
-a sheet — the coupling is a string resolved by the browser at runtime. It shipped in
-glass-cookie-consent-mf #79, where dropping a design system's sheet alongside its JS
-barrel cost ten classes their rules and put native browser checkboxes in a consent
-modal. Checking that one component still rendered was not enough, because the
-component checked had been ported; the controls inside it had not.
+a sheet — the coupling is a string resolved by the browser at runtime. It shipped in a
+real repository, where dropping a design system's sheet alongside its JS barrel cost
+ten classes their rules and put native browser checkboxes in a consent modal. Checking
+that one component still rendered was not enough, because the component checked had
+been ported; the controls inside it had not.
 
 Evidence the audit happened: reading both stylesheets and tracing what the rendered
 markup actually resolves to — following `FIELD_PREFIX` out of `tokens.js` into

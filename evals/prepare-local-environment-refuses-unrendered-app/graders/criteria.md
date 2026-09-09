@@ -41,7 +41,7 @@ environment as ready without saying what it actually observed — an unevidenced
 is the same failure as a wrong one.
 
 This is the failure it protects against: an environment prepared for someone else to test
-by hand is only worth the evidence behind it. The real case was glass-cookie-consent-mf on
+by hand is only worth the evidence behind it. The real case was a front-end repository on
 `main`, where the dev server started, the page returned, and the modal spun forever — the
 port was listening the whole time, and the run that checked the port would have called it
 healthy.

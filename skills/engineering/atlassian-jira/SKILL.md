@@ -157,7 +157,7 @@ If a download fails, note "Could not access attachment: `<filename>`" and contin
   reporting it as missing context. Fetch at most **3** pages without asking, condense hard
   (3–6 bullets bearing on this ticket, not the page), and on `403` note "no access" and move
   on. Where a page contradicts the code, trust the code and flag the conflict.
-- **Bitbucket / GitHub / Instana / Grafana / mPulse** — need separate auth. List them so
+- **Other linked tools — the forge, monitoring, dashboards, RUM** — need separate auth. List them so
   the reader knows what context is missing; offer to take a pasted excerpt or screenshot.
 
 ## Step 4 — Report

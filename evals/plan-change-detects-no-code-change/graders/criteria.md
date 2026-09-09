@@ -3,9 +3,9 @@ type: llm
 weight: 1
 ---
 
-The README states outright that image cache TTL lives in the Akamai property manager
-console and that there is no cache header logic in this codebase. There is nothing
-here to change.
+The README states outright that image cache TTL lives in the CDN provider's property
+manager console and that there is no cache header logic in this codebase. There is
+nothing here to change.
 
 PASS requires a verdict of `no-change-needed` (or an unmistakable equivalent: it says
 plainly that no code change is warranted), WITH the evidence — citing the README or

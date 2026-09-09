@@ -10,11 +10,12 @@ second grouping level as they filled up:
 
 ```
 skills/integrations/atlassian/jira/SKILL.md
-skills/projects/ML11.2/ticket-to-confluence/SKILL.md
+skills/projects/P1.2/ticket-to-confluence/SKILL.md
 ```
 
-The grouping folders (`atlassian/`, `ML11.2/`) were doing real conceptual work — vendor and
-programme are genuine facts about those skills — but they were paid for in three places:
+The grouping folders (`atlassian/`, and `P1.2/` — a programme's name, placeholder here) were
+doing real conceptual work — vendor and programme are genuine facts about those skills — but
+they were paid for in three places:
 
 - **Relative links.** Cross-bucket references were written as `../../../integrations/atlassian/jira/SKILL.md`.
   Depth-dependent link prefixes silently break on any move, and nothing checks them.
@@ -22,9 +23,9 @@ programme are genuine facts about those skills — but they were paid for in thr
   and has to locate it at runtime. It already carried a tuple of _every historical folder
   suffix_ the confluence skill has lived under, because a previous regrouping had broken the
   import once. Each new grouping level adds another entry it must never drop.
-- **Name/folder disagreement.** `skills/projects/ML11.2/ticket-to-confluence/` declared
-  `name: ML11.2-ticket-to-confluence`, which Claude Code registers as
-  `ML11-2-ticket-to-confluence`. Two spellings and a dot that survives in one and not the
+- **Name/folder disagreement.** `skills/projects/P1.2/ticket-to-confluence/` declared
+  `name: P1.2-ticket-to-confluence`, which Claude Code registers as
+  `P1-2-ticket-to-confluence`. Two spellings and a dot that survives in one and not the
   other, needing a four-line footnote in the SKILL.md to explain which one invokes it.
 
 The reference point is [mattpocock/skills](https://github.com/mattpocock/skills), which puts
@@ -46,17 +47,17 @@ Concretely:
 | ---------------------------------------------------- | ---------------------------------------------------- |
 | `skills/integrations/atlassian/jira/`                | `skills/integrations/jira/`                          |
 | `skills/integrations/atlassian/confluence/`          | `skills/integrations/confluence/`                    |
-| `skills/projects/ML11.2/dxpcore-site-speed-gateway/` | `skills/projects/ML11-2-dxpcore-site-speed-gateway/` |
-| `skills/projects/ML11.2/ticket-to-confluence/`       | `skills/projects/ML11-2-ticket-to-confluence/`       |
+| `skills/projects/P1.2/verify-ticket/`                | `skills/projects/P1-2-verify-ticket/`                |
+| `skills/projects/P1.2/ticket-to-confluence/`         | `skills/projects/P1-2-ticket-to-confluence/`         |
 
 The two project skills' frontmatter `name` loses its dot to match the folder. The invocable
-name is unchanged — `/ML11-2-ticket-to-confluence` worked before and works now — because the
+name is unchanged — `/P1-2-ticket-to-confluence` worked before and works now — because the
 dot was already being normalised away at registration.
 
 ## Consequences
 
-- The vendor fact (_these two are Atlassian_) and the programme fact (_these two are ML11.2_)
-  now live in `skills/integrations/README.md` and `skills/projects/README.md`. They are no
+- The vendor fact (_these two are Atlassian_) and the programme fact (_these two are one
+  programme's_) now live in `skills/integrations/README.md` and `skills/projects/README.md`. They are no
   longer enforced by the filesystem, so a future non-Atlassian integration simply sits beside
   jira and confluence rather than forcing a decision about a new vendor folder.
 - Cross-bucket relative links are uniformly `../../<bucket>/<skill>/SKILL.md`. One depth, for
@@ -89,3 +90,8 @@ the semantics were not.
 > now a declared property instead — which keeps the dataflow argument above intact while the
 > buckets sort by domain. The decision recorded in _this_ ADR — one bucket level, folder name
 > equal to skill name — is unaffected and still stands.
+
+> **Refined by [0005](./0005-projects-folder.md).** `projects/` is no longer a bucket under
+> `skills/` at all: project skills live at `projects/<repository>/skills/<skill>/`, untracked,
+> and the programme-name placeholders above describe a layout this repo no longer has. The
+> one-level rule still governs everything under `skills/`.

@@ -12,12 +12,12 @@ stays in that task's own SKILL.md.
 Entries arrive one of two ways, and each one says which.
 
 **Rules** — one observed failure, in a real run, that this rule would have caught. These are
-the expensive ones, bought with a bug. Add through `record-engineering-rule`, naming the run.
+the expensive ones, bought with a bug. Add through `jankolenko-skills:record-engineering-rule`.
 
 **Baseline** — established practice with a named source: Power of 10, a published style guide
-from a team that maintains code at scale, or a convention this repo's own code already holds
-across a large codebase. No speculative style preferences. If no source outside this file
-believes it, it does not go in — that is what keeps the file short enough to actually be read.
+from a team that maintains code at scale, or a convention a large codebase visibly holds. No
+speculative style preferences. If no source outside this file believes it, it does not go in —
+that is what keeps the file short enough to actually be read.
 
 A Baseline rule that a real run later violates gets **promoted to Rules** with the evidence.
 That promotion is the point of the split: it records which rules have already cost us
@@ -26,11 +26,34 @@ something, so the next reader knows where the sharp edges actually are.
 Deleting a rule that proved wrong is as valid as adding one. A rulebook that only grows is
 one nobody trusts.
 
+## What a rule may name
+
+This file holds only what would hold in a repository you have never seen, in a language it
+has not touched. So an entry names the **shape** of the failure — what kind of change, what
+kind of check missed it, what the tell was — and never a repository, a ticket, a pull
+request, a commit, a person or a private package. A `_Source:` line here reads _"observed —
+regenerating a lockfile under a newer toolchain than the repo pinned …"_, not the run's
+coordinates.
+
+The coordinates are not lost. They belong to the repository that bought the rule, in
+`projects/<repository>/ENGINEERING.md` — untracked, beside that repository's own rules, the
+ones that hold there and nowhere else. Where a rule goes is decided once:
+
+| The rule… | Goes to |
+| --- | --- |
+| would hold in a repository you have never seen | here — the shape, no identifiers |
+| holds only in repositories you can list — one team, one stack, one repo | `projects/<repository>/ENGINEERING.md`, one file per repository it applies to |
+| is a fact about how one repo builds or runs that teammates should see | that repo's own `CLAUDE.md`, via `jankolenko-skills:record-learnings` |
+
+If you can list the repositories it applies to, it is a project rule. The session-start hook
+reads this file everywhere and a project file only inside its repository.
+
 ---
 
 # Rules
 
-_Observed. Each entry names the run that bought it._
+_Observed. Each entry names the shape of the run that bought it; the run itself is recorded
+in that repository's `projects/<repository>/ENGINEERING.md`._
 
 ## Reuse the name a thing already has; give a new one meaning
 
@@ -80,8 +103,8 @@ surfaced by ‹7 Coding Laws of Senior Developer› (law 2)._
 ```scss
 .app {
   // no — the JS that imported the barrel is gone, so the sheet must be dead too
-- @import '@adl/collection-v6/css';
-  @include meta.load-css('@adl/collection/style.css');
+- @import '@design-system/collection-v6/css';
+  @include meta.load-css('@design-system/collection/style.css');
 }
 ```
 
@@ -104,10 +127,11 @@ custom-styled is the native widget showing through.
 Exception: a sheet whose classes you have confirmed absent from the rendered DOM in every
 state the component has — and a modal has more states than the one you opened.
 
-_Source: glass-cookie-consent-mf #79 — dropping v6's sheet with its JS barrel cost ten
-classes their rules and shipped native checkboxes; fixed in 4be37d8. The same removal was
-proposed a week earlier in glass-cprs-form-mf #33, where running this audit found 24 broken
-classes and it was reverted before merge._
+_Source: observed — dropping a design system's stylesheet together with its JavaScript
+barrel cost ten classes their rules and shipped native checkboxes inside a consent modal;
+the component checked had been ported, the controls inside it had not. The same removal,
+proposed a week earlier in a sibling repository, was reverted before merge when this audit
+found 24 broken classes._
 
 ## Generate an artifact with the toolchain the repo pins
 
@@ -133,10 +157,10 @@ Exception: a repo that pins nothing — then any supported version is fine, thou
 artifact is large, say which version produced it. And generators whose output genuinely
 does not vary by toolchain version.
 
-_Source: observed — regenerating `package-lock.json` in glass-plp (DXP-10836) under Node 24
-/ npm 11 against a repo pinning Node 20.19.2 changed 1008 version lines while exactly one
-package changed version; under the pinned Node it was 21 lines. The bad lockfile was
-committed before the churn was noticed._
+_Source: observed — regenerating a lockfile under a newer Node and npm than the repo pinned
+rewrote 1008 version lines when exactly one package had changed version; under the pinned
+toolchain the same change was 21 lines. The bad lockfile was committed before the churn was
+noticed._
 
 ## Generated artifacts ship in the commit that changed their source
 
@@ -163,10 +187,10 @@ Exception: artifacts a repo deliberately does not commit (gitignored build outpu
 when regeneration needs an environment you cannot run, say the artifact is stale and why —
 never commit a stale one silently.
 
-_Source: observed — adding two exports to `@sole/analytics` (DXP-10836) left `API.md`
-unregenerated, which the repo's API Extractor check would have failed. Verification had
-been scoped to the two changed files, so the package's own `document` script never ran;
-review caught it._
+_Source: observed — adding two exports to a library package left its generated `API.md`
+unregenerated, which the repo's API-report check would have failed. Verification had been
+scoped to the two changed files, so the package's own `document` script never ran; review
+caught it._
 
 ## Parse at the boundary; trust the types inside it
 
@@ -205,11 +229,11 @@ and the shape you stopped accepting is precisely the one they will keep sending.
 Exception: internal calls already behind a validated boundary. Re-checking there is
 noise that trains readers to skim the checks that matter.
 
-_Source: Power of 10 §5 and §7 (callee validates its parameters). Promoted by DXP-16485
-(ec-sole #1261) — `loadStrategy` went from an object to a string, shipped as a minor on the
-reasoning that no consumer passed it yet. TypeScript consumers would have failed to compile;
-a JavaScript host still passing the object matched neither branch and lost its deferral
-silently, in production. Caught in review; dev now warns._
+_Source: Power of 10 §5 and §7 (callee validates its parameters). Promoted when a library
+option went from an object to a string and shipped as a minor on the reasoning that no
+consumer passed it yet: TypeScript consumers would have failed to compile, and a JavaScript
+host still passing the object matched neither branch and lost its deferral silently, in
+production. Caught in review; the library now warns._
 
 ## A comment that states a behaviour is checked like the code it describes
 
@@ -240,11 +264,11 @@ Exception: a comment about the world outside the code — a browser quirk, a mea
 latency, a vendor's contract. Those drift without any line changing. Date them or cite
 them, so a reader can tell a stale fact from a false one.
 
-_Source: DXP-16485 (ec-sole #1248, #1261) — one change carried three comments describing
-mechanisms the code did not have: a docstring naming a signal the gate no longer used, a
-test comment naming a constant that no longer existed, and a docstring claiming a cost was
-absent when it was accepted. Each was caught by a different reader, none by the author;
-the last was fixed in the review follow-up #1261._
+_Source: observed — one change carried three comments describing mechanisms the code did
+not have: a docstring naming a signal the gate no longer used, a test comment naming a
+constant that no longer existed, and a docstring claiming a cost was absent when it was
+accepted. Each was caught by a different reader, none by the author; the last was fixed in
+the review follow-up._
 
 ## An edit is verified by reading it back, not by the tool that applied it
 
@@ -270,16 +294,17 @@ Exception: an edit followed by a check that exercises it — the test that now p
 build that now compiles. The check is the read-back. Where no such check runs, the diff
 is the only one there is.
 
-_Source: observed — glass-pdp #1098 (DXP-19294): a patch script asserted the old block
-was present, never replaced it, and printed "patched"; the run reported the review
-finding fixed, and the Playwright spec it lived in could not be run locally. The matcher
-error shipped in the first push and was caught by Copilot review; fixed in aa7a8f44._
+_Source: observed — a patch script asserted the old block was present, never replaced it,
+and printed "patched"; the run reported the review finding fixed, and the end-to-end spec
+it lived in could not be run locally. The matcher error shipped in the first push and was
+caught by an automated reviewer._
 
 ---
 
 # Baseline
 
-_Sourced. Each entry names where the practice comes from._
+_Sourced. Each entry names where the practice comes from — a published source, or a
+convention a large codebase visibly holds, described but not named._
 
 ## Every loop, retry and poll carries a bound
 
@@ -328,7 +353,8 @@ linter, not that you handled the rejection.
 Exception: fire-and-forget telemetry, which still gets a `.catch()` — a swallowed
 rejection is a choice, and choices are written down.
 
-_Source: Power of 10 §7; `no-floating-promises: "error"` in ma-mf-confirmed._
+_Source: Power of 10 §7; `no-floating-promises: "error"` in a production front-end's lint
+config._
 
 ## Strict from the first commit; a suppression carries its reason
 
@@ -352,7 +378,7 @@ the signal is gone long before the code is.
 Do not loosen `tsconfig` to make a change compile. That trades a local problem for a
 global one, and the trade is invisible in the diff.
 
-_Source: Power of 10 §10; `strict: true` in openclaude's tsconfig._
+_Source: Power of 10 §10; `strict: true` in a large TypeScript codebase's tsconfig._
 
 ## Errors are typed, narrowed, and never silently swallowed
 
@@ -379,7 +405,8 @@ and a wrapper that discards it makes the new message the only clue.
 Exception: a cleanup path in a `finally`, where a secondary failure must not mask the
 original. Say so in a comment; that is the case this rule expects you to reason about.
 
-_Source: openclaude — 254 catches typed `unknown`, `Error` hierarchy in `utils/errors.ts`._
+_Source: a large TypeScript codebase — every one of its 254 catches typed `unknown`, one
+`Error` hierarchy in a single errors module._
 
 ## Return early; keep the happy path at the left margin
 
@@ -480,8 +507,8 @@ rename at every boundary, which is the thing that rule exists to prevent.
 Exception: frameworks that require it — a Next.js page or route, a config file the tool
 loads by convention. Follow the framework; it is not a style choice there.
 
-_Source: Google TypeScript Style Guide (default exports prohibited); openclaude — 4702
-named exports to 138 default._
+_Source: Google TypeScript Style Guide (default exports prohibited); a large TypeScript
+codebase — 4702 named exports to 138 default._
 
 ## Comments explain why, not what
 
@@ -498,8 +525,8 @@ The compiler already documents _what_. A comment earns its place by carrying wha
 code cannot: the constraint that forced this shape, the bug that made the obvious
 version wrong, the reason a check that looks redundant is load-bearing.
 
-The highest-value comment in any codebase usually explains a defeat. openclaude guards
-against abort errors with an `instanceof` check rather than the obvious name comparison,
+The highest-value comment in any codebase usually explains a defeat. One large codebase
+guards against abort errors with an `instanceof` check rather than the obvious name comparison,
 and the comment says why: minified builds mangle class names, so string matching passes
 in dev and silently fails in production. Nobody would keep that check without the
 comment — and deleting it would reintroduce a bug that only appears after a build step.
@@ -513,11 +540,10 @@ second copy reads it as leftover text.
 
 Exception: docblocks on a public API, where describing what it does _is_ the job.
 
-_Source: Google, Apple and kernel style guides converge here; specimen from openclaude
-`utils/errors.ts`. Sharpened by glass-pdp #1098 (DXP-19294): the same rationale was
-written on `WithGooglePlacesAPI` and repeated at three call sites, review flagged the
-copies, the run kept them, and a reviewer then asked for one as leftover — removed in
-ea8b8137._
+_Source: Google, Apple and kernel style guides converge here; specimen from a large
+TypeScript codebase's errors module. Sharpened when the same rationale was written on a
+component and repeated at three call sites: review flagged the copies, the run kept them,
+and a reviewer then asked for one as leftover._
 
 ## The change includes the deletion
 
@@ -555,7 +581,7 @@ new Intl.DateTimeFormat(locale).format(d); // yes — platform, zero bytes, loca
 
 A dependency is never just its API. It is a supply-chain surface, a permanent upgrade
 obligation, a bet on somebody else's maintenance, and — on the client — bytes on the
-critical path, which is the entire budget that site-speed work is fighting for.
+critical path, which is the entire budget that performance work is fighting for.
 
 Before adding one, answer three questions in the PR: what does it cost to ship, what
 happens when it stops being maintained, and how much of its surface do you actually use?
@@ -568,8 +594,8 @@ surprising number of packages, and they never need upgrading.
 Exception: cryptography, time zones, and anything with a specification longer than this
 file. Do not hand-roll those — the liability runs the other way.
 
-_Source: convergent across Google, Apple and Meta dependency review; sharpened by the
-site-speed work these skills do._
+_Source: convergent across Google, Apple and Meta dependency review; sharpened by
+performance work, where every dependency lands on the critical path's budget._
 
 ## Separate the decision from the action
 
@@ -612,19 +638,20 @@ Surfaced by ‹7 Coding Laws of Senior Developer› (law 5)._
 
 Owned by a skill, and restating it here would create two sources of truth:
 
-| Topic                                              | Owner                          |
-| -------------------------------------------------- | ------------------------------ |
-| Test structure, what to assert, runner conventions | `write-tests`                  |
-| Commit message shape, what may be staged           | `git-commit`                   |
-| Branch naming                                      | `git-create-branch`            |
-| Whether a change should exist at all               | `plan-change`, `critique-plan` |
+| Topic                                              | Owner                                                              |
+| -------------------------------------------------- | ------------------------------------------------------------------ |
+| Test structure, what to assert, runner conventions | `jankolenko-skills:write-tests`                                    |
+| Commit message shape, what may be staged           | `jankolenko-skills:git-commit`                                     |
+| Branch naming                                      | `jankolenko-skills:git-create-branch`                              |
+| Whether a change should exist at all               | `jankolenko-skills:plan-change`, `jankolenko-skills:critique-plan` |
 
 Considered and rejected, so they are not re-proposed each time: **declare at narrowest
 scope** (Power of 10 §6 — already the default for `const` in block scope, and the linter
 covers the rest), **formatting is not a decision** (Prettier enforces it as an error; a
 rule that only restates a config file teaches readers this file is skimmable),
-**thread a cancellation signal** (real — openclaude threads `AbortSignal` through 422 call
-sites — but narrower than the rules above; promote it if a run gets bitten), and
+**thread a cancellation signal** (real — one large codebase threads `AbortSignal` through
+hundreds of call sites — but narrower than the rules above; promote it if a run gets bitten),
+and
 **make invalid states unrepresentable** (Minsky, 2011 — proposed from ‹7 Coding Laws of
 Senior Developer› law 4, and declined).
 
