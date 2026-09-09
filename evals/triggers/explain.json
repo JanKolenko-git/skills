@@ -1,0 +1,75 @@
+[
+ {
+  "query": "what is INP, and what actually moves it?",
+  "should_trigger": true
+ },
+ {
+  "query": "what does p75 mean in performance metrics? p50, p75",
+  "should_trigger": true
+ },
+ {
+  "query": "explain how CDN caching decides a hit from a miss",
+  "should_trigger": true
+ },
+ {
+  "query": "what does this file do  packages/app/src/ssr/utils/mf-versions.ts",
+  "should_trigger": true
+ },
+ {
+  "query": "how does the RUM tool get browser performance data like CLS, LCP, INP? does the browser report it, or how does it work?",
+  "should_trigger": true
+ },
+ {
+  "query": "I don't get hydration. why does the server render if the client renders again?",
+  "should_trigger": true
+ },
+ {
+  "query": "how can I use a custom timer in the RUM tool - do I need custom setup or create a name in the console, how does this work?",
+  "should_trigger": true
+ },
+ {
+  "query": "Whats the difference between CI and CD pipeline builds?",
+  "should_trigger": true
+ },
+ {
+  "query": "so basically I'm just deferring hydration - skeleton is there, css is there - only the hydration is deferred? is that right?",
+  "should_trigger": true
+ },
+ {
+  "query": "how much time is this  cache-control max-age=31280507",
+  "should_trigger": true
+ },
+ {
+  "query": "plan this change: add VAT to the cart total",
+  "should_trigger": false,
+  "instead": "plan-change"
+ },
+ {
+  "query": "fix this: Unsafe member access .postTask on an `any` value, in page-load.ts:420",
+  "should_trigger": false
+ },
+ {
+  "query": "write a teams message explaining the header change to the PO, short",
+  "should_trigger": false,
+  "instead": "draft-reply"
+ },
+ {
+  "query": "how should I answer this: 'do you think header/footer could use the host's design system css?' here's my draft: probably not, they ship their own",
+  "should_trigger": false,
+  "instead": "draft-reply"
+ },
+ {
+  "query": "implement the stability gate",
+  "should_trigger": false
+ },
+ {
+  "query": "write tests for schedule-task.ts",
+  "should_trigger": false,
+  "instead": "write-tests"
+ },
+ {
+  "query": "whats in PROJ-1155 ticket?",
+  "should_trigger": false,
+  "instead": "atlassian-jira"
+ }
+]

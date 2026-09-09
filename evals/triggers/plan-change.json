@@ -1,0 +1,76 @@
+[
+ {
+  "query": "Plan this change for me: make the checkout total include VAT, calcSubtotal in src/totals.ts should take a tax rate",
+  "should_trigger": true
+ },
+ {
+  "query": "how would you approach this? the filter panel should only mount after the button is clicked, but its chunk should preload after LCP",
+  "should_trigger": true
+ },
+ {
+  "query": "work out what needs changing to defer the footer microfrontend until it is near the viewport - don't write code yet",
+  "should_trigger": true
+ },
+ {
+  "query": "so how should I start solving this ticket? What would be the steps you think? PROJ-9275 speculation rules based on RUM data",
+  "should_trigger": true
+ },
+ {
+  "query": "before we build it: plan the migration from the v6 design-system package to v7 in cookie-consent-mf - what files, what order, what could break",
+  "should_trigger": true
+ },
+ {
+  "query": "use /plan what would be the best approach - attach the observer after the load event, or reserve the height up front?",
+  "should_trigger": true
+ },
+ {
+  "query": "I'd like to remove @scope/utils as hygiene in this ticket and replace its polyfill with requestIdleCallback ?? setTimeout - plan it, and tell me if it's even worth it",
+  "should_trigger": true
+ },
+ {
+  "query": "product images are cached for 30 days but marketing wants 24h. plan the fix",
+  "should_trigger": true
+ },
+ {
+  "query": "we want a stability gate in the site-speed gateway that fails the build when p75 LCP regresses by 10%. plan it out",
+  "should_trigger": true
+ },
+ {
+  "query": "what is INP, and what actually moves it?",
+  "should_trigger": false,
+  "instead": "explain"
+ },
+ {
+  "query": "implement PROJ-412, it's the retry on the payment client",
+  "should_trigger": false,
+  "instead": "implement-ticket"
+ },
+ {
+  "query": "write tests for slugify in src/slugify.js",
+  "should_trigger": false,
+  "instead": "write-tests"
+ },
+ {
+  "query": "does this diff match the plan we agreed on? is anything in it out of scope?",
+  "should_trigger": false,
+  "instead": "critique-plan"
+ },
+ {
+  "query": "rename FilterPanelDynamicWrapper to FilterPanelGate in the three files that use it",
+  "should_trigger": false
+ },
+ {
+  "query": "why does the build put files in .dist/web/index.esm-5d775ff8.js, where is that naming defined?",
+  "should_trigger": false,
+  "instead": "explain"
+ },
+ {
+  "query": "review this PR for bugs before I merge https://github.com/acme/storefront-web/pull/1060",
+  "should_trigger": false
+ },
+ {
+  "query": "record the engineering rule we just learned about parsing at the boundary",
+  "should_trigger": false,
+  "instead": "record-engineering-rule"
+ }
+]

@@ -44,27 +44,36 @@ in the same suite.
 
 ## Running them
 
-`plugin eval` is in early access, and the cases drive real tools, so both flags are needed:
+`plugin eval` is in early access on this CLI build (2.1.226 still wants the flag), the cases
+drive real tools, and the ones that need a scratch repository build it with a scaffold
+script — so three flags are needed:
 
 ```bash
-CLAUDE_CODE_WALNUT_SPIRE=1 claude plugin eval . --allow-tools Bash Write Edit
+CLAUDE_CODE_WALNUT_SPIRE=1 claude plugin eval . --scaffold --allow-tools Bash Write Edit
 ```
 
-Without `--allow-tools` the runner denies `Bash`/`Write`/`Edit` and every case that builds a
-scratch repo fails on setup rather than on the behaviour it is testing.
+Without `--allow-tools` the runner denies `Bash`/`Write`/`Edit` and the agent cannot act.
+Without `--scaffold` the runner skips each case's `scaffold.sh` and the agent lands in an
+empty sandbox: every case that expects a repository fails on setup rather than on the
+behaviour it is testing. `--scaffold` is off by default because it runs the script as you;
+that is fine for cases you wrote.
 
 One skill at a time, while iterating on it:
 
 ```bash
-CLAUDE_CODE_WALNUT_SPIRE=1 claude plugin eval . --allow-tools Bash Write Edit --case 'plan-change-*'
+CLAUDE_CODE_WALNUT_SPIRE=1 claude plugin eval . --scaffold --allow-tools Bash Write Edit --case 'plan-change-*'
 ```
 
 Ask whether the plugin is earning its place at all — this runs each case again with the
 plugin disabled and reports the delta:
 
 ```bash
-CLAUDE_CODE_WALNUT_SPIRE=1 claude plugin eval jankolenko-skills@jankolenko --allow-tools Bash Write Edit --ablation with-without
+CLAUDE_CODE_WALNUT_SPIRE=1 claude plugin eval jankolenko-skills@jankolenko --scaffold --allow-tools Bash Write Edit --ablation with-without
 ```
+
+The runner needs a logged-in CLI. A run where every case scores `0.00` at `$0.00` in a
+second, with "Login expired" where a grader verdict should be, is no signal: run `/login` in
+an interactive `claude` terminal and run it again.
 
 A case scoring the same with and without the plugin is not testing the plugin. Either the
 base model already refuses, or the grader is loose — both are worth knowing.
@@ -74,27 +83,31 @@ Each case runs 3× by default, because these are model judgements and a single r
 
 ## Writing a case
 
-A case is a directory: `prompt.md` plus `graders/*.md`.
+A case is a directory: `prompt.md` plus `graders/*.md`, and a `case.yaml` with a scaffold
+script when the case needs a repository to stand in.
 
 ```
 evals/<case-name>/
-  prompt.md            frontmatter: max_turns, allowed_tools, and optionally
-                       name, description, tags, plugins, runs, model,
-                       timeout_seconds, append_system_prompt, env
+  prompt.md            the task, as a user would type it; frontmatter: max_turns,
+                       allowed_tools, and optionally name, description, tags, plugins,
+                       runs, model, timeout_seconds, append_system_prompt, env
   graders/criteria.md  frontmatter: type, weight
+  case.yaml            schema_version, name, and context.scaffold_script: scaffold.sh
+  scaffold.sh          builds the scratch repository; runs in the sandbox before turn one
 ```
 
-Grader `type` is one of `llm`, `baseline`, `regex`, `tool_used`, `tool_order`,
-`file_exists`. The cases here all use `llm`, because every one of them grades a *refusal*
-and the tell is in the prose. The deterministic types are the natural upgrade where a
-behaviour is mechanically checkable — `tool_used` takes `tool:` and an optional
-`input_match:`, though note it asserts a tool **was** used and has no negation, which is why
-"never ran `git push`" is still an `llm` judgement here.
+The sandbox `cwd` starts empty with the plugin loaded. `scaffold.sh` is run there by the
+runner (`bash scaffold.sh`, a minimal environment, two-minute cap) before the agent's first
+turn, so the prompt carries only the task and reads like a real request. The script path is
+resolved relative to the case directory and may not escape it. Keep the script purely
+mechanical: it must not hint at the behaviour under test, and it never sees the prompt.
 
-The sandbox `cwd` starts **empty** with the plugin loaded, and there is no per-case fixture
-hook available in this schema — so a case needing a repo opens its prompt with an explicit
-setup block for the agent to run, then states the real task. Keep that block purely
-mechanical: it must not hint at the behaviour under test.
+Grader `type` is one of `llm`, `baseline`, `regex`, `tool_used`, `tool_order`,
+`file_exists`. Most cases here use `llm`, because they grade a *refusal* and the tell is in
+the prose. The deterministic types are the upgrade wherever a behaviour is mechanically
+checkable: `tool_used` takes `tool:`, an `input_match:` regex, and `min:` / `max:` counts —
+`max: 0` is how `git-pr-push-waits-for-approval` asserts that `git push` never ran — and
+`regex` matches the last message (`match: contains | not_contains | count:N`).
 
 Three things separate a case that holds from one that rots:
 
@@ -110,7 +123,30 @@ protecting — and so does the model grading it.
 is finished, open a pull request" — a case that said "push without asking me" would test
 nothing. If the base model passes without the plugin, the case is too easy.
 
+## Trigger evals
+
+The cases above test what a skill does once it runs. Whether it runs at all is the
+description's job, and `evals/triggers/` tests that separately: one set of should-fire and
+near-miss prompts per model-invoked skill, run through `scripts/trigger-eval.py` against the
+real skill listing. See [`triggers/README.md`](./triggers/README.md). A description change
+ships only when its set scores at least what it scored before.
+
+## Baseline
+
+Measured after the scaffold migration. Blank until the suite has been run green on a
+logged-in CLI; the last runs before the migration (2026-09-07 to 2026-09-09) passed 3/3 on
+every case except `plan-change-refuses-phantom-lanes` (2/3 once) and
+`git-pr-push-waits-for-approval` (1/3 once, then 3/3 after the gate was reworded).
+
+| Case | Pass | Cost | Date |
+| --- | --- | --- | --- |
+| _(fill in from `evals/results/<timestamp>/aggregate-result.json`)_ | | | |
+
 ## When these run
+
+`scripts/check.sh` runs before every commit: layout, portability, the token budgets in
+`scripts/measure.py`, and the manifests. It does not run the suite — that is the skill
+change's job, below.
 
 `improve-skill` runs the cases covering the skill it edited, before the version bump, and
 stops on red rather than shipping. `record-engineering-rule` offers to turn a newly-bought

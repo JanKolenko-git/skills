@@ -1,0 +1,70 @@
+[
+ {
+  "query": "commit this",
+  "should_trigger": true
+ },
+ {
+  "query": "commit with a ticket reference, PROJ-1234, only the src changes",
+  "should_trigger": true
+ },
+ {
+  "query": "stage and commit the codeowners change, the message should follow whatever this repo uses",
+  "should_trigger": true
+ },
+ {
+  "query": "commit everything and push",
+  "should_trigger": true
+ },
+ {
+  "query": "write a commit, don't mention co-author and push to branch",
+  "should_trigger": true
+ },
+ {
+  "query": "I just created the feature flag. please commit and push to the PROJ-997 branch",
+  "should_trigger": true
+ },
+ {
+  "query": "commit the probe, conventional message, ticket in the footer",
+  "should_trigger": true
+ },
+ {
+  "query": "lets leave it as it is - commit and push to branch",
+  "should_trigger": true
+ },
+ {
+  "query": "open a PR for this branch",
+  "should_trigger": false,
+  "instead": "git-pr-push-and-open"
+ },
+ {
+  "query": "write a commit message for adding loadUtagAgentAfterLCP to the analytics package, I'll commit it myself",
+  "should_trigger": false
+ },
+ {
+  "query": "undo my last commit but keep the changes",
+  "should_trigger": false
+ },
+ {
+  "query": "rebase with main and push",
+  "should_trigger": false
+ },
+ {
+  "query": "resolve the merge conflicts on this branch",
+  "should_trigger": false,
+  "instead": "mattpocock-skills:resolving-merge-conflicts"
+ },
+ {
+  "query": "what changed in commits 4f58fd9 and 35095a7?",
+  "should_trigger": false,
+  "instead": "explain"
+ },
+ {
+  "query": "squash the last 3 commits into one",
+  "should_trigger": false
+ },
+ {
+  "query": "create a branch for PROJ-1234",
+  "should_trigger": false,
+  "instead": "git-create-branch"
+ }
+]

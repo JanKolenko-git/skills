@@ -1,0 +1,62 @@
+[
+ {
+  "query": "record this in the repo's CLAUDE.md: the suite needs TZ=UTC or the date assertions drift",
+  "should_trigger": true
+ },
+ {
+  "query": "write this back to the spec - the page says the handoff happens before LCP but the code does it after",
+  "should_trigger": true
+ },
+ {
+  "query": "capture what we learned for next time: the mock has to sit at the module boundary because setup.ts stubs the network globally",
+  "should_trigger": true
+ },
+ {
+  "query": "run /learn on the v7 Modal facts in storefront-web",
+  "should_trigger": true
+ },
+ {
+  "query": "the ticket assumed the CDN sets the cache header, it doesn't - the origin does. record that where the next run will see it",
+  "should_trigger": true
+ },
+ {
+  "query": "we spent an hour on this: the dev server only works on node 20 here. save it so it doesn't happen again",
+  "should_trigger": true
+ },
+ {
+  "query": "save what we learned to memory",
+  "should_trigger": false
+ },
+ {
+  "query": "add the CSS class audit as an engineering rule",
+  "should_trigger": false,
+  "instead": "record-engineering-rule"
+ },
+ {
+  "query": "improve the plan-change skill, the lane test read as advisory",
+  "should_trigger": false,
+  "instead": "improve-skill"
+ },
+ {
+  "query": "write docs for the analytics module, a README with usage",
+  "should_trigger": false
+ },
+ {
+  "query": "add a comment to the ticket with what has been discovered, proposed and done https://jira.example.com/browse/PROJ-10836",
+  "should_trigger": false,
+  "instead": "atlassian-jira"
+ },
+ {
+  "query": "add a note to the PR description about the timing",
+  "should_trigger": false
+ },
+ {
+  "query": "update the changeset to mention the timing",
+  "should_trigger": false
+ },
+ {
+  "query": "log this as a skill gap: I keep pasting the same CI logs by hand",
+  "should_trigger": false,
+  "instead": "find-skill-gaps"
+ }
+]

@@ -1,0 +1,64 @@
+[
+ {
+  "query": "does this diff match the plan we agreed on? is anything in it out of scope?",
+  "should_trigger": true
+ },
+ {
+  "query": "check the implementation against the plan before I commit - the plan is in plan.md, the diff is the working tree",
+  "should_trigger": true
+ },
+ {
+  "query": "should this change exist at all now that the code is written? the plan assumed the header preloads after LCP but I ended up polling",
+  "should_trigger": true
+ },
+ {
+  "query": "review what I built against the ticket's intent, not for bugs - PROJ-16486 lazy-load header subfeatures",
+  "should_trigger": true
+ },
+ {
+  "query": "is this in scope? I added a second bug fix along the way and a small refactor",
+  "should_trigger": true
+ },
+ {
+  "query": "compare the diff with the plan and tell me what the plan asked for that never got built",
+  "should_trigger": true
+ },
+ {
+  "query": "review this PR for bugs and security before I merge https://github.com/acme/checkout-api/pull/91",
+  "should_trigger": false
+ },
+ {
+  "query": "plan this change: add VAT to the cart total",
+  "should_trigger": false,
+  "instead": "plan-change"
+ },
+ {
+  "query": "address the review comments on https://github.com/acme/storefront-web/pull/1060",
+  "should_trigger": false,
+  "instead": "git-pr-address-review"
+ },
+ {
+  "query": "simplify this diff, there's duplication in the two handlers",
+  "should_trigger": false
+ },
+ {
+  "query": "write tests for the change",
+  "should_trigger": false,
+  "instead": "write-tests"
+ },
+ {
+  "query": "explain what we did in https://github.com/acme/order-mf/pull/1242, I lost the context",
+  "should_trigger": false,
+  "instead": "explain"
+ },
+ {
+  "query": "commit and push what we have",
+  "should_trigger": false,
+  "instead": "git-commit"
+ },
+ {
+  "query": "grill me on this plan, I want to stress-test my thinking",
+  "should_trigger": false,
+  "instead": "mattpocock-skills:grilling"
+ }
+]

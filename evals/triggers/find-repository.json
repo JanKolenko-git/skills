@@ -1,0 +1,67 @@
+[
+ {
+  "query": "which repo is PROJ-2201 about? I have like 30 repos in ~/Developer",
+  "should_trigger": true
+ },
+ {
+  "query": "I just cloned order-mf and navigation-mf into Developer - which of my repos owns the footer microfrontend? the ticket says footer loading",
+  "should_trigger": true
+ },
+ {
+  "query": "where does the @scope/analytics package live locally? I need to open a PR there",
+  "should_trigger": true
+ },
+ {
+  "query": "find the repository this task belongs to: 'Checkout total is wrong when a discount code is applied' - my repos are under $REPO_ROOT",
+  "should_trigger": true
+ },
+ {
+  "query": "we need to update @scope/analytics in the repositories that consume it - can you find which local repos those are? my take is pdp, plp and landing",
+  "should_trigger": true
+ },
+ {
+  "query": "which of the repos under ~/code is the checkout backend? there's checkout-web and checkout-api and I always mix them up",
+  "should_trigger": true
+ },
+ {
+  "query": "ticket PROJ-9910 mentions 'the CPRS form' - which repo is that?",
+  "should_trigger": true
+ },
+ {
+  "query": "find where resolveMfVersion is defined in this repo",
+  "should_trigger": false
+ },
+ {
+  "query": "clone https://github.com/acme/order-mf into ~/Developer and install deps",
+  "should_trigger": false
+ },
+ {
+  "query": "Can you explain this repository very short, what is it about?",
+  "should_trigger": false,
+  "instead": "explain"
+ },
+ {
+  "query": "what does this file do  packages/app/src/ssr/utils/mf-versions.ts",
+  "should_trigger": false,
+  "instead": "explain"
+ },
+ {
+  "query": "whats in PROJ-1155 ticket?",
+  "should_trigger": false,
+  "instead": "atlassian-jira"
+ },
+ {
+  "query": "create a branch for PROJ-2201 in this repo",
+  "should_trigger": false,
+  "instead": "git-create-branch"
+ },
+ {
+  "query": "run this repo locally so I can test it in the browser",
+  "should_trigger": false,
+  "instead": "prepare-local-environment"
+ },
+ {
+  "query": "list all git repos on my machine that have uncommitted changes",
+  "should_trigger": false
+ }
+]
