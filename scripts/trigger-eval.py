@@ -16,7 +16,8 @@ one anthropic-skills:skill-creator's run_eval.py reads, so its sets work here un
 
 Usage: scripts/trigger-eval.py --skill plan-change [--set evals/triggers/plan-change.json]
            [--runs 1] [--model claude-sonnet-5] [--workers 4] [--timeout 90] [--json out.json]
-Exit 1 when any query fails its expectation (trigger rate on the wrong side of 0.5).
+Exit 1 when any query fails its expectation (trigger rate on the wrong side of 0.5), 2 when a
+query has no valid run because every attempt errored (a usage limit, an auth failure).
 """
 import argparse
 import json
@@ -122,6 +123,11 @@ def watch_tool_calls(process, timeout, skill_name, max_tool_calls):
                 # worth reading here; the stream events above already classified it.
                 continue
             elif event.get("type") == "result":
+                # A usage limit, an auth failure or an API error ends the run with no tool
+                # call; that is not evidence about the description and must not count as one.
+                if event.get("is_error") or event.get("subtype") not in (None, "success"):
+                    detail = str(event.get("result") or event.get("subtype") or "error")[:80]
+                    return ("error", detail)
                 return seen[0] if seen else ("none", None)
         if process.poll() is not None and not buffer:
             break
@@ -199,24 +205,30 @@ def main():
         shutil.rmtree(workdir, ignore_errors=True)
 
     results = []
+    errored = 0
     for item in eval_set:
         runs = outcomes[item["query"]]
-        hits = sum(1 for kind, name in runs if kind == "skill" and matches(name or "", args.skill))
-        rate = hits / len(runs) if runs else 0.0
+        valid = [(kind, name) for kind, name in runs if kind not in ("error", "timeout")]
+        errored += len(runs) - len(valid)
+        hits = sum(1 for kind, name in valid if kind == "skill" and matches(name or "", args.skill))
+        rate = hits / len(valid) if valid else 0.0
         expected = bool(item["should_trigger"])
-        passed = rate >= TRIGGER_THRESHOLD if expected else rate < TRIGGER_THRESHOLD
+        passed = (rate >= TRIGGER_THRESHOLD if expected else rate < TRIGGER_THRESHOLD) if valid else None
         fired = sorted({f"{kind}:{name}" for kind, name in runs if not (kind == "skill" and matches(name or "", args.skill))})
         results.append({
             "query": item["query"], "should_trigger": expected, "instead": item.get("instead"),
-            "trigger_rate": rate, "runs": len(runs), "pass": passed, "fired_instead": fired,
+            "trigger_rate": rate, "runs": len(valid), "errors": len(runs) - len(valid),
+            "pass": passed, "fired_instead": fired,
         })
 
-    positives = [r for r in results if r["should_trigger"]]
-    negatives = [r for r in results if not r["should_trigger"]]
+    positives = [r for r in results if r["should_trigger"] and r["pass"] is not None]
+    negatives = [r for r in results if not r["should_trigger"] and r["pass"] is not None]
+    no_data = [r for r in results if r["pass"] is None]
     summary = {
         "skill": args.skill, "model": args.model, "runs_per_query": args.runs,
         "should_trigger": {"passed": sum(r["pass"] for r in positives), "total": len(positives)},
         "should_not_trigger": {"passed": sum(r["pass"] for r in negatives), "total": len(negatives)},
+        "errored_runs": errored, "queries_without_data": len(no_data),
     }
     report = {"summary": summary, "results": results}
     if args.json_out:
@@ -226,10 +238,15 @@ def main():
     print(f"{args.skill}: should-trigger {summary['should_trigger']['passed']}/{summary['should_trigger']['total']}, "
           f"should-not-trigger {summary['should_not_trigger']['passed']}/{summary['should_not_trigger']['total']} "
           f"(runs per query: {args.runs}, model: {args.model or 'default'})")
+    if errored:
+        print(f"  WARNING: {errored} run(s) errored (usage limit, auth or API failure) and were left out; "
+              f"{len(no_data)} quer{'y has' if len(no_data) == 1 else 'ies have'} no data")
     for r in results:
-        mark = "PASS" if r["pass"] else "FAIL"
+        mark = "NODATA" if r["pass"] is None else ("PASS" if r["pass"] else "FAIL")
         extra = f"  fired: {', '.join(r['fired_instead'])}" if r["fired_instead"] and not r["pass"] else ""
         print(f"  [{mark}] {'+' if r['should_trigger'] else '-'} {r['trigger_rate']:.2f}  {r['query'][:90]}{extra}")
+    if no_data:
+        return 2
     return 0 if all(r["pass"] for r in results) else 1
 
 
