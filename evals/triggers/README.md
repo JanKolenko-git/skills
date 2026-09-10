@@ -49,6 +49,41 @@ model-specific, and the number that matters is the delta, not the absolute rate.
 
 ## Baseline
 
-Not yet measured — the CLI was logged out when the sets were written. The first run against
-the current descriptions goes here, one line per skill: should-trigger passed/total,
-should-not-trigger passed/total, model, runs.
+Measured 2026-09-10 against the descriptions as they stood before Phase 1, on
+`claude-sonnet-5`, one run per prompt, the first three tool calls watched, a scratch git
+repository as the working directory. Raw results: `evals/results/triggers-2026-09-10/`
+(untracked).
+
+| Skill | Should trigger | Should not trigger |
+| --- | --- | --- |
+| `atlassian-confluence` | 6/8 | 8/8 |
+| `atlassian-jira` | 8/10 | 5/7 |
+| `critique-plan` | 5/6 | 8/8 |
+| `draft-reply` | 4/8 | 7/7 |
+| `explain` | 7/10 | 7/7 |
+| `find-repository` | 5/7 | 8/8 |
+| `git-commit` | 2/8 | 8/8 |
+| `git-create-branch` | 6/6 | 8/8 |
+| `git-pr-address-review` | 4/8 | 7/7 |
+| `git-pr-push-and-open` | 2/8 | 7/7 |
+| `implement-ticket` | 5/7 | 8/8 |
+| `improve-skill` | 3/7 | 7/7 |
+| `plan-change` | 5/9 | 8/8 |
+| `prepare-local-environment` | 5/9 | 7/7 |
+| `record-engineering-rule` | 6/7 | 7/7 |
+| `record-learnings` | 2/6 | 8/8 |
+| `write-tests` | 3/7 | 8/8 |
+| **all 17** | **78/131 (60%)** | **126/128 (98%)** |
+
+Under-triggering is the whole problem: near-misses stay quiet (two leaks, both into
+`atlassian-jira` from prompts that begin by reading a ticket), while two in five prompts that
+should fire a skill do not. The dominant miss is the model doing the thing itself — `git
+commit`, `git push`, `npm run dev`, a grep for the repo — through Bash, which is exactly
+where the gates those skills carry are skipped. The five weakest: `git-commit` 2/8,
+`git-pr-push-and-open` 2/8, `record-learnings` 2/6, `improve-skill` 3/7, `write-tests` 3/7.
+Two `implement-ticket` prompts fired `atlassian-jira` instead; a prompt typed as
+`/implement-ticket PROJ-4412` counts among them, because print mode does not resolve an
+unqualified slash command and the model read it as text.
+
+One run per prompt is noise at the level of a single prompt; the per-skill totals and the
+direction are what to compare against after a rewrite, on the same model and settings.
