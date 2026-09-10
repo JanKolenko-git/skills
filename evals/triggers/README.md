@@ -41,8 +41,8 @@ scripts/trigger-eval.py --skill plan-change --model claude-sonnet-5 --json out.j
 ```
 
 A prompt passes when its trigger rate lands on the right side of 0.5. Exit 1 on any failure.
-Runs need a logged-in CLI; each prompt costs one model turn, because the process is killed at
-the first tool call or the first finished message.
+Runs need a logged-in CLI. Each prompt costs one to three short turns: the process is killed
+as soon as the skill fires, three other tool calls have been seen, or the message ends.
 
 Compare before and after on the same model and the same number of runs. Triggering is
 model-specific, and the number that matters is the delta, not the absolute rate.
