@@ -1,6 +1,6 @@
 ---
 name: git-pr-push-and-open
-description: Show the finished diff for human review, stop for explicit approval, then push the branch and open a pull request with a concise title and body linking any related ticket. Use when the user or another skill (e.g. jankolenko-skills:implement-ticket) is ready to ship committed work, or asks to "open a PR", "raise a PR", or "push and open a pull request". The review stop before pushing is mandatory and part of this skill.
+description: Push a branch and open its pull request after showing the finished diff and stopping for approval, with a concise title and body linking the ticket. Use whenever a branch is to be pushed or a PR opened or raised, however small the change: 'push and open PR', 'ship it', 'open a PR', 'push to the branch'. The review stop before pushing lives here.
 ---
 
 # Git PR — Push and Open

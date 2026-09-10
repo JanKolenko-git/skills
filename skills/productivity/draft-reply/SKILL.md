@@ -1,6 +1,6 @@
 ---
 name: draft-reply
-description: Turn a pasted thread — and usually a rough draft of the answer — into a reply that is short, checks out, and answers everything that was actually asked, reporting what it changed and which claims it could not verify. Use when the user pastes a Slack, Teams, email or PR conversation with "how should I answer this", "improve my answer", or their own draft plus a request to tighten it.
+description: Turn a pasted Slack, Teams, email or PR thread, usually with the user's rough draft, into a reply that is short, checks out and answers everything asked, or write the short status message from the links given. Use when the user asks how to answer a thread, to improve, tighten or shorten a message, or for a teams message about a ticket or PR.
 argument-hint: <pasted thread> [+ your draft]
 ---
 

@@ -1,6 +1,7 @@
 ---
 name: find-session-improvements
-description: Sweep a finished conversation for everything the skill layer should have learned from it — wording that misled a run, an input a skill was missing, a step that fought the task, a capability no skill covers, a coding convention the output got wrong — then route each finding to the skill that owns it (jankolenko-skills:improve-skill, the SIGNALS ledger, jankolenko-skills:record-engineering-rule) behind a single triage gate. Reads the live context and falls back to this session's own transcript on disk for whatever compaction dropped. Use at the end of any long session — after implementing a ticket, resolving a PR review, or any run that used several skills and changed direction along the way — and whenever the user asks to "reflect on this session", "what did we learn here", "improve the skills we just used", "run a retrospective", or types /find-session-improvements.
+description: Sweep this session's transcript for what the skill layer should learn and route each finding to improve-skill, the signals ledger or record-engineering-rule behind one triage gate.
+disable-model-invocation: true
 argument-hint: [optional focus — a skill name, or an area to concentrate on]
 ---
 

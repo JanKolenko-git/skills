@@ -87,3 +87,44 @@ unqualified slash command and the model read it as text.
 
 One run per prompt is noise at the level of a single prompt; the per-skill totals and the
 direction are what to compare against after a rewrite, on the same model and settings.
+
+## After Phase 1
+
+Same model, settings and sets as the baseline (`claude-sonnet-5`, one run per prompt),
+against the rewritten descriptions. Each cell is should-fire · near-miss quiet. The last
+column is a three-run check on the skills whose one-run number moved. Raw results:
+`evals/results/triggers-2026-09-10-phase1*/` (untracked).
+
+| Skill | Baseline | After Phase 1 | Three runs |
+| --- | --- | --- | --- |
+| `atlassian-confluence` | 6/8 · 8/8 | 6/8 · 8/8 |  |
+| `atlassian-jira` | 8/10 · 5/7 | 9/10 · 5/7 |  |
+| `critique-plan` | 5/6 · 8/8 | 6/6 · 8/8 |  |
+| `draft-reply` | 4/8 · 7/7 | 6/8 · 7/7 |  |
+| `explain` | 7/10 · 7/7 | 6/10 · 7/7 | 8/10 · 7/7 |
+| `find-repository` | 5/7 · 8/8 | 5/7 · 8/8 |  |
+| `git-commit` | 2/8 · 8/8 | 3/8 · 8/8 | 2/8 · 8/8 |
+| `git-create-branch` | 6/6 · 8/8 | 6/6 · 8/8 |  |
+| `git-pr-address-review` | 4/8 · 7/7 | 6/8 · 7/7 |  |
+| `git-pr-push-and-open` | 2/8 · 7/7 | 2/8 · 7/7 | 2/8 · 7/7 |
+| `implement-ticket` | 5/7 · 8/8 | 5/7 · 8/8 |  |
+| `improve-skill` | 3/7 · 7/7 | 2/7 · 7/7 | 5/7 · 7/7 |
+| `plan-change` | 5/9 · 8/8 | 7/9 · 8/8 |  |
+| `prepare-local-environment` | 5/9 · 7/7 | 7/9 · 6/7 | 7/9 · 6/7 |
+| `record-engineering-rule` | 6/7 · 7/7 | 5/7 · 7/7 | 6/7 · 7/7 |
+| `record-learnings` | 2/6 · 8/8 | 5/6 · 8/8 |  |
+| `write-tests` | 3/7 · 8/8 | 3/7 · 8/8 |  |
+| **all 17** | **78/131 (60%) · 126/128 (98%)** | **89/131 (68%) · 125/128 (98%)** | |
+
+Should-fire rose from 60% to 68% with near-misses unchanged, and every skill whose one-run
+number dipped holds at or above its baseline over three runs. The `prepare-local-environment`
+near-miss that now fires ("my local server 500s on every page after the branch switch") was
+mislabelled: a stale install after a branch switch is the case the skill was reworded for, so
+that prompt is a positive from now on.
+
+Two things the measurement itself taught. A hook sentence routing commits, pushes and skill
+edits to their skills was tried and dropped: an A/B on the default model showed no
+difference (`git-commit` 8/8 in both arms, `git-pr-push-and-open` 6/8 against 7/8). And the
+default model fires those two guardrail skills 8/8 and 7/8 where Sonnet 5 manages 2/8 on the
+same prompts, so the low Sonnet numbers are a property of the measuring model, not of the
+descriptions; Sonnet stays the measuring model because the delta is what the gate checks.

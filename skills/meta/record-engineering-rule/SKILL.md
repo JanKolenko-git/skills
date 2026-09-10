@@ -1,6 +1,6 @@
 ---
 name: record-engineering-rule
-description: Decide where a convention a coding run learned belongs — the general ENGINEERING.md every skill's output follows, or one repository's projects/<repository>/ENGINEERING.md — routing the candidates that belong elsewhere to jankolenko-skills:record-learnings, jankolenko-skills:improve-skill or the signals ledger, then showing the exact diff and stopping for approval before committing, bumping the plugin version and telling the user to update. Use when a run turned up a convention worth keeping, when review caught something no rule covered, or when the user asks to "add an engineering rule", "should this go in ENGINEERING.md", "is this rule general or project-specific", or "did we learn a rule here".
+description: Decide where a coding convention a run learned belongs, the general ENGINEERING.md or a repository's own rules file, gated on the diff. Use when review caught a convention no rule covered, or the user asks to add an engineering rule or whether a rule is general or project-specific.
 argument-hint: <what was learned / what the code got wrong>
 ---
 

@@ -49,7 +49,8 @@
  },
  {
   "query": "why does my local server 500 on every page after the branch switch?",
-  "should_trigger": false
+  "should_trigger": true,
+  "note": "reclassified 2026-09-10: a 500 on every page after a branch switch is the stale-install case the skill exists for (reinstall unless node_modules matches the lockfile), not a bug to diagnose"
  },
  {
   "query": "explain how vite decides the dev server port",

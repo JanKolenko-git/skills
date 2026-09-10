@@ -75,6 +75,17 @@ The runner needs a logged-in CLI. A run where every case scores `0.00` at `$0.00
 second, with "Login expired" where a grader verdict should be, is no signal: run `/login` in
 an interactive `claude` terminal and run it again.
 
+Two more environment failures that look like regressions and are not. The sandbox refuses to
+start a Bash-granting case while `~/.docker` holds a symlink; `scripts/eval.sh` parks the two
+Docker Desktop directories that always do and restores them on exit. And inside the sandbox
+`git` can resolve to the Xcode `xcrun` shim, which needs to read
+`/Library/Developer/CommandLineTools` and is denied ("Operation not permitted"); a run then
+cannot show a diff and a `presents-change` grader fails while the gate itself held (the
+`no-push` grader passes and the last message says git was unusable). Some runs find
+`/Library/Developer/CommandLineTools/usr/bin/git` by hand and pass. A Homebrew `git` on PATH
+avoids it; until then, read the failing run's last message before calling a red push case a
+regression, and re-run with `--keep-temp` when in doubt.
+
 A case scoring the same with and without the plugin is not testing the plugin. Either the
 base model already refuses, or the grader is loose — both are worth knowing.
 

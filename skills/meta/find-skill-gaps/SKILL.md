@@ -1,6 +1,7 @@
 ---
 name: find-skill-gaps
-description: Turn recurring friction into a proposal for a new skill — reads the observations/SIGNALS.md ledger, clusters the signals, and proposes only when a gap has two or more independent dated signals and nothing installed already covers it; gated twice, on the idea before any drafting and on the draft before it lands. Use when the user asks "what skills are we missing", when the standing rule has accumulated repeated signals for the same gap, or when the user wants a repeated manual chore turned into a skill.
+description: Propose a new skill from the observations/SIGNALS.md ledger once a gap has two independent signals; gated on the idea, then on the draft.
+disable-model-invocation: true
 argument-hint: [a new signal to log first, or empty to review the ledger]
 ---
 

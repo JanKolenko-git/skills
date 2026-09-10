@@ -1,52 +1,23 @@
 # Engineering rules
 
-Cross-cutting rules for the **code the skills produce** — as opposed to `.agents/authoring.md`,
-which governs how the SKILL.md files themselves are written. Different audience, different
-moment: this file is read when a skill is about to change a work repo.
-
-Every skill inherits these and none of them restates them. A rule only one task cares about
-stays in that task's own SKILL.md.
+Cross-cutting rules for the **code the skills produce**, read before a skill changes a work
+repo. No skill restates these; a rule only one task cares about stays in that SKILL.md.
 
 ## How an entry earns its place
 
-Entries arrive one of two ways, and each one says which.
-
-**Rules** — one observed failure, in a real run, that this rule would have caught. These are
-the expensive ones, bought with a bug. Add through `jankolenko-skills:record-engineering-rule`.
-
-**Baseline** — established practice with a named source: Power of 10, a published style guide
-from a team that maintains code at scale, or a convention a large codebase visibly holds. No
-speculative style preferences. If no source outside this file believes it, it does not go in —
-that is what keeps the file short enough to actually be read.
-
-A Baseline rule that a real run later violates gets **promoted to Rules** with the evidence.
-That promotion is the point of the split: it records which rules have already cost us
-something, so the next reader knows where the sharp edges actually are.
-
-Deleting a rule that proved wrong is as valid as adding one. A rulebook that only grows is
-one nobody trusts.
+**Rules** — one observed failure, in a real run, that the rule would have caught. Added
+through `jankolenko-skills:record-engineering-rule`. **Baseline** — established practice
+with a named source (Power of 10, a published style guide, a convention a large codebase
+visibly holds). No source outside this file, no entry. A Baseline rule a run later violates
+is promoted to Rules with the evidence; a rule that proved wrong is deleted.
 
 ## What a rule may name
 
-This file holds only what would hold in a repository you have never seen, in a language it
-has not touched. So an entry names the **shape** of the failure — what kind of change, what
-kind of check missed it, what the tell was — and never a repository, a ticket, a pull
-request, a commit, a person or a private package. A `_Source:` line here reads _"observed —
-regenerating a lockfile under a newer toolchain than the repo pinned …"_, not the run's
-coordinates.
-
-The coordinates are not lost. They belong to the repository that bought the rule, in
-`projects/<repository>/ENGINEERING.md` — untracked, beside that repository's own rules, the
-ones that hold there and nowhere else. Where a rule goes is decided once:
-
-| The rule… | Goes to |
-| --- | --- |
-| would hold in a repository you have never seen | here — the shape, no identifiers |
-| holds only in repositories you can list — one team, one stack, one repo | `projects/<repository>/ENGINEERING.md`, one file per repository it applies to |
-| is a fact about how one repo builds or runs that teammates should see | that repo's own `CLAUDE.md`, via `jankolenko-skills:record-learnings` |
-
-If you can list the repositories it applies to, it is a project rule. The session-start hook
-reads this file everywhere and a project file only inside its repository.
+Only what would hold in a repository you have never seen: the **shape** of the failure, never
+a repository, ticket, pull request, commit, person or private package. A rule that holds only
+in repositories you can list is a project rule and lives in that repository's
+`projects/<repository>/ENGINEERING.md`, untracked, beside the coordinates of the runs that
+bought the general ones. `jankolenko-skills:record-engineering-rule` decides which.
 
 ---
 
@@ -57,46 +28,25 @@ in that repository's `projects/<repository>/ENGINEERING.md`._
 
 ## Reuse the name a thing already has; give a new one meaning
 
-Two halves of one rule, and they never conflict: the first governs a name something else
-chose, the second a name you choose.
-
-**When you bind something that already has a name, keep it.**
-
 ```ts
 const requestIdleCallback = window.requestIdleCallback; // yes
 const requestIdle = window.requestIdleCallback; // no
-```
 
-A renamed alias breaks the link between the code and its documentation. Nobody greps
-`requestIdle` while reading MDN, and the next reader has to carry a second name for a thing
-that already had one. The rule binds hardest on standard Web and Node APIs, then on symbols
-exported by dependencies, then on names the repo already uses for the same concept.
-
-Rename only when the new name carries information the old one does not — a real narrowing
-(`onIdle` for a callback prop), or a collision you are forced to break.
-
-**When you invent a name, name the thing by meaning.**
-
-```ts
 const order = getOrder(); // yes
 const data = getOrder(); // no
-
-const user = { name: "John", lastname: "Doe" }; // yes
-const data = { name: "John", lastname: "Doe" }; // no
 ```
 
-`data`, `info`, `item`, `result`, `manager`, `helper` — each describes a value's shape or
-its role in the machine, and the code already shows both. What it does not show is which
-of your domain's concepts this actually is, so the reader reconstructs that on every read.
-A name is the cheapest documentation there is, and the only kind that travels with the
-value.
+Keep the name something else chose: a renamed alias breaks the link to its documentation and
+gives the reader a second name for one thing. Rename only when the new name carries
+information the old one lacks, or a collision forces it. Name what you invent by its meaning:
+`data`, `info`, `item`, `result`, `helper` describe a shape the code already shows, not the
+domain concept the reader has to reconstruct.
 
-Exception, second half only: genuinely generic code. A `map` helper's parameter is `item`
-because it really is any item; inventing a domain name there would be a lie.
+Exception, second half only: genuinely generic code, where a `map` helper's `item` really is
+any item.
 
-_Source: first half observed — this file's founding entry. Second half: Ousterhout, ‹A
-Philosophy of Software Design› §14; Kernighan & Pike, ‹The Practice of Programming› §1 —
-surfaced by ‹7 Coding Laws of Senior Developer› (law 2)._
+_Source: first half observed (this file's founding entry); second half Ousterhout, ‹A
+Philosophy of Software Design› §14._
 
 ## A stylesheet is unused only if the rendered markup says so
 
@@ -111,27 +61,18 @@ surfaced by ‹7 Coding Laws of Senior Developer› (law 2)._
 ```js
 // yes — ask the rendered screen which classes it uses, then diff the sheets
 const used = new Set([...document.querySelectorAll('*')].flatMap((el) => [...el.classList]));
-// anything `used` that the old sheet styles and the new one does not is a silent regression
 ```
 
-Removing or narrowing a stylesheet is invisible to every automated check. Types, lint,
-tests and the production build all pass, because nothing connects a class name in markup
-to a rule in a sheet — the coupling is a string, resolved by the browser at runtime. The
-component whose JS you deleted is not the only thing that sheet was dressing.
+Removing a stylesheet passes types, lint, tests and the build, because a class name and a
+rule are coupled by a string the browser resolves at runtime. The component whose JS you
+deleted is not the only thing the sheet dressed: ask the rendered DOM which classes it uses,
+in every state, and diff the sheets. Tell: `getComputedStyle(el).appearance === 'auto'` on a
+control that should be custom-styled.
 
-Checking one screen is not the audit. A ported modal renders correctly while the controls
-inside it fall back to browser defaults, which is exactly how this shipped. A quick tell
-for that failure: `getComputedStyle(el).appearance === 'auto'` on a control that should be
-custom-styled is the native widget showing through.
+Exception: classes confirmed absent from the rendered DOM in every state.
 
-Exception: a sheet whose classes you have confirmed absent from the rendered DOM in every
-state the component has — and a modal has more states than the one you opened.
-
-_Source: observed — dropping a design system's stylesheet together with its JavaScript
-barrel cost ten classes their rules and shipped native checkboxes inside a consent modal;
-the component checked had been ported, the controls inside it had not. The same removal,
-proposed a week earlier in a sibling repository, was reverted before merge when this audit
-found 24 broken classes._
+_Source: observed — a design system's stylesheet dropped with its JavaScript barrel cost ten
+classes their rules; the component checked had been ported, the controls inside it had not._
 
 ## Generate an artifact with the toolchain the repo pins
 
@@ -143,24 +84,15 @@ nvm use                # 20.19.2
 npm install            # yes — 21 lines, one version actually changed
 ```
 
-A repo pins its toolchain because the generator's output differs between versions. Run it
-on the wrong one and you get an artifact that is valid, passes tests, and is wrong in bulk:
-the same dependency graph re-expressed, burying the one line you meant to change.
+A generator's output differs between versions; on the wrong one it produces an artifact that
+is valid, passes tests, and is wrong in bulk, and the only tell is a diff far larger than the
+change deserves. Read the pin (`.nvmrc`, `.tool-versions`, `engines`) and match it before the
+generator runs.
 
-This is the rare failure with no signal at the point of action. The command succeeds, the
-JSON parses, nothing warns. The only tell is a diff far larger than the change deserves —
-and that is easy to wave away as the tool being noisy. So the check belongs *before* the
-generator runs, not after: read the pin (`.nvmrc`, `.tool-versions`, `engines`, a pinned
-Python for `poetry.lock`, a pinned protoc for a generated client) and match it.
+Exception: a repo that pins nothing, and generators whose output does not vary by version.
 
-Exception: a repo that pins nothing — then any supported version is fine, though if the
-artifact is large, say which version produced it. And generators whose output genuinely
-does not vary by toolchain version.
-
-_Source: observed — regenerating a lockfile under a newer Node and npm than the repo pinned
-rewrote 1008 version lines when exactly one package had changed version; under the pinned
-toolchain the same change was 21 lines. The bad lockfile was committed before the churn was
-noticed._
+_Source: observed — a lockfile regenerated under a newer Node than the repo pinned rewrote
+1008 lines for one changed package; under the pin, 21._
 
 ## Generated artifacts ship in the commit that changed their source
 
@@ -172,39 +104,23 @@ src/lib/index.ts   + export function startInteractionTimer(…)
 API.md             + export function startInteractionTimer(…)      // yes
 ```
 
-Anything derived from a source you just changed — an API report, a lockfile, a snapshot,
-a generated client, a `.d.ts` baseline, a checked-in schema — is part of that change, not
-a follow-up. The generator is the source of truth for the artifact; the moment the two
-disagree, the artifact is lying to every reader who trusts it more than they trust the
-diff.
+Anything derived from a source you changed (an API report, a lockfile, a snapshot, a
+generated client) is part of that change; the moment the two disagree, the artifact lies to
+every reader. These checks hide behind a separate script (`document`, `generate`,
+`snapshot -u`) a scoped verification never runs, so find out what a package regenerates
+before calling a change verified.
 
-These are the checks most easily missed, because they are usually not what a test failure
-or a linter reports. They live behind a separate script — `document`, `generate`,
-`snapshot -u` — that a scoped verification run never reaches. Find out what a package
-regenerates *before* claiming a change to its public surface is verified.
+Exception: artifacts the repo deliberately does not commit. When regeneration needs an
+environment you cannot run, say the artifact is stale; never commit a stale one silently.
 
-Exception: artifacts a repo deliberately does not commit (gitignored build output). And
-when regeneration needs an environment you cannot run, say the artifact is stale and why —
-never commit a stale one silently.
-
-_Source: observed — adding two exports to a library package left its generated `API.md`
-unregenerated, which the repo's API-report check would have failed. Verification had been
-scoped to the two changed files, so the package's own `document` script never ran; review
-caught it._
+_Source: observed — two new exports left a library's generated API report stale; verification
+had been scoped to the two changed files._
 
 ## Parse at the boundary; trust the types inside it
 
 ```ts
 const user = await res.json() as User            // no — a cast is a wish, not a check
 const user = UserSchema.parse(await res.json())  // yes
-
-function retry(times: number) { … }              // no — -1 and NaN both type-check
-function retry(times: number) {
-  if (!Number.isInteger(times) || times < 0) {
-    throw new RangeError(`retry times must be a non-negative integer, got ${times}`)
-  }
-  …                                              // yes
-}
 
 if (strategy === 'when-near-viewport') defer()   // no — a host still sending the old
                                                  //   `{ type: … }` shape matches nothing
@@ -214,26 +130,17 @@ if (strategy !== 'immediate' && strategy !== 'when-near-viewport') {
 }
 ```
 
-TypeScript checks what you wrote, not what arrives. Every API response, env var, URL
-param, `postMessage` payload and file read enters as `unknown` wearing a type you
-asserted. `as` does not verify — it instructs the compiler to stop asking. The failure
-lands far from the boundary, in code that had every right to trust its inputs.
+TypeScript checks what you wrote, not what arrives: every API response, env var, URL param,
+`postMessage` payload and file read enters as `unknown` wearing a type you asserted, and
+`as` tells the compiler to stop asking. Validate once where data enters, then trust the
+types. A library's public prop or option is a boundary too: JavaScript hosts keep sending
+the shape you stopped accepting.
 
-Validate once, where data enters. Past that line, the types are real and code stops
-defending itself — that is the payoff, and it is why the line has to be a line.
+Exception: internal calls already behind a validated boundary.
 
-A public prop or option on a library is a boundary as much as a URL param is. The compiler
-checks the TypeScript hosts; the JavaScript ones arrive as `unknown` like everything else,
-and the shape you stopped accepting is precisely the one they will keep sending.
-
-Exception: internal calls already behind a validated boundary. Re-checking there is
-noise that trains readers to skim the checks that matter.
-
-_Source: Power of 10 §5 and §7 (callee validates its parameters). Promoted when a library
-option went from an object to a string and shipped as a minor on the reasoning that no
-consumer passed it yet: TypeScript consumers would have failed to compile, and a JavaScript
-host still passing the object matched neither branch and lost its deferral silently, in
-production. Caught in review; the library now warns._
+_Source: Power of 10 §5 and §7. Promoted when a library option went from object to string as
+a minor and a JavaScript host still passing the object lost its deferral silently in
+production._
 
 ## A comment that states a behaviour is checked like the code it describes
 
@@ -248,27 +155,16 @@ await waitForLayoutToSettle();          // yes — the cost is named, not denied
 await waitForViewport(placeholder);
 ```
 
-A comment survives every automated check and is trusted precisely because it explains.
-When the explanation is wrong, the next reader — usually the author, a week later —
-reasons from it, and it becomes the most durable bug in the file: nothing fails, nothing
-warns, and the code is now defended by a description of something it does not do.
+A comment survives every automated check and is trusted because it explains; when it is
+wrong, the next reader reasons from it and nothing fails. When a mechanism moves, grep for
+its old name and its old story; when a comment says a case is handled, find the line that
+handles it. A comment you cannot point at code for is a guess.
 
-So it gets the check the code gets. When a mechanism moves, grep for its old name and its
-old story. When a comment says a cost is absent or a case is handled, find the line that
-handles it. A comment you cannot point at code for is a claim, and an unchecked claim is a
-guess in a comment's clothing. This bites hardest on the comments "Comments explain why,
-not what" asks for: a *why* is a statement about how the system behaves, and it is the
-kind most likely to outlive the behaviour.
+Exception: a comment about the world outside the code (a browser quirk, a measured latency,
+a vendor's contract). Date it or cite it.
 
-Exception: a comment about the world outside the code — a browser quirk, a measured
-latency, a vendor's contract. Those drift without any line changing. Date them or cite
-them, so a reader can tell a stale fact from a false one.
-
-_Source: observed — one change carried three comments describing mechanisms the code did
-not have: a docstring naming a signal the gate no longer used, a test comment naming a
-constant that no longer existed, and a docstring claiming a cost was absent when it was
-accepted. Each was caught by a different reader, none by the author; the last was fixed in
-the review follow-up._
+_Source: observed — one change carried three comments describing mechanisms the code no
+longer had; each was caught by a different reader, none by the author._
 
 ## An edit is verified by reading it back, not by the tool that applied it
 
@@ -280,31 +176,23 @@ python3 patch.py
 git diff -- spec.ts               # yes — the change, not the report of one
 ```
 
-A patch script, a `sed`, a codemod, an editor macro: each reports its own success, and
-each can succeed while changing nothing — an anchor that matched but was never replaced,
-a pattern that hit zero lines, a file written back as it was. The exit code is a fact
-about the tool. The diff is the fact about the code, and only the diff gets committed.
+A patch script, a `sed`, a codemod: each reports its own success and each can succeed while
+changing nothing. The exit code is a fact about the tool; the diff is the fact about the
+code. Read the diff of every file the tool touched, hardest where nothing else will look: a
+test the session cannot run, a config no build loads, a comment.
 
-Read the diff of every file the tool touched before calling the change made. This binds
-hardest where nothing else will look: a test the session cannot run, a config no build
-loads, a comment. There a bad edit has no second line of defence — the next reader is a
-reviewer, or production.
+Exception: an edit followed by a check that exercises it (the test that now passes, the build
+that compiles). The check is the read-back.
 
-Exception: an edit followed by a check that exercises it — the test that now passes, the
-build that now compiles. The check is the read-back. Where no such check runs, the diff
-is the only one there is.
-
-_Source: observed — a patch script asserted the old block was present, never replaced it,
-and printed "patched"; the run reported the review finding fixed, and the end-to-end spec
-it lived in could not be run locally. The matcher error shipped in the first push and was
-caught by an automated reviewer._
+_Source: observed — a patch script asserted the old block was present, never replaced it and
+printed "patched"; the error shipped in the first push._
 
 ---
 
 # Baseline
 
-_Sourced. Each entry names where the practice comes from — a published source, or a
-convention a large codebase visibly holds, described but not named._
+_Sourced. Each entry names where the practice comes from: a published source, or a convention
+a large codebase visibly holds, described but not named._
 
 ## Every loop, retry and poll carries a bound
 
@@ -316,17 +204,11 @@ await fetch(url)                                           // no
 await fetch(url, { signal: AbortSignal.timeout(5_000) })   // yes
 ```
 
-An unbounded loop is fine right up until the condition it waits on never arrives — a
-paginated API that keeps handing back a cursor, a poll whose target never turns healthy,
-a retry against an endpoint that is simply down. Then it is not a bug that fails, it is a
-bug that _hangs_: no stack trace, no error, no log line, just work that never returns.
-A bound turns that into a real failure with a real message.
+An unbounded loop waits on a condition that may never arrive and fails by hanging: no stack
+trace, no log line. A bound turns that into a failure with a message. Name the constant;
+`MAX_PAGES` says what it protects, `50` does not.
 
-The bound is a constant with a name, not a magic number at the call site. `MAX_PAGES`
-tells the next reader what the limit protects; `50` does not.
-
-Exception: a genuine event loop or long-lived consumer, whose termination is external —
-a signal, a closed queue. Make that shutdown path explicit rather than implying it.
+Exception: a genuine event loop or long-lived consumer, whose shutdown path is then explicit.
 
 _Source: Power of 10 §2._
 
@@ -342,19 +224,13 @@ const res = await fetch(url); // no — res.ok never consulted
 if (!res.ok) throw new HttpError(res.status); // yes
 ```
 
-A floating promise is the one mistake in async code that gets _worse_ the further it
-travels: the failure surfaces with no stack pointing at the code that caused it, often
-in an unrelated tick, sometimes as a process exit. An unchecked `res.ok` is the same
-shape — a 500 parsed as JSON becomes a confusing type error three layers away.
+A floating promise surfaces with no stack pointing at its cause, often in another tick,
+sometimes as a process exit; an unchecked `res.ok` turns a 500 into a type error three layers
+away. `.catch()` is an answer; `void` documents that you looked at the linter.
 
-`.catch()` is a real answer, `void` is not. `void` documents that you looked at the
-linter, not that you handled the rejection.
+Exception: fire-and-forget telemetry, which still gets a `.catch()`.
 
-Exception: fire-and-forget telemetry, which still gets a `.catch()` — a swallowed
-rejection is a choice, and choices are written down.
-
-_Source: Power of 10 §7; `no-floating-promises: "error"` in a production front-end's lint
-config._
+_Source: Power of 10 §7; `no-floating-promises: "error"` in a production front-end._
 
 ## Strict from the first commit; a suppression carries its reason
 
@@ -366,19 +242,12 @@ config._
 …                                                // yes
 ```
 
-The rule is not "never suppress" — it is that a suppression is a claim, and a claim
-needs a reason a later reader can check and eventually delete. A reason-free suppression
-is indistinguishable from a mistake, so nobody ever removes it, and it outlives the
-problem by years.
+A suppression is a claim, and a claim needs a reason a later reader can check and delete; a
+reason-free one is indistinguishable from a mistake and outlives the problem by years. New
+code compiles clean under the repo's strictest setting from its first commit. Never loosen
+`tsconfig` to make a change compile.
 
-New code compiles clean under the repo's strictest available setting from its first
-commit. Warnings tolerated on day one are warnings nobody reads on day one hundred —
-the signal is gone long before the code is.
-
-Do not loosen `tsconfig` to make a change compile. That trades a local problem for a
-global one, and the trade is invisible in the diff.
-
-_Source: Power of 10 §10; `strict: true` in a large TypeScript codebase's tsconfig._
+_Source: Power of 10 §10; `strict: true` in a large TypeScript codebase._
 
 ## Errors are typed, narrowed, and never silently swallowed
 
@@ -393,32 +262,20 @@ try { … } catch (e) {                        // `e` is `unknown` under strict
 }
 ```
 
-A log-only catch is worse than no catch: it converts a failure into wrong behaviour that
-keeps running, and it does so at exactly the point where the program still had enough
-context to say something useful. Catch to _handle_ — recover, or rethrow with more
-context than you were given.
-
-Throw `Error` subclasses, never strings or object literals: only a real `Error` carries a
-stack. Pass `{ cause }` when rethrowing — the original failure is the part worth keeping,
-and a wrapper that discards it makes the new message the only clue.
+A log-only catch turns a failure into wrong behaviour that keeps running, at the one point
+with enough context to say something useful. Catch to handle: recover, or rethrow with more
+context and `{ cause }`. Throw `Error` subclasses, never strings; only a real `Error` carries
+a stack.
 
 Exception: a cleanup path in a `finally`, where a secondary failure must not mask the
-original. Say so in a comment; that is the case this rule expects you to reason about.
+original. Say so in a comment.
 
-_Source: a large TypeScript codebase — every one of its 254 catches typed `unknown`, one
-`Error` hierarchy in a single errors module._
+_Source: a large TypeScript codebase — 254 catches typed `unknown`, one `Error` hierarchy._
 
 ## Return early; keep the happy path at the left margin
 
 ```ts
-if (user) {
-  // no
-  if (user.active) {
-    if (hasQuota(user)) {
-      return grant(user);
-    }
-  }
-}
+if (user) { if (user.active) { if (hasQuota(user)) { return grant(user); } } } // no
 return null;
 
 if (!user) return null; // yes
@@ -427,45 +284,25 @@ if (!hasQuota(user)) return null;
 return grant(user);
 ```
 
-Every level of indentation is a condition the reader has to hold in mind until the
-closing brace. Nested happy paths spend that attention on bookkeeping, and the actual
-work ends up furthest from the margin — hardest to find, hardest to change safely.
+Every level of indentation is a condition the reader holds until the closing brace, and the
+actual work lands furthest from the margin. Guards make the failure cases enumerable, each
+readable and testable alone.
 
-Guards also make the failure cases enumerable: three lines, three reasons, each one
-readable and testable on its own.
-
-Exception: none worth stating. If the guards outnumber the work, that is a signal the
-function is doing two jobs, not that the rule is wrong.
+Exception: none worth stating. Guards outnumbering the work means the function does two jobs.
 
 _Source: Linux kernel, Go and Google style guides converge here._
 
 ## A function fits on one screen
 
-A function you cannot see at once is a function nobody verifies — checking it means
-scrolling while holding the first half in memory, so reviewers stop reading and start
-trusting. That is where bugs live.
+A function you cannot see at once is one nobody verifies: reviewers scroll, then trust. Length
+is a symptom of several ideas never named; extract the ideas rather than splitting to a
+threshold, which is why this rule states no number.
 
-Length is a symptom. A very long function is almost never one idea that happens to be
-long; it is several ideas that were never named. Extract the ideas and the length
-resolves itself — splitting to hit a threshold produces fragments with no meaning, which
-is worse than the long version. That is why this rule states no number.
-
-Exception: a flat exhaustive `switch`, a config literal, a generated mapping — long
-without being deep.
+Exception: a flat exhaustive `switch`, a config literal, a generated mapping.
 
 _Source: Power of 10 §4 (which does state one: ~60 lines)._
 
 ## Wait for the third occurrence before abstracting
-
-Two similar blocks are a coincidence. Three is a pattern, and only the third one tells
-you which parts actually vary — which is the entire question an abstraction has to answer
-correctly to be worth having.
-
-Abstracting at two guesses the axis of variation, and a wrong guess is expensive in a way
-duplication is not. Duplicate code is honest: it is visibly repeated, and any reader can
-see all of it. A wrong abstraction hides the repetition behind a shared function that
-now needs a flag, then a second flag, then a branch that only one caller takes — and
-unpicking it means understanding every call site at once.
 
 ```ts
 function render(item, opts) {
@@ -474,17 +311,16 @@ function render(item, opts) {
 }
 ```
 
-A parameter that exists only to select behaviour is the signal that two things were
-merged too early. Prefer inlining it back and waiting.
+Two similar blocks are a coincidence; the third shows which parts vary, which is the question
+an abstraction has to answer. Abstracting at two guesses the axis, and a wrong abstraction
+hides the repetition behind a function that grows a flag, then another; a parameter that
+exists only to select behaviour is the tell. Generated code pattern-matches on shape, so this
+binds hardest there.
 
-This binds hardest on generated code, which pattern-matches on shape and will happily
-factor together two things that merely look alike.
+Exception: a contract you already know — an interface a third party defines, a boundary the
+architecture requires.
 
-Exception: a genuine contract you already know — an interface a third party defines, a
-boundary the architecture requires. Those are designed, not discovered.
-
-_Source: the rule of three (Fowler, ‹Refactoring›); reinforced by Google's readability
-guidance on premature generalisation._
+_Source: the rule of three (Fowler, ‹Refactoring›)._
 
 ## Export by name, not by default
 
@@ -496,19 +332,15 @@ import parse from './manifest'                   // no — importer invents the 
 import { parseManifest } from './manifest'       // yes
 ```
 
-A default export has no name at its definition site, so every importer invents one.
-Grep for the real name and you find the definition and none of the call sites. Rename
-refactors stop working, because there is no shared symbol to rename. Two files end up
-calling the same function `parse` and `loadManifest`, and neither is wrong.
+A default export has no name at its definition site, so every importer invents one: grep finds
+the definition and none of the call sites, and a rename has no shared symbol to work on. This
+is **Reuse the name a thing already has**, one level up.
 
-This is also **Reuse the name a thing already has**, one level up: a default export forces a
-rename at every boundary, which is the thing that rule exists to prevent.
+Exception: frameworks that require it — a Next.js page or route, a config file loaded by
+convention.
 
-Exception: frameworks that require it — a Next.js page or route, a config file the tool
-loads by convention. Follow the framework; it is not a style choice there.
-
-_Source: Google TypeScript Style Guide (default exports prohibited); a large TypeScript
-codebase — 4702 named exports to 138 default._
+_Source: Google TypeScript Style Guide; a large TypeScript codebase — 4702 named exports to
+138 default._
 
 ## Comments explain why, not what
 
@@ -521,29 +353,16 @@ count++; // no — the code already said this
 if (res.status === 429) return retryOnce(req); // yes
 ```
 
-The compiler already documents _what_. A comment earns its place by carrying what the
-code cannot: the constraint that forced this shape, the bug that made the obvious
-version wrong, the reason a check that looks redundant is load-bearing.
+The compiler documents what. A comment earns its place carrying what the code cannot: the
+constraint that forced this shape, the bug that made the obvious version wrong, the check that
+looks redundant and is load-bearing. Say a reason once, where it lives: on the component, with
+a pointer at most at the call site. Three copies of one why are three places for it to go
+stale.
 
-The highest-value comment in any codebase usually explains a defeat. One large codebase
-guards against abort errors with an `instanceof` check rather than the obvious name comparison,
-and the comment says why: minified builds mangle class names, so string matching passes
-in dev and silently fails in production. Nobody would keep that check without the
-comment — and deleting it would reintroduce a bug that only appears after a build step.
+Exception: docblocks on a public API, where describing what it does is the job.
 
-Write the comment for whoever arrives after the context is gone. That is usually you.
-
-Say it once, where the reason lives. A rationale that belongs to a component goes on the
-component; a call site gets a pointer at most, or nothing when the name already says it.
-Three copies of one *why* are three places for it to go stale, and a reader who meets the
-second copy reads it as leftover text.
-
-Exception: docblocks on a public API, where describing what it does _is_ the job.
-
-_Source: Google, Apple and kernel style guides converge here; specimen from a large
-TypeScript codebase's errors module. Sharpened when the same rationale was written on a
-component and repeated at three call sites: review flagged the copies, the run kept them,
-and a reviewer then asked for one as leftover._
+_Source: Google, Apple and kernel style guides converge. Sharpened when one rationale was
+repeated at three call sites and a reviewer read a copy as leftover._
 
 ## The change includes the deletion
 
@@ -552,23 +371,15 @@ export function formatPrice(v: number) { … }                  // old, still ex
 export function formatPriceV2(v: number, c: Currency) { … }   // no — both are live now
 ```
 
-Replacing something means removing what it replaced. The commented-out block, the export
-with no remaining importer, the flag branch that can no longer be reached, the helper
-whose last caller went away in this same diff — all of it ships in the change that made
-it dead, not in a cleanup nobody schedules.
+Replacing something means removing what it replaced: the commented-out block, the export with
+no importer, the flag branch nobody can reach, the helper whose last caller left in this diff.
+Version control remembers; commented-out code is a question the next reader cannot answer.
+Generated code adds far more readily than it removes, so a diff that only grows gets a second
+look.
 
-Version control already remembers. Commented-out code is not a backup, it is a question
-the next reader cannot answer: was this disabled on purpose, is it about to come back,
-is it safe to delete? Nobody can tell, so nobody touches it, and it stays for years.
+Exception: a deliberate deprecation window, with a dated removal note and a replacement.
 
-This rule binds hardest on generated code, which adds far more readily than it removes.
-A diff that only grows is worth a second look before it lands.
-
-Exception: a deliberate deprecation window — which carries a dated removal note and a
-replacement, not silence.
-
-_Source: convergent across large-codebase review practice (Google, Meta); the failure is
-amplified by generated code._
+_Source: convergent across large-codebase review practice (Google, Meta)._
 
 ## A new dependency is a liability you are choosing
 
@@ -579,82 +390,46 @@ format(d, "dd/MM/yyyy"); // ~20kB shipped to render one date
 new Intl.DateTimeFormat(locale).format(d); // yes — platform, zero bytes, localised
 ```
 
-A dependency is never just its API. It is a supply-chain surface, a permanent upgrade
-obligation, a bet on somebody else's maintenance, and — on the client — bytes on the
-critical path, which is the entire budget that performance work is fighting for.
+A dependency is a supply-chain surface, an upgrade obligation, a bet on somebody else's
+maintenance and, on the client, bytes on the critical path. Before adding one, answer in the
+PR what it costs to ship, what happens when it goes unmaintained, and how much of it you use.
+Reach for the platform first: `Intl`, `URL`, `structuredClone`, `AbortSignal.timeout`.
 
-Before adding one, answer three questions in the PR: what does it cost to ship, what
-happens when it stops being maintained, and how much of its surface do you actually use?
-"One function" is usually the honest answer, and usually the argument against.
+Exception: cryptography, time zones, and anything with a specification longer than this file.
 
-Reach for the platform first. `Intl`, `URL`, `URLSearchParams`, `structuredClone`,
-`AbortSignal.timeout`, `Array.prototype.at` and `crypto.randomUUID` between them retire a
-surprising number of packages, and they never need upgrading.
-
-Exception: cryptography, time zones, and anything with a specification longer than this
-file. Do not hand-roll those — the liability runs the other way.
-
-_Source: convergent across Google, Apple and Meta dependency review; sharpened by
-performance work, where every dependency lands on the critical path's budget._
+_Source: convergent across Google, Apple and Meta dependency review._
 
 ## Separate the decision from the action
 
 ```ts
-async function cancel(id: string) {          // no — one function, untestable without I/O
+async function cancel(id: string) {          // no — decision and I/O in one function
   const sub = await db.load(id)
   if (sub.endsAt < new Date()) return
-  if (sub.plan === 'trial') { await db.delete(id); await email.send(…); return }
-  await db.update(id, { cancelled: true })
-  await email.send(…)
+  await db.update(id, { cancelled: true }); await email.send(…)
 }
 
 function decideCancellation(sub: Sub, now: Date): CancelAction { … }  // yes — pure
-
 async function cancel(id: string) {                                   // yes — thin shell
-  const action = decideCancellation(await db.load(id), new Date())
-  await apply(action)
+  await apply(decideCancellation(await db.load(id), new Date()))
 }
 ```
 
-Logic tangled with I/O can only be exercised through that I/O: asserting one branch needs
-a database, a clock and a mail server. So the branch does not get tested — and the
-branches that go untested are exactly the interesting ones, the expiry edge case, the
-ordering, the "what if it was already cancelled".
+Logic tangled with I/O can only be tested through that I/O, so the interesting branches go
+untested. Pull the decision out as a function of its arguments, `now` included: a function
+that reads the clock has a hidden input no test can vary. The shell that remains is thin
+enough to check by reading.
 
-Pulled out, the decision is a function of its arguments. No setup, no mocks, no waiting.
-Passing `now` in rather than calling `new Date()` inside is part of the same move: a
-function that reads the clock has a hidden input, and hidden inputs cannot be varied by a
-test. What remains in the shell is thin enough to be checked by reading it.
+Exception: code that is genuinely all action — a migration, a thin adapter.
 
-Exception: code that is genuinely all action — a migration, a thin adapter. There is no
-decision to extract, and inventing one adds a layer without adding a test.
-
-_Source: Gary Bernhardt, "Boundaries" (2012) — functional core, imperative shell.
-Surfaced by ‹7 Coding Laws of Senior Developer› (law 5)._
+_Source: Gary Bernhardt, "Boundaries" (2012) — functional core, imperative shell._
 
 ---
 
 ## What deliberately is not here
 
-Owned by a skill, and restating it here would create two sources of truth:
-
-| Topic                                              | Owner                                                              |
-| -------------------------------------------------- | ------------------------------------------------------------------ |
-| Test structure, what to assert, runner conventions | `jankolenko-skills:write-tests`                                    |
-| Commit message shape, what may be staged           | `jankolenko-skills:git-commit`                                     |
-| Branch naming                                      | `jankolenko-skills:git-create-branch`                              |
-| Whether a change should exist at all               | `jankolenko-skills:plan-change`, `jankolenko-skills:critique-plan` |
-
-Considered and rejected, so they are not re-proposed each time: **declare at narrowest
-scope** (Power of 10 §6 — already the default for `const` in block scope, and the linter
-covers the rest), **formatting is not a decision** (Prettier enforces it as an error; a
-rule that only restates a config file teaches readers this file is skimmable),
-**thread a cancellation signal** (real — one large codebase threads `AbortSignal` through
-hundreds of call sites — but narrower than the rules above; promote it if a run gets bitten),
-and
-**make invalid states unrepresentable** (Minsky, 2011 — proposed from ‹7 Coding Laws of
-Senior Developer› law 4, and declined).
-
-Power of 10 §1 (no recursion), §3 (no dynamic allocation after init), §8 (preprocessor
-limits) and §9 (one level of pointer dereference, no function pointers) have no honest
-analogue in TypeScript and were dropped rather than forced into one.
+Test structure, commit messages, branch naming and whether a change should exist belong to
+the skills that own them (`write-tests`, `git-commit`, `git-create-branch`, `plan-change`
+and `critique-plan`). Considered and rejected, so they are not re-proposed: declare at
+narrowest scope (the linter covers it), formatting (Prettier enforces it), thread a
+cancellation signal (promote it if a run gets bitten), make invalid states unrepresentable.
+Power of 10 §1, §3, §8 and §9 have no honest analogue in TypeScript.

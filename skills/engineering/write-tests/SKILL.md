@@ -1,6 +1,6 @@
 ---
 name: write-tests
-description: Write tests for a change against the conventions the repository already uses — detecting the runner, matching existing file layout and assertion style, and covering the acceptance criteria or bug repro rather than the implementation's internals. Use when the user or another skill (e.g. jankolenko-skills:implement-ticket) needs tests for new or changed code, or asks to "write tests", "add test coverage", or "test this fix".
+description: Write or extend tests in the repository's own runner, layout and style, covering the acceptance criteria or the bug's repro, not internals; stops before adding a framework the repo lacks. Use when the user asks to write, add, update or extend tests, add coverage, or test a fix, also after a rename or refactor. Test-first is mattpocock-skills:tdd.
 ---
 
 # Write Tests

@@ -1,6 +1,6 @@
 ---
 name: improve-skill
-description: Improve one of your own skills from a concrete observation — a wording fix, a structural change, a missing input, a split, or a new idea — reading .agents/authoring.md first, showing the exact diff and stopping for approval, then committing, bumping the plugin version and telling the user to update, so the change actually reaches the next session. Use when the user or the session-start standing rule surfaces friction with a jankolenko-skills or jankolenko-projects skill, or the user asks to "improve the skill", "fix the skill wording", or "split this skill".
+description: Fix one of this plugin's own skills from an observed problem, gated on the exact diff, then ship it. Use when friction with a jankolenko-skills or jankolenko-projects skill is named, or the user asks to fix, update, improve or split a skill.
 argument-hint: <skill-name> — <what happened / what should change>
 ---
 

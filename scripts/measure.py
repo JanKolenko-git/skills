@@ -23,12 +23,12 @@ REPO = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 CHARS_PER_TOKEN = 4  # a rough, deliberately simple estimate; consistent across runs is what matters
 
 BUDGETS = {
-    "description_chars": 900,          # per model-invoked skill: description + when_to_use
-    "description_total_chars": 10700,  # sum over the model-invoked skills in skills/
+    "description_chars": 350,          # per model-invoked skill: description + when_to_use
+    "description_total_chars": 6000,  # sum over the model-invoked skills in skills/
     "body_words": 2200,                # per skill, prose words (fenced code excluded)
     "body_lines": 500,                 # Anthropic's ceiling for a SKILL.md body
-    "hook_chars": 2000,                # the additionalContext the session-start hook injects
-    "engineering_words": 4400,         # ENGINEERING.md, prose words
+    "hook_chars": 1000,                # the additionalContext the session-start hook injects
+    "engineering_words": 2300,         # ENGINEERING.md, prose words
 }
 
 TARGETS = {

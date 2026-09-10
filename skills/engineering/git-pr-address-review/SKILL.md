@@ -1,6 +1,6 @@
 ---
 name: git-pr-address-review
-description: Work through the review comments on a pull request one at a time — apply the ones that earn a change, decline the ones that don't, reply to each, and report a ledger with one row per comment. Use when the user or another skill gives a GitHub or Bitbucket PR URL and wants its review comments resolved, or asks to "address the review", "handle the PR feedback" or "resolve these comments".
+description: Work through the review comments on a GitHub or Bitbucket PR one at a time: apply the ones that earn a change, decline the rest with a reason, reply on each thread, report a ledger. Use when a PR URL comes with 'address the review', 'resolve the comments', 'check the copilot comments', 'post the replies', or a reviewer's comment to look at.
 ---
 
 # Git PR — Address Review

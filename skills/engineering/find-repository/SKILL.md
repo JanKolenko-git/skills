@@ -1,6 +1,6 @@
 ---
 name: find-repository
-description: Locate the local git repository that a piece of work belongs to, from a ticket key, a project or package name, or a few keywords — searching the current directory, $REPO_ROOT, and the usual development folders, then cross-checking package.json and git remotes. Use when the user or another skill (e.g. jankolenko-skills:implement-ticket) needs to know which repo to work in and has not been told, or asks "which repo is this ticket for?".
+description: Find the git repository a task belongs to, from a ticket key, package name or keywords: searches $REPO_ROOT and the usual code folders, checks package.json names and remotes, refuses to guess between two matches. Use when the user asks which repo something is about or which repo owns or consumes a package, or work must start with no repo named.
 ---
 
 # Find Repository

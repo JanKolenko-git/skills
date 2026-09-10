@@ -1,6 +1,6 @@
 ---
 name: record-learnings
-description: Write what a piece of work learned back to where the next run will read it — a repo's CLAUDE.md, a delimited section on a Confluence spec, or a ticket comment — filtering out everything that was not durable. Use when the user or another skill (e.g. jankolenko-skills:implement-ticket) has finished work that turned up a wrong assumption or an undocumented constraint, or asks to "record this", "write this back to the spec", or "capture what we learned".
+description: Write what a run learned to where the next run reads it, a repo's CLAUDE.md, a Confluence spec section or a ticket comment, keeping only durable constraints. Use when the user asks to record, note, save or capture something for next time, to write a finding back to the spec, or runs /learn. How code should be written is record-engineering-rule.
 ---
 
 # Record Learnings

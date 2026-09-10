@@ -1,6 +1,6 @@
 ---
 name: git-commit
-description: Stage and commit the current work with a conventional message — type, an optional ticket key, and a concise subject line — reviewing the diff first and never committing unrelated or secret-bearing files. Use when the user or another skill (e.g. jankolenko-skills:implement-ticket) wants changes committed locally, or asks to "commit this" or "commit with a ticket reference". Committing only; it does not push.
+description: Stage and commit the work with a conventional message: reviews the diff first, stages by path, keeps unrelated changes and secrets out, follows the repository's commit rules. Use for every commit, including 'commit and push', 'commit this' and 'commit to the branch', rather than committing through git directly. Pushing is git-pr-push-and-open.
 ---
 
 # Git Commit

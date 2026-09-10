@@ -1,6 +1,6 @@
 ---
 name: critique-plan
-description: Review a diff against the plan it was meant to implement — what the plan asked for and the diff never did, what the diff does that no plan step asked for, and whether the plan still looks right now the code exists. Routes rejections back to the plan or back to the code. Use when the user or another skill (e.g. jankolenko-skills:implement-ticket) has implemented a plan and wants it checked against intent rather than for bugs, or asks "does this match the plan", "is this in scope", or "should this exist".
+description: Review a diff against the plan it was meant to implement: what the plan asked for that never landed, what the diff does that no step asked for, whether the plan still holds now the code exists. Use when the user asks whether the implementation matches the plan or the ticket's intent, whether something is in scope, or whether a change should exist.
 ---
 
 # Critique Plan

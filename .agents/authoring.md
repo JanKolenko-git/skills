@@ -169,10 +169,17 @@ apply to them ([`adr/0004-two-repos.md`](./adr/0004-two-repos.md)) — and nothi
 Every SKILL.md follows the same shape regardless of bucket or role — the name is historical,
 and integrations and orchestrators obey it too. In this order:
 
-1. **Frontmatter** — `name`, and a `description` shaped as _"what it does — use when …"_:
-   concrete capabilities first, then the trigger phrases and the callers (name the
-   orchestrators that invoke it, e.g. "the user or another skill (e.g. implement-ticket)").
-   Entry-point skills users type by hand also get `argument-hint: <required> [optional]`.
+1. **Frontmatter** — `name`, and a `description` that is a trigger, not a summary: third
+   person for what it does, then _"Use when …"_ with the phrases users actually type, then
+   one near-miss where a competing skill exists ("Pushing is git-pr-push-and-open"). At
+   most 350 characters; every listed description is paid for in every session, and the
+   listing budget is shared with every other plugin. No caller lists — the Skill tool takes
+   a name, not a description — no caveats, no narration of the steps. A skill the user
+   starts by hand and the model never should carries `disable-model-invocation: true` and a
+   one-line human-facing description. Entry-point skills also get
+   `argument-hint: <required> [optional]`. `scripts/trigger-eval.py` measures whether a
+   description fires; a change ships only at or above its baseline in
+   `evals/triggers/README.md`.
 2. **Title + thesis** — one or two sentences stating the skill's opinion, not a summary.
 3. **`## Inputs`** — a bulleted list; mark `**required.**` explicitly; state defaults.
 4. **`## Output`** — a table of **named fields** (`plan.verdict`, `ticket.title`). Names are

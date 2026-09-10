@@ -1,6 +1,6 @@
 ---
 name: implement-ticket
-description: Implement a Jira ticket end-to-end — fetches the ticket and its linked Confluence specs, finds the target repo, plans the change, branches, implements it with tests, critiques the diff against the plan, self-reviews, then STOPS for human review before pushing; on approval opens a PR, moves the ticket to In Review and records what the run learned. Bails out when the ticket is too ambiguous to act on. Use when the user runs /implement-ticket or asks to "implement", "solve" or "work on" a ticket by key or URL.
+description: Implement a Jira ticket end to end: fetch it and its specs, find the repo, plan, branch, build with tests, critique against the plan, stop for human review, then push, open the PR and move the ticket to In Review. Use when the user asks to implement, solve, work on or take to in review a ticket by key or URL. Reading a ticket is atlassian-jira.
 argument-hint: <ticket-key | jira-url> [repo] [push=ask|waived]
 ---
 

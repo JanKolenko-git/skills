@@ -1,6 +1,6 @@
 ---
 name: prepare-local-environment
-description: Get a repository to the state where you can exercise it by hand — work out how this repo actually runs, install dependencies, build what needs building, start the server, then prove the app really rendered before handing back a URL. Use when the user wants to try a branch in a browser, or says "run this locally", "prepare my local environment", "set this up so I can test it", "start the dev server", "how do I run this", or asks for a link they can open — and any time a change needs looking at by hand rather than by test.
+description: Get a repository running so it can be exercised by hand: work out how it runs, install, build if needed, start the dev server, prove the app rendered. Use when the user asks to run something locally, get it running, set up the local environment, start the dev server, test a branch or PR in the browser, or fix a localhost that spins or 500s.
 ---
 
 # Prepare Local Environment

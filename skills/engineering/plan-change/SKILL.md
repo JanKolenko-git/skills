@@ -1,6 +1,6 @@
 ---
 name: plan-change
-description: Turn a goal into a concrete implementation plan grounded in the code — which files change, in what order, what could break, and whether the work splits into independent lanes or has to be built serially. Decides up front when no code change is warranted at all, and weighs more than one approach before committing, so a suggested solution is treated as a candidate rather than a given. Use when the user or another skill (e.g. jankolenko-skills:implement-ticket) needs a plan before implementing, or asks to "plan this", "how would you approach this", or "work out what needs changing".
+description: Turn a goal into an implementation plan grounded in the code: files, ordered steps, risks, whether the work splits into lanes, whether any code change is warranted. Use when the user asks to plan a change, how to approach something, what the steps or best approach would be, or what needs changing, before anything is edited.
 ---
 
 # Plan Change

@@ -1,6 +1,6 @@
 ---
 name: explain
-description: Explain something the user does not understand — a block of code, a principle like CDN caching or hydration, a metric like LCP/CLS/INP, or how to build a specific thing with a specific product — in plain words that stay technically accurate, grounded in the real code or the real docs, and closed with an everyday analogy. Use whenever the user asks what something is, how something works, why something behaves the way it does, or says they do not get it — including short questions like "what is INP?" and code questions like "what does this file do?". Reach for it even when the question looks answerable in one line, because the reflex answer to those is a definition made of more jargon, which leaves the user exactly where they started.
+description: Explain something the user does not understand, code, a principle like hydration, a metric like INP, a header value, a product feature, in plain accurate words grounded in the real code or docs. Use when the user asks what something is or means, how it works, why it behaves that way, or how to do X with Y, however short the question.
 argument-hint: <the thing you don't understand> [what you're trying to do with it]
 ---
 

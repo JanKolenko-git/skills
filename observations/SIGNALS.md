@@ -26,6 +26,8 @@ When `jankolenko-skills:find-skill-gaps` acts on a cluster, it moves those lines
 
 <!-- append below this line -->
 
+- 2026-09-10 · estate-wide dependency bump · Bumped `@scope/analytics` across 12 repos with an ad-hoc worktree script (manifest, `--package-lock-only` lockfile, changeset, PR) and opened the PRs without running any repo's build/test/lint; reviewers on two PRs asked whether tests and integrations had run. A first local run then failed only because these turbo monorepos import sibling packages from `.dist`, so `npm run build` must precede `npm test`. The same shape was done before (the same package, one minor earlier); no skill covers finding consumers, keeping each repo's range convention (reviewers reject `^` for that scope's packages), verifying on the pinned Node, and opening the PRs.
+
 - 2026-09-07 · a comment on someone else's PR · Posted a diagnosis before confirming it — named a likely cause for an analytics beacon that "didn't send", then a live test showed a duration cap was the actual cause and the comment had to be corrected publicly. No skill governs writing an unprompted finding to a shared surface: `jankolenko-skills:git-pr-address-review` covers replying to someone else's review comment, nothing covers the confidence bar for a claim you raise yourself.
 
 - 2026-09-03 · monthly work report · Rebuilt "what did I do last month" by hand from git logs, PR lists and session transcripts across a dozen repos; the same request was made on 2026-08-03 for July.

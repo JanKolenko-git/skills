@@ -1,6 +1,6 @@
 ---
 name: atlassian-confluence
-description: Read and update pages in any Confluence Server / Data Center instance via the REST API — fetch a page as Markdown, search by title or text, list or download attachments, and (when asked) add or update a delimited section on a page. Authenticates with a personal access token against the instance in $CONFLUENCE_URL; Confluence Cloud is a different API and is not supported. Use when the user or another skill (e.g. jankolenko-skills:atlassian-jira, jankolenko-skills:implement-ticket) gives a Confluence URL or page ID, names a Confluence page or tech spec by title, or asks to "read/fetch/open/summarise" a page or to write a report onto one.
+description: Read and update Confluence Server/Data Center pages over REST: fetch as Markdown, search by title or text, get attachments, add or update one delimited section. Use when a Confluence URL or page id appears, even in passing, a spec is named by title, or a report or status is to be written onto a page. Not Confluence Cloud.
 argument-hint: <page-url | page-id | page title>
 ---
 

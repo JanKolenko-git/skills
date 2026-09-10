@@ -112,8 +112,11 @@ the run** — never mid-pipeline.
 | **[record-engineering-rule](./skills/meta/record-engineering-rule/SKILL.md)** | Decide where a convention a coding run learned belongs — the general [`ENGINEERING.md`](./ENGINEERING.md), which names the shape of a failure and never a repo or ticket, or one repository's `projects/<repository>/ENGINEERING.md` — routes most candidates to `record-learnings` or `improve-skill` instead, and 🛑 gates the rest |
 | **[find-session-improvements](./skills/meta/find-session-improvements/SKILL.md)** | Sweep a finished session for what the skill layer should have learned from it and route each finding to the skill that owns it, behind one 🛑 triage gate — re-derives findings from the transcript, because in a long session noticing depends on recall and recall is what compaction drops |
 
-All four are bound by [`.agents/authoring.md`](./.agents/authoring.md) — the written-down conventions every
-skill here follows — which defers generic skill-writing mechanics to
+`find-skill-gaps` and `find-session-improvements` are started by hand
+(`/jankolenko-skills:find-skill-gaps`); the model cannot invoke them, so their descriptions
+cost nothing in the skill listing. All four are bound by
+[`.agents/authoring.md`](./.agents/authoring.md) — the written-down conventions every skill
+here follows — which defers generic skill-writing mechanics to
 `anthropic-skills:skill-creator` through one swappable reference.
 
 ## How they compose

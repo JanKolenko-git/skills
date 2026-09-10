@@ -1,6 +1,6 @@
 ---
 name: clarify-goal
-description: Turn a blocked plan into answered questions — takes the specific questions jankolenko-skills:plan-change named, answers from the environment what is a fact, puts each remaining decision to the user one at a time with a recommended answer, and folds the answers back into an enriched goal, criteria and constraints ready for re-planning. Use when the user or another skill (e.g. jankolenko-skills:implement-ticket) hits plan.verdict = blocked, or the user asks to "clarify the requirements" or "ask me what you need to know" before building.
+description: Turn a plan blocked on open questions into answers: settle facts from the code or ticket, ask the user the rest one decision at a time with a recommendation, fold the answers into the goal. Use when plan-change returns blocked or the user asks to clarify requirements before building.
 argument-hint: [the questions blocking the plan, or empty to derive them]
 ---
 

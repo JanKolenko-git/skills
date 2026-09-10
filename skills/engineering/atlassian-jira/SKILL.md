@@ -1,6 +1,6 @@
 ---
 name: atlassian-jira
-description: Read and update tickets in any Jira Server / Data Center instance via the REST API — fetch a ticket as Markdown with its description, comments, links and attachments, search by JQL or text, download attachments, and (when asked) transition status, add comments, create issues and edit fields. Authenticates with a personal access token against the instance in $JIRA_URL; Jira Cloud is a different API and is not supported. Use when the user or another skill (e.g. jankolenko-skills:implement-ticket) gives a Jira URL or a ticket key like PROJ-1155 and wants to read, search, comment on, move, create or update it.
+description: Read and update Jira Server/Data Center tickets over REST: fetch as Markdown, search by JQL or text, attachments, transition, comment, create, edit. Use when a Jira URL or a key like PROJ-1155 appears and the user wants it read, its status checked, moved, commented on or created. Not Jira Cloud. Implementing a ticket end to end is implement-ticket.
 argument-hint: <ticket-key | jira-url | jql> [mode=read|comment|transition|create|edit]
 ---
 
