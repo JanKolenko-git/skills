@@ -4,9 +4,11 @@
 For every query in an eval set, run `claude -p` once (or `--runs` times) against the skill
 listing the user actually has — every installed plugin, plus this working tree loaded with
 `--plugin-dir` so the description under test is the one on disk, not the cached one — and
-watch the first tool call. The skill triggered when that call is `Skill` naming it. Nothing
-else the model does is needed, so the process is killed as soon as the first tool call or
-the first message completes; a query costs one model turn.
+watch the first few tool calls. The skill triggered when one of them is `Skill` naming it;
+the model often looks first (git status, ls), and a tool `claude -p` cannot get permission
+for is a cheap denied turn. The process is killed as soon as the skill fires, the tool-call
+allowance is spent, or the message ends, so a query costs one to three short turns. The
+scratch project is a git repository with one commit, because most prompts assume one.
 
 The eval set is a JSON list of {"query", "should_trigger", "instead"?}: `instead` names the
 skill a near-miss query belongs to, so a failure can say which skill won. The format is the
@@ -29,6 +31,7 @@ REPO = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 PLUGIN_ID = "jankolenko-skills@jankolenko"
 TRIGGER_THRESHOLD = 0.5
 MAX_STREAM_LINES = 5000  # a stuck stream is killed, not read forever
+DEFAULT_MAX_TOOL_CALLS = 3  # the model often looks (git status, ls) before it reaches for a skill
 
 
 def find_skill(name):
@@ -57,14 +60,19 @@ def build_command(query, model):
     return cmd
 
 
-def first_tool_call(process, timeout):
-    """Return ("skill", <name>) / ("tool", <name>) / ("none", None) from the stream."""
+def watch_tool_calls(process, timeout, skill_name, max_tool_calls):
+    """Return ("skill", <name>) as soon as the skill is invoked, else what happened instead.
+
+    Reads the stream until the skill fires, `max_tool_calls` other tool calls have been seen
+    (("tool", <first tool>) or ("skill", <other skill>) for the first of them), or the message
+    ends without a tool call (("none", None)). A stuck stream returns ("timeout", None)."""
     import select
     import time
 
     deadline = time.time() + timeout
     pending_json = ""
     pending_tool = None
+    seen = []
     lines_read = 0
     buffer = ""
     while time.time() < deadline and lines_read < MAX_STREAM_LINES:
@@ -101,19 +109,23 @@ def first_tool_call(process, timeout):
                     if delta.get("type") == "input_json_delta":
                         pending_json += delta.get("partial_json", "")
                 elif kind == "content_block_stop" and pending_tool is not None:
-                    return classify(pending_tool, pending_json)
-                elif kind == "message_stop":
-                    return ("none", None)
+                    outcome = classify(pending_tool, pending_json)
+                    pending_tool = None
+                    if outcome[0] == "skill" and matches(outcome[1] or "", skill_name):
+                        return outcome
+                    seen.append(outcome)
+                    if len(seen) >= max_tool_calls:
+                        return seen[0]
             elif event.get("type") == "assistant":
-                for item in event.get("message", {}).get("content", []):
-                    if item.get("type") == "tool_use":
-                        return classify(item.get("name", ""), json.dumps(item.get("input", {})))
-                return ("none", None)
+                # One assistant event arrives per content block, and a thinking or text
+                # block usually precedes the tool call, so a tool_use is the only thing
+                # worth reading here; the stream events above already classified it.
+                continue
             elif event.get("type") == "result":
-                return ("none", None)
+                return seen[0] if seen else ("none", None)
         if process.poll() is not None and not buffer:
             break
-    return ("timeout", None)
+    return seen[0] if seen else ("timeout", None)
 
 
 def classify(tool_name, input_json):
@@ -126,12 +138,12 @@ def classify(tool_name, input_json):
     return ("skill", skill)
 
 
-def run_query(query, model, timeout, workdir):
+def run_query(query, model, timeout, workdir, skill_name, max_tool_calls):
     env = {k: v for k, v in os.environ.items() if k != "CLAUDECODE"}
     process = subprocess.Popen(build_command(query, model), stdout=subprocess.PIPE,
                                stderr=subprocess.DEVNULL, cwd=workdir, env=env)
     try:
-        return first_tool_call(process, timeout)
+        return watch_tool_calls(process, timeout, skill_name, max_tool_calls)
     finally:
         if process.poll() is None:
             process.kill()
@@ -151,6 +163,8 @@ def main():
     parser.add_argument("--workers", type=int, default=4)
     parser.add_argument("--timeout", type=int, default=90)
     parser.add_argument("--json", dest="json_out")
+    parser.add_argument("--max-tool-calls", type=int, default=DEFAULT_MAX_TOOL_CALLS,
+                        help="stop watching after this many tool calls that are not the skill")
     args = parser.parse_args()
 
     find_skill(args.skill)
@@ -162,13 +176,18 @@ def main():
     # listing and the query — the same position a fresh session is in.
     workdir = tempfile.mkdtemp(prefix="trigger-eval-")
     os.makedirs(os.path.join(workdir, ".claude"), exist_ok=True)
+    with open(os.path.join(workdir, "README.md"), "w", encoding="utf-8") as fh:
+        fh.write("# app\n")
+    subprocess.run("git init -q . && git add -A && git -c user.email=e@x -c user.name=n commit -qm init",
+                   shell=True, cwd=workdir, check=True, capture_output=True)
     outcomes = {item["query"]: [] for item in eval_set}
     try:
         with ThreadPoolExecutor(max_workers=args.workers) as pool:
             futures = {}
             for item in eval_set:
                 for _ in range(args.runs):
-                    future = pool.submit(run_query, item["query"], args.model, args.timeout, workdir)
+                    future = pool.submit(run_query, item["query"], args.model, args.timeout, workdir,
+                                         args.skill, args.max_tool_calls)
                     futures[future] = item["query"]
             for future in as_completed(futures):
                 query = futures[future]
