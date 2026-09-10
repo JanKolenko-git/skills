@@ -88,7 +88,7 @@ scripts/check.sh > /tmp/ship-check.log 2>&1 || { cat /tmp/ship-check.log; echo "
 echo "ship.sh: check.sh green"
 
 if [ "$run_evals" -eq 1 ]; then
-  matches="$(ls -d evals/*/ 2>/dev/null | xargs -n1 basename | grep -v '^results$\|^triggers$' | grep -E "^${case_glob//\*/.*}$" || true)"
+  matches="$(ls -d evals/*/ 2>/dev/null | xargs -n1 basename | grep -vE '^(results|triggers)$' | grep -E "^${case_glob//\*/.*}$" || true)"
   if [ -z "$matches" ]; then
     echo "ship.sh: no eval case matches '$case_glob' — an uncovered gate; say so in the commit body"
   else
