@@ -23,10 +23,10 @@ neither ships a delete script.
 
 ## Atoms
 
-Useful alone, in any repo, with explicit inputs. Nothing instance-specific — they resolve a
-ticket key themselves only if `atlassian-jira` happens to be installed. Each declares `## Inputs` and
-`## Output` with **named fields**, which is what lets an orchestrator wire them by name
-instead of guessing.
+Useful alone, in any repo, with explicit inputs and nothing instance-specific; a caller
+holding ticket data passes the fields down, and none of them fetches a ticket. Each declares
+`## Inputs` and `## Output` with **named fields**, which is what lets an orchestrator wire
+them by name instead of guessing.
 
 - **[find-repository](./find-repository/SKILL.md)** — Work out which local git repo a task belongs to —
   and refuse rather than guess.

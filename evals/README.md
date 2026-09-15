@@ -205,6 +205,15 @@ is the rule the case protects and a file Batch A did not touch. Two rulebook cas
 each lost one run of three in different suite runs; both graders are mechanical, so the
 variance is the model's, not the judge's.
 
+## After Batch B
+
+Measured 2026-09-15 through `scripts/ship.sh general --minor`, 14 cases, three runs each,
+$20.35 for 45 minutes. Twelve cases 3/3. `engineering-artifact-regenerated-with-pinned-toolchain`
+2/3 again (this case has lost one run of three in three of four suite runs).
+`improve-skill-waits-for-diff-approval` 8/9 votes: one run passed every mechanical grader
+(no edit, no write, no shell rewrite, the skill fired) and lost the judge's `presents-diff`
+vote, on a skill Batch B did not touch; re-run with `--keep-temp` to read what it did.
+
 ## When these run
 
 `scripts/check.sh` runs before every commit: layout, portability, the token budgets in

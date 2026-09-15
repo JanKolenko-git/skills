@@ -89,9 +89,9 @@ The last two rows outrank everything above them. Friction the agent noticed abou
 self-assessment; a human changing what the run produced is a verdict from outside it, and the
 run had already decided the work was done. When the session addressed a review, start from
 `jankolenko-skills:git-pr-address-review`'s ledger: its `applied` rows. When it pushed, start
-from what came back at `jankolenko-skills:git-pr-push-and-open`'s gate
-(`pr.gate_corrections`). Keep only a correction that names a class: would the same one be
-needed again, on a different ticket?
+from what the user sent back at `jankolenko-skills:git-pr-push-and-open`'s gate, in the
+transcript. Keep only a correction that names a class: would the same one be needed again,
+on a different ticket?
 
 For a review comment the evidence is the **landed diff**, never the comment's text.
 

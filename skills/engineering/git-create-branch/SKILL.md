@@ -10,12 +10,11 @@ which ticket it answers.
 
 ## Inputs
 
-- `type` — `feature` | `bugfix` | `hotfix`. **Optional if `ticket_key` is given** — see the
-  mapping below.
+- `type` — `feature` | `bugfix` | `hotfix`. Derived from the ticket's type and priority if
+  omitted (Step 1).
 - `slug` — 3–5 words describing the work, kebab-cased. Derived from the title if omitted.
-- `ticket_key` — optional. If given and **`jankolenko-skills:atlassian-jira` is installed**, fetch the ticket to
-  resolve `type` and `slug`. A caller that already holds the ticket data should pass
-  `type`, `slug` and `ticket_key` directly rather than making this refetch.
+- `ticket_key` — optional. Goes into the name; a caller holding the ticket passes the key,
+  `type` and `slug` from it, and this skill fetches nothing.
 - `base` — optional. Defaults to the repository's default branch.
 
 ## Output
@@ -28,75 +27,50 @@ which ticket it answers.
 
 ## Step 1 — Resolve the type
 
-From the ticket, when `type` was not passed:
-
-| Issue type | Priority | Branch prefix |
+| Issue type | Priority | Prefix |
 | --- | --- | --- |
-| Bug | Critical or Blocker | `hotfix/` |
-| Bug | anything else | `bugfix/` |
+| Bug | `Critical`, `Blocker`, `P1`, `Highest` | `hotfix/` |
+| Bug | anything else, or absent | `bugfix/` |
 | Story, Task, anything else | — | `feature/` |
 
-Priority names vary by project. Treat `Critical`, `Blocker`, `P1` and `Highest` as the
-hotfix tier; if the priority is absent or unrecognised, use `bugfix/` rather than assuming
-urgency.
-
-The type is still worth resolving even where the repo's convention turns out to have no
-prefix — it is the fallback in Step 3, and it costs nothing to have ready.
+Resolve it even when the repo's convention turns out to have no prefix: it is the fallback
+in Step 3.
 
 ## Step 2 — Adopt the repository's convention
 
-Check how this repo names branches **before** composing a name. A branch name is awkward to
-correct once it is pushed and a PR is open against it, so a guess here is paid for later and
-usually by someone else.
-
 ```bash
 grep -rin "branch nam" AGENTS.md CONTRIBUTING.md CLAUDE.md README.md 2>/dev/null
-git branch -a --sort=-committerdate | head -20   # what the repo's branches actually look like
+git branch -a --sort=-committerdate | head -20
 ```
 
-If a stated convention exists, **follow it and say which file it came from** — a repo's rule
-always wins over the default below. Many repos put the ticket key first with no type prefix
-at all (`PROJ-1234-short-description`), which the Step 3 format would violate.
-
-Where the docs are silent, let the live branches decide; where both are silent, use Step 3.
+A stated convention wins and is named by file; many repos put the ticket key first with no
+type prefix (`PROJ-1234-short-description`). Where the docs are silent, the live branches
+decide; where both are silent, Step 3. A branch name is awkward to correct once a PR is
+open against it, so a guess here is paid for later, usually by someone else.
 
 ## Step 3 — Build the name
 
-When the repository states no convention of its own:
-
-```
-<type>/<TICKET-KEY>-<slug>
-```
-
-- Ticket key **uppercase**, exactly as Jira spells it.
-- Slug: lowercase, hyphen-separated, 3–5 meaningful words from the title. Drop filler
-  ("the", "a", "issue with"), punctuation, and anything over ~50 characters.
-- Without a ticket key, `<type>/<slug>` is fine.
+`<type>/<TICKET-KEY>-<slug>`, or `<type>/<slug>` without a ticket. The key is uppercase,
+exactly as Jira spells it. The slug is lowercase, hyphen-separated, 3–5 meaningful words
+from the title, dropping filler ("the", "a", "issue with"), punctuation, and anything over
+about 50 characters. The key and slug rules hold under a repo's own convention too; only
+the prefix is in question.
 
 `PROJ-1234 "Cart total is wrong when VAT rounding applies"` → `bugfix/PROJ-1234-cart-vat-rounding`
-
-The key and slug rules hold under a repo's own convention too — only the prefix is in
-question.
 
 ## Step 4 — Branch from a clean base
 
 ```bash
-git fetch origin
-git checkout <base>
-git pull --ff-only
-git checkout -b <branch-name>
+git fetch origin && git checkout <base> && git pull --ff-only && git checkout -b <branch-name>
 ```
 
-Resolve `<base>` from `git symbolic-ref refs/remotes/origin/HEAD`, falling back to `main`
-then `master`.
+`<base>` comes from `git symbolic-ref refs/remotes/origin/HEAD`, then `main`, then `master`.
 
 > 🛑 **GATE — a dirty working tree.** `git status --short` is on screen.
 > Ask through `AskUserQuestion`: "Uncommitted changes: stash, commit, or stop?" — options
 > **stash**, **commit**, **stop**.
 > Branching over work in progress silently drags it onto the new branch.
 
-If `pull --ff-only` fails, the local base has diverged — report it rather than merging or
-resetting. That is a state the user should see.
-
-If the branch already exists, check it out instead of failing, and set `branch.existed`.
-Do not append `-2` to make a fresh one.
+A failed `pull --ff-only` means the local base diverged: report it rather than merging or
+resetting. A branch that already exists is checked out, with `branch.existed = true`; never
+append `-2` to make a fresh one.

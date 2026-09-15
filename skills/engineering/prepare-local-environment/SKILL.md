@@ -5,148 +5,98 @@ description: Get a repository running so it can be exercised by hand: work out h
 
 # Prepare Local Environment
 
-Hand back a URL that opens on the thing worth looking at. Nothing short of that counts as
-done.
-
-A listening port is not a working app. The failure this skill exists to prevent is reporting
-"it's running on :9000" over a page that spins forever — which happens because the run
-checked that the *server answered*, not that the *app rendered*.
+Hand back a URL that opens on the thing worth looking at. A listening port is not a working
+app: the failure this skill prevents is "it's running on :9000" over a page that spins
+forever, because the run checked that the server answered, not that the app rendered.
 
 ## Inputs
 
-- `repo` — optional, defaults to the current directory. If the user names a project rather
-  than a path and **`jankolenko-skills:find-repository` is installed**, resolve it there.
-- `target` — optional. What they actually want to look at: a screen, a route, a scenario
-  ("the consent modal at en_GB"). It shapes the URL in Step 7; without it, the app's entry
-  point.
-- `fresh` — optional, default off. Reinstall from the lockfile and clear build caches. Worth
-  it after a branch switch that moved dependencies.
+- `repo` — optional, defaults to the current directory. A project named rather than pathed
+  resolves through `jankolenko-skills:find-repository` if installed.
+- `target` — optional. What they want to look at: a screen, a route, a scenario. Without
+  it, the app's entry point.
+- `fresh` — optional, default off. Reinstall from the lockfile and clear build caches;
+  worth it after a branch switch that moved dependencies.
 
 ## Output
 
 | Field | Contents |
 | --- | --- |
-| `env.url` | The URL to open — landing on `target`, not just the app root |
+| `env.url` | The URL to open, landing on `target`, not the app root |
 | `env.command` | What is running, and the directory it runs in |
 | `env.stop` | How to stop it |
 | `env.evidence` | What proved the app rendered, rather than merely answered |
-| `env.workarounds` | What had to be fixed to get here — usually worth committing |
+| `env.workarounds` | What had to be fixed to get here, usually worth committing |
 | `env.blocked` | What this environment still cannot do: a missing `.env`, a service behind VPN, an unseeded database |
 
 ## Step 1 — Read how this repo runs; never infer it
 
-In order, stopping when you have a command and a port:
+In order, stopping when you have a command and a port: `.claude/launch.json`; the repo's
+own words (`README.md`, `CONTRIBUTING.md`, `CLAUDE.md`); the manifests (`package.json`
+scripts, `Makefile`, `Procfile`, `docker-compose.yml`, `pyproject.toml`, `Cargo.toml`,
+`go.mod`). In a monorepo the root script fans out to every package: find the package that
+changed and read its scripts. The port comes from the script, a config file, `.env` or the
+server's first log line. If nothing in the repo says how to run it, stop and ask:
+`npx serve` over `dist/` looks like the app and behaves like a museum exhibit.
 
-1. **`.claude/launch.json`** — if it exists it already answers this. Use it as written.
-2. **The repo's own words** — `README.md`, `CONTRIBUTING.md`, `CLAUDE.md`. These usually name
-   both the command and the port, and they are right more often than the manifest is.
-3. **Manifests** — `package.json` scripts, `Makefile`, `Procfile`, `docker-compose.yml`,
-   `pyproject.toml` / `manage.py`, `Cargo.toml`, `go.mod`.
+## Step 2 — Check what the code needs that it does not carry
 
-**In a monorepo the root script is rarely the one you want.** `npm run dev` at the root of a
-turbo or nx workspace fans out to every package at once; the server you need is the one
-belonging to the package that changed. Find that package first, then read *its* scripts —
-they often invoke a framework CLI the root never mentions.
-
-Get the port from the script, a config file, `.env`, or the first line the server logs. Do
-not assume 3000.
-
-> 🛑 **GATE:** If nothing in the repo says how to run it, **STOP** and ask. Improvising
-> `npx serve` over a `dist/` produces something that looks like the app and behaves like a
-> museum exhibit — the user tests it, believes what they see, and the belief is wrong.
-
-## Step 2 — Check what the code needs that the code does not carry
-
-Before installing anything, because these are what turn a clean start into a broken page: an
-`.env.example` with no `.env` beside it, `.nvmrc` or `engines` against the node actually in
-the shell, an `.npmrc` pointing at a private registry with no auth, a database or docker
-service or VPN the app reaches for on first paint.
-
-Report what is missing rather than papering over it. Some of it only the user can supply, and
-learning that now is cheaper than learning it from a blank screen in Step 6.
+An `.env.example` with no `.env` beside it, `.nvmrc` or `engines` against the node in the
+shell, an `.npmrc` pointing at a private registry with no auth, a database, docker service
+or VPN the app reaches for on first paint. Report what is missing rather than papering
+over it.
 
 ## Step 3 — Clear the ground, then install
 
-Stop whatever is already on the port before installing, in that order. An install that
-replaces `node_modules` under a running dev server leaves that server holding files that no
-longer exist, and its errors will not look like the cause.
-
-- **`npm ci`** unless `node_modules` provably matches the lockfile. "This branch did not
-  touch dependencies" is not that proof — the base branch moves under a checkout, and a
-  stale install surfaces two steps later as a 500 that looks like the app's fault.
-  `npm ls --depth=0` answers in seconds: an `invalid` or `missing` line means reinstall.
-  `npm ci` is the only install that reproduces what CI and production see, and the only
-  one to use before measuring anything.
-- **`npm install`** when this branch edited the manifest and the lockfile has to catch up —
-  then say so, because the lockfile is now part of the diff.
-- **`fresh`** additionally clears the caches that survive a dependency change and quietly
-  serve stale modules: `node_modules/.vite`, `.next`, `.turbo`, `dist`.
+Stop whatever is on the port first; an install under a running server leaves it holding
+files that no longer exist. Then `npm ci` unless `npm ls --depth=0` shows the install
+matches the lockfile: the base moves under a checkout, and a stale install surfaces as a
+500 that looks like the app's fault. `npm install` only when this branch edited the manifest
+and the lockfile must catch up, and say so. `fresh` also clears `node_modules/.vite`,
+`.next`, `.turbo` and `dist`.
 
 ## Step 4 — Build only if the run path needs one
 
-Most dev servers compile on demand, so a build first is wasted minutes. SSR services,
-anything served out of `dist/`, and Docker paths do need one. If the repo documents a command
-for local work, trust that it does what it needs.
+Most dev servers compile on demand; SSR services, anything served out of `dist/`, and
+Docker paths need a build.
 
 ## Step 5 — Start it where you can still read it
 
-If `mcp__Claude_Browser__preview_start` is available, prefer it: write a `.claude/launch.json`
-entry if the repo has none, then start by name. The process survives the turn and
-`preview_logs` gives you stdout and stderr — which is where the real failure usually is when
-the page itself looks fine.
-
-Otherwise background it and tee it somewhere readable:
+Prefer `mcp__Claude_Browser__preview_start` when available: write a `.claude/launch.json`
+entry if the repo has none, start by name, and read `preview_logs`. Otherwise background it
+and tee the log, then poll until the ready line or the port answers, with a ceiling:
 
 ```bash
 nohup <the command> > <scratchpad>/dev.log 2>&1 &
 ```
 
-A foreground server blocks the turn and dies with it. Do not `sleep` and hope, either — poll
-until the server logs its ready line or the port answers, with a ceiling, then read the log.
-
 ## Step 6 — Prove the app rendered
 
-The step the skill exists for. A `200` proves a process is listening; it does not prove the
-app mounted. In rough order of what actually catches things:
+A `200` proves a process is listening, not that the app mounted. Fetch the page and look
+for content only the app could produce (a heading, a known string, a test id attribute);
+an empty root element is a failure dressed as a success. Read the server log, where failed
+module resolution, a missing env var and an upstream 500 all serve on through a `200`. In a
+browser, read the console; a spinner with no network activity is the endless-spinner case.
 
-- **Fetch the page and look for content only the app could have produced** — a heading, a
-  known string, a `data-auto-id`. An HTML shell with an empty root element is a failure
-  dressed as a success.
-- **Read the server log.** Failed module resolution, a missing env var, an upstream 500 — a
-  server will happily keep serving through all three without changing its status code.
-- **Open it, if a browser is available, and read the console.** An uncaught error, or a
-  spinner with no network activity behind it, is the endless-spinner case: the page loads,
-  the app never finishes.
+Do not report a URL you have not watched render, and do not edit application or server
+source to make it render: a component the branch has not written yet is the user's own
+work in progress, and your guess at it converts a visible failure into an invisible one.
+Say what is missing, offer to write it, and wait.
 
-> 🛑 **GATE:** Do not report a URL you have not watched render. The user's next move is to
-> open it and believe it, and a URL handed over on the strength of a status code moves the
-> debugging onto them — which is the errand they asked you to run.
->
-> Nor does preparing an environment stretch to editing application or server source until
-> the page renders. A component the branch has not written yet, a module that does not
-> resolve — that is the user's own work in progress, and supplying your guess at it converts
-> a visible failure into an invisible one: the page renders, they believe it, and what they
-> are looking at is yours. Offering to write the missing piece and waiting is the move;
-> writing it and reporting the app as working is not. Say what is missing and let them
-> decide.
+Done when: `env.evidence` names the content that proved the render.
 
 ## Step 7 — Hand over the URL, not the port
 
-Give them the URL that lands on `target`. If getting there needs query parameters, a cookie,
-a seeded row or a two-click path, put what you can in the URL and write the rest out as
-steps — "open X, click Y" beats "it's on 9000, go find it".
-
-Then report the Output fields, including what you changed to get here. A `.env` you created,
-a cache you cleared, a port you freed: the next person hits the same wall, and half of these
-belong in the repo rather than in your shell history.
+The URL lands on `target`; what it cannot carry (a cookie, a seeded row, a two-click path)
+is written out as steps. Report the Output fields, including what you changed to get here;
+a `.env` created, a cache cleared, a port freed belongs in the repo rather than in your
+shell history.
 
 ## Notes
 
-- **Leave it running.** Stopping is the user's call; give them `env.stop` and let them.
-- This skill does not drive the app. Claude Code's built-in `/run` launches and *exercises*
-  one to confirm a change works. Reach for `/run` when you want the agent to check; reach for
-  this when the user wants to look.
-- Say what you generated to get running rather than quietly committing it. A `.env` holds
-  values that are theirs and stays out of the diff; a `.claude/launch.json` is usually worth
-  keeping. Either way it is their call, and a URL carrying a token or a session id is a
-  secret rather than a convenience — keep that one out of the report entirely.
+- Leave it running; stopping is the user's call, so give them `env.stop`.
+- This skill does not drive the app: `/run` launches and exercises one to confirm a change
+  works; this one gets it running for the user to look at.
+- A generated `.env` holds their values and stays out of the diff; a `.claude/launch.json`
+  is usually worth keeping. Standing rule: no secrets in output. A URL carrying a token or
+  a session id stays out of the report.
