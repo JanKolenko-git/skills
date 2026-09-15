@@ -6,116 +6,76 @@ argument-hint: <what was learned / what the code got wrong>
 
 # Record Engineering Rule
 
-`jankolenko-skills:improve-skill` fixes how a skill instructs. This fixes how the **code**
-comes out — the conventions every skill's output follows. They live in two places and this
-skill owns both. `ENGINEERING.md` at the root of `jankolenko-skills`, read by every session
-through the session-start hook, holds only what would hold in a repository you have never
-seen. `projects/<repository>/ENGINEERING.md`, untracked and read only inside that repository,
-holds the rules that are true there and nowhere else — and the coordinates (ticket, PR,
-commit) of every run that bought a general rule. Deciding which is the whole job: a
-repository-specific constraint in the general file is noise every session pays for, and a
-general rule buried in one repository's file is a lesson every other repository re-learns.
-
-Every rule added to the general file is paid for by every future coding session that reads
-it. So the default answer is **no rule**, and the value of this skill is the routing and the
-filter, not the writing.
+`jankolenko-skills:improve-skill` fixes how a skill instructs; this skill fixes how the
+**code** comes out. `ENGINEERING.md`, read by every session, holds only what would hold in
+a repository you have never seen; `projects/<repository>/ENGINEERING.md`, untracked, holds
+what is true there alone, plus the coordinates of every run that bought a general rule.
+Every general rule is paid for by every future session, so the default answer is **no
+rule**.
 
 ## Inputs
 
-- `learning` — **required.** What the run turned up: what the code got wrong, what review
-  caught, what convention was violated. Evidence, not a preference.
-- `evidence` — where it happened: the repo, the file, the review comment, the failure. A
-  candidate with no run behind it does not qualify.
+- `learning` — **required.** What the code got wrong, what review caught, what convention
+  was violated. Evidence, not a preference.
+- `evidence` — where it happened: the repo, the file, the review comment, the failure.
 
 ## Output
 
 | Field | Contents |
 | --- | --- |
 | `rule.verdict` | `added` / `sharpened` / `promoted` / `routed-elsewhere` / `no-rule` |
-| `rule.scope` | `general` (`ENGINEERING.md`) or `project` (`projects/<repository>/ENGINEERING.md`, with the repositories named) |
-| `rule.destination` | Where it actually belongs, when it is neither of those files |
+| `rule.scope` | `general` or `project` (repositories named) |
+| `rule.destination` | The owner, when it routes elsewhere |
 | `rule.diff` | The exact change, when there is one |
-| `rule.version` | New plugin version, once bumped — general rules only |
+| `rule.version` | New plugin version, once bumped; general rules only |
 
 ## Step 1 — Route before you write
 
-Most candidates do not belong in the general file. Place it first:
+| The learning is about | Owner |
+| --- | --- |
+| How a skill instructs | `jankolenko-skills:improve-skill` (that `SKILL.md`, `.agents/authoring.md`) |
+| How one repo builds or runs | `jankolenko-skills:record-learnings` (that repo's `CLAUDE.md`) |
+| How code is written anywhere | this skill, `rule.scope = general` |
+| How code is written in repositories you can list | this skill, `rule.scope = project` |
+| A capability that does not exist | `observations/SIGNALS.md`, then `jankolenko-skills:find-skill-gaps` |
 
-| The learning is about | Belongs in | Via |
-| --- | --- | --- |
-| How a skill instructs — wording, a missing input, a step | that `SKILL.md` or `.agents/authoring.md` | `jankolenko-skills:improve-skill` |
-| A fact about how **one repo** builds or runs that teammates should see — its build order, its gotchas | that repo's own `CLAUDE.md` | `jankolenko-skills:record-learnings` |
-| How code should be written **anywhere** — it would hold in a repo you have never seen | `ENGINEERING.md` | this skill, `rule.scope = general` |
-| How code should be written **in repositories you can list** — one team, one stack, one repo | `projects/<repository>/ENGINEERING.md`, one file per repository | this skill, `rule.scope = project` |
-| A capability that does not exist at all | `observations/SIGNALS.md` | session-start rule, then `jankolenko-skills:find-skill-gaps` |
-
-If you can list the repositories it applies to, it is a project rule. Three repositories out
-of the thirty you work in is a list; "any front-end with a lockfile" is not.
-
-> 🛑 **GATE:** If it routes elsewhere, stop with `rule.verdict = routed-elsewhere` and name
-> the skill that owns it. Do not write a repo-specific constraint into the file every session
-> reads — that is how a shared rulebook becomes noise, and noise is what stops the next
-> reader taking the real rules seriously. And do not bury a rule that would hold anywhere in
-> one repository's file, where every other repository has to learn it again.
+If you can list the repositories it applies to, it is a project rule; "any front-end with a
+lockfile" is not a list. Routed elsewhere → stop with `rule.verdict = routed-elsewhere` and
+name the owner: a repository-specific line in the general file is noise every session pays
+for, and a general rule buried in one repository's file is re-learned everywhere else.
 
 ## Step 2 — Apply the bar
 
-`ENGINEERING.md` has two sections and they take different evidence. Test 1 decides which
-section a general rule lands in; test 2 confirms the file; test 3 decides whether it lands
-at all. A project file has one section, `## Rules`, and takes test 1's first kind only — a
-run that happened there.
+1. **Provenance, one of two.** A real run failed for want of it (→ **Rules**), or a named
+   source outside this file believes it (→ **Baseline**: Power of 10, a published style
+   guide, a convention a large codebase visibly holds). "Tidier" is neither.
+2. **The scope survives the wording.** Write the rule as a sentence: still true in the next
+   repo, in a language this one has not touched? True only with a repository's name in it
+   → project rule. A project rule just as true without the name → promote it.
+3. **No existing rule covers it.** Read the destination file in full; sharpen a near rule
+   rather than add a second.
 
-1. **Provenance — and it must be one of exactly two.** Either *a real run failed for want
-   of it* (→ **Rules**) or *a named source outside this file already believes it*
-   (→ **Baseline**, citing it: Power of 10, a published style guide, a convention a large
-   codebase visibly holds). "This would be tidier" is neither. A preference with no source
-   does not go in a file injected into every session.
-2. **The scope from Step 1 survives contact with the wording.** Write the rule as a
-   sentence, then ask whether it is still true in the next repo and in a language this repo
-   has not touched. If the sentence only stays true with a repository's name in it, it is a
-   project rule however general it felt; if a project rule reads just as true with the name
-   removed, it is a general rule that has not been promoted yet — say so.
-3. **No existing rule covers it.** Read the destination file in full first — the general
-   one is short on purpose. If a rule nearly covers it, sharpening that rule beats adding a
-   second one.
-
-**Promotion is a real outcome.** When a run gets bitten by something already sitting in
-Baseline, move that entry to Rules and attach the evidence — `rule.verdict = promoted`.
-That is not bookkeeping: it is how the file records which rules have already cost
-something, so the next reader knows which edges are actually sharp.
-
-A candidate with no source *and* no run — clearly right, but only intuition behind it — is
-worth naming to the user without adding it. Say so and let them decide; a source or a
-second sighting is what turns it into a rule.
+A project file has one section, `## Rules`, and takes only the first provenance. A Baseline
+entry a run was bitten by moves to Rules with the evidence (`promoted`); a rule that proved
+wrong is narrowed or deleted (`sharpened`); no source and no run → name it to the user, add
+nothing.
 
 ## Step 3 — Draft the minimal change
 
-In the file's own voice: an `##` heading stating the rule as a sentence, a short code
-example showing the yes and the no, the reason it matters to a reader, the legitimate
-exception, and a closing `_Source: …_` line. Put it under the section test 1 chose.
+In the file's own voice: a `##` heading stating the rule as a sentence, a short yes/no code
+example, one sentence of why, the exception (a rule with none is ignored the first time it
+is inconvenient), a `_Source: …_` line, under the section test 1 chose. In `ENGINEERING.md`
+the source and the example name the shape of the run or the citation, never a repository,
+ticket, PR, commit, person or private package; those go as one bullet under `## Evidence
+behind general rules` in the buying repository's project file. In a project file the source
+names the ticket, PR and commit.
 
-**What the `_Source:` line may say depends on the file.** In `ENGINEERING.md` it names the
-*shape* of the run — the kind of change, the check that missed it, the tell — or the citation
-from test 1; never a repository, ticket, PR, commit, person or private package, and the same
-holds for the code example. In `projects/<repository>/ENGINEERING.md` it names the ticket,
-the PR and the commit, because there they are the point. A general rule's coordinates are
-still written down: one bullet under `## Evidence behind general rules` in the file of the
-repository that bought it, keyed by the rule's heading — create the file from the template
-in `projects/README.md` if that repository has none yet. Draft the general entry the way
-`scripts/check-portable.py` will read it, because Step 5 runs it.
-
-State the exception. A rule with no exception is ignored the first time it is inconvenient,
-and an ignored rule is worse than an absent one because it teaches that the file is optional.
-
-Deleting or narrowing a rule that proved wrong is a valid outcome of this skill —
-`rule.verdict = sharpened` covers it. A rulebook that only grows is one nobody trusts.
+Done when: the entry reads as `scripts/check-portable.py` will read it.
 
 ## Step 4 — 🛑 The approval gate
 
-Show the learning, the routing decision with its scope, the three tests and the exact
-diff: both files, when a general rule also writes its evidence bullet.
-
-> 🛑 **GATE — changing the rulebook.** The exact diff is on screen.
+> 🛑 **GATE — changing the rulebook.** The learning, the routing with its scope, the three
+> tests and the exact diff (both files, for a general rule) are on screen.
 > Ask through `AskUserQuestion`: "Add this entry to `<file>`?" — options **approve**,
 > **change**, **stop**.
 > approve → Step 5. change → redo Step 3 with what they said, then this gate again.
@@ -126,39 +86,24 @@ diff: both files, when a general rule also writes its evidence bullet.
 
 ## Step 5 — Apply and ship
 
-1. Resolve the working copy, then apply the diff there, never in the plugin cache, which
-   every update regenerates:
+```bash
+eval "$("${CLAUDE_SKILL_DIR}/../../../scripts/which-plugin.sh" record-engineering-rule)"   # repo, scripts
+```
 
-   ```bash
-   eval "$("${CLAUDE_SKILL_DIR}/../../../scripts/which-plugin.sh" record-engineering-rule)"   # sets repo, scripts
-   ```
+Apply the diff in `$repo`, never in the plugin cache. A project rule ends here: the hook
+reads `projects/` directly. For a general rule, offer (not do) an eval case named
+`engineering-*`: one prompt that invites the failure the rule was bought with, one grader
+that fails on it (`evals/README.md`). Then `git -C "$repo" add ENGINEERING.md` and
 
-   - `rule.scope = general`: `$repo/ENGINEERING.md`, plus the evidence bullet in the buying
-     repository's `projects/<repository>/ENGINEERING.md`.
-   - `rule.scope = project`: `projects/<repository>/ENGINEERING.md` for every repository
-     named. The folder is untracked and the session-start hook reads it directly, so there
-     is no commit, bump or update. Say so and stop.
-2. **Offer to encode the rule as an eval case.** A Rules entry is bought with one observed
-   failure, which is an eval case with a known-bad outcome; written down, the rule holds
-   only while a run reads it, and as a case it is checked. Propose one prompt that invites
-   the failure and one grader that fails on it (`evals/README.md`; the rulebook's cases are
-   named `engineering-*`). An offer, not a step; skip it for a Baseline entry, which has no
-   failure to reproduce.
-3. Ship a general rule: `git -C "$repo" add ENGINEERING.md`, then
+```bash
+"$scripts/ship.sh" general --case 'engineering-*' -m "docs(engineering): <the rule, in one line>"
+```
 
-   ```bash
-   "$scripts/ship.sh" general --case 'engineering-*' -m "docs(engineering): <the rule, in one line>"
-   ```
-
-   It runs `scripts/check-portable.py` on the way; a hit means a coordinate stayed in the
-   general file, so move it rather than allowlist it. Quote the update command it prints.
+A `check-portable.py` hit means a coordinate stayed in the general file: move it, never
+allowlist it. Quote the update command the script prints.
 
 ## Notes
 
-- One rule per invocation. A second learning is a second invocation.
-- This skill owns `ENGINEERING.md` and every `projects/<repository>/ENGINEERING.md`, and
-  nothing else. `jankolenko-skills:improve-skill` owns `SKILL.md` files and
-  `.agents/authoring.md`; they do not overlap.
-- If the run produced no durable rule, say so plainly and stop. That is the expected
-  outcome of most runs, and inventing a rule to justify the invocation is the one failure
-  mode this skill cannot recover from.
+- One rule per invocation. This skill owns the two rule files and nothing else.
+- Most runs produce no durable rule; say so and stop. A rule invented to justify the
+  invocation is the one failure this skill cannot recover from.

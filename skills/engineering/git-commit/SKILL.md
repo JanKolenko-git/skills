@@ -1,23 +1,22 @@
 ---
 name: git-commit
 description: Stage and commit the work with a conventional message: reviews the diff first, stages by path, keeps unrelated changes and secrets out, follows the repository's commit rules. Use for every commit, including 'commit and push', 'commit this' and 'commit to the branch', rather than committing through git directly. Pushing is git-pr-push-and-open.
+allowed-tools: Bash(git status*), Bash(git diff*), Bash(git log*), Bash(git rev-parse*), Bash(git config core.hooksPath), Bash(git add *), Bash(git commit *)
 ---
 
 # Git Commit
 
-Stage and commit the current change with a message that says what happened.
-
-**Local only.** This skill never pushes and never opens a PR — a commit is reversible, which
-is why it needs no confirmation gate. Pushing is not, and lives in `jankolenko-skills:git-pr-push-and-open`.
+Stage and commit the current change with a message that says what happened. Local only: a
+commit is reversible, so it needs no gate; pushing is not, and lives in
+`jankolenko-skills:git-pr-push-and-open`.
 
 ## Inputs
 
 - `subject` — **required.** One line, imperative, what the change does.
-- `type` — `feat` | `fix` | `chore` | `refactor` | `test` | `docs`. Inferred from the change
-  if omitted.
-- `ticket_key` — optional. Included in the message when present.
-- `files` — optional. Specific paths to stage. Defaults to the files this session changed —
-  **never** a blanket `git add -A`.
+- `type` — `feat` | `fix` | `chore` | `refactor` | `test` | `docs`. Inferred if omitted.
+- `ticket_key` — optional. Goes in the message when present.
+- `files` — optional. Paths to stage. Defaults to the files this session changed, never a
+  blanket `git add -A`.
 
 ## Output
 
@@ -27,72 +26,49 @@ is why it needs no confirmation gate. Pushing is not, and lives in `jankolenko-s
 | `commit.message` | The full message used |
 | `commit.files` | What was staged |
 
-## Step 1 — Look at what you are about to commit
+## Step 1 — Look before staging
 
 ```bash
-git rev-parse --abbrev-ref HEAD
-git status --short
-git diff
-git diff --staged
+git rev-parse --abbrev-ref HEAD && git status --short && git diff && git diff --staged
 ```
 
-Three things to catch before staging:
+- **The wrong branch.** A commit onto a colleague's feature branch lands inside their open
+  PR; `jankolenko-skills:git-create-branch` makes the right one first.
+- **Unrelated changes.** Debug logging, a formatting sweep, an editor config: leave them
+  out. A fix mixed with 200 lines of reformatting is unreviewable.
+- **Secrets.** `.env`, tokens, keys, credentials in fixtures: stop and tell the user. A
+  secret in git history is not fixed by a follow-up commit.
 
-- **The wrong branch.** The branch you are on is the one that happened to be checked out,
-  not necessarily the one this work belongs to. Committing onto a colleague's feature
-  branch puts your change inside their open PR, where they will not expect it and cannot
-  easily remove it. Check the branch matches the work *before* staging — `jankolenko-skills:git-create-branch`
-  makes the right one if it does not.
-- **Unrelated changes.** Debug logging, a stray formatting sweep, an editor config. Leave
-  them out — a commit that mixes a fix with 200 lines of reformatting is unreviewable.
-- **Secrets.** `.env`, tokens, keys, credentials in fixtures. Stop and tell the user rather
-  than committing them; a secret in git history is not fixed by a follow-up commit.
-
-Stage explicitly, by path:
-
-```bash
-git add <path> <path>
-```
+Then stage by path: `git add <path> <path>`.
 
 ## Step 2 — Adopt the repository's convention
 
-Check what this repo enforces **before** composing the message. A rejected commit wastes a
-round trip, and a repo's rule always wins over the default below.
-
 ```bash
-git config core.hooksPath           # often .githooks
-ls .githooks/ .husky/ 2>/dev/null
-ls commitlint.config.* .commitlintrc* 2>/dev/null
-git log -10 --format=%s             # what the history actually looks like
+git config core.hooksPath; ls .githooks/ .husky/ commitlint.config.* .commitlintrc* 2>/dev/null
+git log -10 --format=%s
 ```
 
-If you find a validator (a `commit-msg` hook, `commitlint`, a `verify-commit-msg` script),
-**read it** — the allowed types and the subject rules are usually literal values in it — and
-follow that. Some repos restrict the type list, cap the subject length, or require the ticket
-in the footer rather than the subject.
+A validator (a `commit-msg` hook, `commitlint`, a `verify-commit-msg` script) holds the
+allowed types and subject rules as literal values: read it and follow it. The repo's rule
+wins over the default below; if its history puts the ticket in the subject, match the
+history.
 
 ## Step 3 — Write the message
 
-Default, when the repo has no rule of its own — [Conventional
-Commits](https://www.conventionalcommits.org):
+Default, [Conventional Commits](https://www.conventionalcommits.org):
 
 ```
 <type>(<scope>): <subject>
 
-<body, only when the why is not obvious>
+<body, only when the why is not obvious from the diff>
 
 Refs: <TICKET-KEY>
 ```
 
-- The **colon is required**, and `<scope>` is the area of the codebase (`gate`, `auth`,
-  `cart`) — lowercase. It is **not** the ticket key: many validators restrict scope to
-  `[a-z0-9._-]+`, so an uppercase key like `PROJ-1234` is rejected there.
-- Put the ticket in a `Refs:` footer, which is where tooling looks for it.
-- Subject imperative and under ~70 characters: "fix VAT rounding on cart total", not "fixed"
-  or "this fixes".
-- Say **what changed**, not which files changed — the diff already lists those.
-- Body only when the *why* is not evident from the diff: the constraint you worked around,
-  the approach you rejected. Wrap at 72.
+The colon is required; `<scope>` is a lowercase area of the codebase (`cart`, `auth`), never
+the ticket key, which validators restricting scope to `[a-z0-9._-]+` reject. Subject
+imperative, under 70 characters, what changed rather than which files; body wrapped at 72,
+only for the constraint worked around or the approach rejected.
 
 ```
 fix(cart): correct VAT rounding on totals
@@ -103,19 +79,9 @@ up to 2 cents. Round once on the total instead.
 Refs: PROJ-1234
 ```
 
-If the repo's own history plainly puts the ticket in the subject, match the history instead —
-consistency inside one repo beats the general convention.
-
 ## Step 4 — Commit
 
-```bash
-git commit -m "<message>"
-```
-
-Report the short SHA.
-
-Do **not** add co-author trailers, tool attribution, or emoji unless the repository's own
-history already uses them — check `git log -10 --format=%B` and match what is there.
-
-> 🛑 If a commit hook rejects the commit, surface the hook's output and stop. Do not retry
-> with `--no-verify`. The hook is the project's rule, not an obstacle.
+`git commit -m "<message>"`, then report the short SHA. No co-author trailers, tool
+attribution or emoji unless `git log -10 --format=%B` shows the repository already uses
+them. If a hook rejects the commit, surface its output and stop; the hook is the project's
+rule, so never retry with `--no-verify`.

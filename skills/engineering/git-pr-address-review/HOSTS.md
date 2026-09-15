@@ -1,8 +1,9 @@
 # Hosts
 
+Sections: [GitHub](#github) · [Bitbucket Cloud](#bitbucket-cloud) · [Bitbucket Data Center](#bitbucket-data-center). Read only the one for the host in front of you.
+
 Per-host commands for the three things `git-pr-address-review` needs: **read** the comments,
-**reply** to a thread, **resolve** a thread. Read only the section for the host in front of
-you.
+**reply** to a thread, **resolve** a thread.
 
 Tokens are read from the environment at runtime. Never hardcode one, and never ask the user
 to paste one into chat — if it is missing or rejected, say which variable is needed and stop.

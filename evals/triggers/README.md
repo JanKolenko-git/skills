@@ -109,7 +109,7 @@ column is a three-run check on the skills whose one-run number moved. Raw result
 | `git-pr-push-and-open` | 2/8 · 7/7 | 2/8 · 7/7 | 2/8 · 7/7 |
 | `implement-ticket` | 5/7 · 8/8 | 5/7 · 8/8 |  |
 | `improve-skill` | 3/7 · 7/7 | 2/7 · 7/7 | 5/7 · 7/7 |
-| `plan-change` | 5/9 · 8/8 | 7/9 · 8/8 |  |
+| `plan-change` | 5/9 · 8/8 | 7/9 · 8/8 | 10/11 · 8/8 after Batch A (set grew by two clarify prompts; the miss is "the plan came back blocked … re-plan", which a fresh session has no plan for) |
 | `prepare-local-environment` | 5/9 · 7/7 | 7/9 · 6/7 | 7/9 · 6/7 |
 | `record-engineering-rule` | 6/7 · 7/7 | 5/7 · 7/7 | 6/7 · 7/7 |
 | `record-learnings` | 2/6 · 8/8 | 5/6 · 8/8 |  |

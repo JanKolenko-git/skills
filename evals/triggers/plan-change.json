@@ -36,6 +36,14 @@
   "should_trigger": true
  },
  {
+  "query": "clarify the requirements for PROJ-1234 before we build anything - the ticket doesn't say where the banner goes or who can dismiss it",
+  "should_trigger": true
+ },
+ {
+  "query": "the plan came back blocked on two open questions. get them answered and re-plan",
+  "should_trigger": true
+ },
+ {
   "query": "what is INP, and what actually moves it?",
   "should_trigger": false,
   "instead": "explain"

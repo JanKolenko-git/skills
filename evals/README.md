@@ -194,6 +194,17 @@ no lanes but phrased its verdict past the `lanes-none` regex, which is now wider
 account's spend limit, which is no signal. Neither `plan-change` nor `ENGINEERING.md`
 changed in Phase 2.
 
+## After Batch A
+
+Measured 2026-09-15 through `scripts/ship.sh general --major`, 14 cases, three runs each,
+$20.11 for 43 minutes. Thirteen cases 3/3, including every case that covers a rewritten
+skill and the two that were red in the Phase 2 run.
+`engineering-mechanism-change-updates-its-comments` 5/6 grader votes: one run doubled the
+backoff and updated the docstring but left the sibling comment stating the old total, which
+is the rule the case protects and a file Batch A did not touch. Two rulebook cases have now
+each lost one run of three in different suite runs; both graders are mechanical, so the
+variance is the model's, not the judge's.
+
 ## When these run
 
 `scripts/check.sh` runs before every commit: layout, portability, the token budgets in

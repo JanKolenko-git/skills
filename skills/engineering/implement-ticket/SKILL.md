@@ -33,7 +33,7 @@ passed down — nothing refetches.
 | --- | --------- | -------------------------------- | ---------------------------------------------------------------------------------- |
 | 1   | Context   | `jankolenko-skills:atlassian-jira` (+ `jankolenko-skills:atlassian-confluence`)          | → `ticket.*`                                                                       |
 | 2   | Repo      | `jankolenko-skills:find-repository`                      | `ticket.title/description` → `hints`; → `repo.path`                                |
-| 3   | Plan      | `jankolenko-skills:plan-change` (+ `jankolenko-skills:clarify-goal`) | `ticket.*` → `goal`/`criteria`/`candidates`; → `plan.*`; `blocked` → `jankolenko-skills:clarify-goal` 🛑 **gate** |
+| 3   | Plan      | `jankolenko-skills:plan-change`                  | `ticket.*` → `goal`/`criteria`/`candidates`; → `plan.*`; `blocked` 🛑 **gate**   |
 | 4   | Branch    | `jankolenko-skills:git-create-branch`                  | `ticket.type/priority` → `type`; `ticket.title` → `slug`                           |
 | 5   | Start     | `jankolenko-skills:atlassian-jira`                           | `mode=transition`, `target_status="In Progress"`                                   |
 | 6   | Build     | _(inline)_ + `jankolenko-skills:write-tests`       | `plan.steps`/`plan.lanes`; `criteria` → `jankolenko-skills:write-tests`                              |
@@ -113,12 +113,9 @@ Keep `plan.*` in context for the rest of the run. Steps 6, 8a and 9 all read fro
 > 🛑 **GATE:** Honour `plan.verdict`, and note that this happens **before** any branch or
 > ticket change — deliberately, so a run that should not have started leaves no trace.
 >
-> - **`blocked`** — do not bail out yet. Invoke **`jankolenko-skills:clarify-goal`** with the questions
->   `jankolenko-skills:plan-change` named, plus the current `goal`/`criteria`/`constraints` and
->   `ticket.key` as `source`. Fold its `clarify.*` output into a **fresh
->   `jankolenko-skills:plan-change`** invocation. One clarification round per ticket: if the re-plan
->   blocks again, or `clarify.unanswered` still holds the blocking question, bail out
->   with both — the ticket needs work outside this run.
+> - **`blocked`** — `jankolenko-skills:plan-change` has already settled the facts it could
+>   and asked the user its one round of decisions (`plan.answers`). Bail out with
+>   `plan.open_questions`: the ticket needs work outside this run.
 > - **`no-change-needed`** — **make no code change and do not touch the Jira ticket.** Report
 >   the finding with its evidence. What to do about the ticket is the user's call.
 > - **`ready`** — continue.

@@ -72,7 +72,6 @@ whole bucket (`code-`) sorts nothing.
 | `find`                     | Locate something that already exists                  | no               |
 | `plan`                     | Produce a plan                                        | no               |
 | `critique`                 | Judge finished work against its intent                | no               |
-| `clarify`                  | Turn unknowns into answers by asking                  | no               |
 | `explain`                  | Teach until it is understood                          | no               |
 | `create`                   | Make a new named thing                                | yes              |
 | `write`                    | Produce new file content                              | yes              |

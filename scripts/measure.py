@@ -56,7 +56,6 @@ TARGETS = {
         "find-repository": 350,
         "git-commit": 350,
         "write-tests": 350,
-        "clarify-goal": 0,
         "git-create-branch": 300,
     },
 }

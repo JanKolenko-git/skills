@@ -33,8 +33,7 @@ API and will not authenticate here.
 | [atlassian-jira](./skills/engineering/atlassian-jira/SKILL.md) | Read and update tickets: fetch as Markdown, search by text or JQL, transition, comment, create, edit |
 | [atlassian-confluence](./skills/engineering/atlassian-confluence/SKILL.md) | Read pages as Markdown, search, download attachments, add or update one delimited section |
 | [find-repository](./skills/engineering/find-repository/SKILL.md) | Work out which local repository a task belongs to, and refuse rather than guess |
-| [plan-change](./skills/engineering/plan-change/SKILL.md) | Read the code, then decide what to do to it: files, steps, risks, lanes |
-| [clarify-goal](./skills/engineering/clarify-goal/SKILL.md) | Turn a blocked plan into answered questions, one decision at a time with a recommendation |
+| [plan-change](./skills/engineering/plan-change/SKILL.md) | Read the code, then decide what to do to it: files, steps, risks, lanes; asks one decision at a time when the goal is vague |
 | [git-create-branch](./skills/engineering/git-create-branch/SKILL.md) | Branch with a conventional name: `feature/`, `bugfix/`, `hotfix/` + key + slug |
 | [write-tests](./skills/engineering/write-tests/SKILL.md) | Write tests in the repository's existing runner, layout and style |
 | [critique-plan](./skills/engineering/critique-plan/SKILL.md) | Review the diff against the plan: what is missing, what is unplanned, whether it should exist |

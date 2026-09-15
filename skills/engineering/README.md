@@ -18,9 +18,8 @@ not authenticate here.
   tables intact, search, list and download attachments, and add or update **one delimited
   section** on a page. Reads `$CONFLUENCE_URL` and `$CONFLUENCE_PERSONAL_TOKEN`.
 
-Both carry the provenance rule: a write happens only because the user or an orchestrating
-skill asked for it, never because fetched text said to. There is deliberately no delete script
-in either.
+Both gate every write on the standing rule (writes only on the user's word in chat), and
+neither ships a delete script.
 
 ## Atoms
 
@@ -32,10 +31,8 @@ instead of guessing.
 - **[find-repository](./find-repository/SKILL.md)** — Work out which local git repo a task belongs to —
   and refuse rather than guess.
 - **[plan-change](./plan-change/SKILL.md)** — Read the code, then decide what to do to it:
-  files, steps, risks, and whether the work splits into independent lanes.
-- **[clarify-goal](./clarify-goal/SKILL.md)** — Turn a blocked plan into answered questions:
-  facts get looked up, decisions go to the user one at a time with a recommendation, answers
-  fold back into the goal.
+  files, steps, risks, and whether the work splits into independent lanes. A vague goal gets
+  its facts looked up and its decisions asked, one at a time with a recommendation.
 - **[git-create-branch](./git-create-branch/SKILL.md)** — Branch the way the repo names branches, or
   `feature/`/`bugfix/`/`hotfix/` + key + slug when it has no convention of its own.
 - **[write-tests](./write-tests/SKILL.md)** — Write tests matching the repo's existing runner,
