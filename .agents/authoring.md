@@ -208,8 +208,9 @@ It resolves the plugin, runs `scripts/check.sh`, runs the eval cases named `<ski
 whole suite for `general`; `--case '<glob>'` widens or narrows), refuses to bump on red,
 bumps patch (`--minor` when the skill set or the manifest's paths change), commits when the
 tree is tracked, and prints the exact update command, which carries the required
-`@marketplace` suffix. `--no-evals` only with the user's say-so and the reason in the commit
-body.
+`@marketplace` suffix. A staged skill whose description changed also runs its trigger set
+and ships only at or above its baseline. `--no-evals` only with the user's say-so and the
+reason in the commit body.
 
 | Source                        | Env override               | Plugin                | Update                                                          | Tracked                            |
 | ----------------------------- | -------------------------- | --------------------- | --------------------------------------------------------------- | ---------------------------------- |

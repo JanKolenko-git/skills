@@ -18,6 +18,8 @@ set -uo pipefail
 #   --minor       bump the minor version (the skill set or plugin.json paths changed)
 #   --major       bump the major version (a skill removed, a contract or gate changed shape)
 #   --no-evals    skip the eval run (say why in the commit body)
+#   --trigger     run the target skill's trigger set even if its description is unchanged; a
+#                 staged skill whose description changed always runs its set
 #   --dry-run     show the target, version and staged files; change nothing
 #
 # Stage the files you changed first (`git add <path>`); this script stages only the manifest
@@ -83,7 +85,8 @@ fi
 
 # --- 2. Checks and evals ---------------------------------------------------------------
 if [ "$dry_run" -eq 1 ]; then
-  echo "ship.sh: dry run — would run check.sh$( [ "$run_evals" -eq 1 ] && echo ", eval.sh --case '$case_glob'" )$( [ "$trigger" -eq 1 ] && echo ", trigger-eval.py --skill $target" ), then bump$( [ "$tracked" -eq 1 ] && echo " and commit" )"
+  changed_desc="$(git diff --cached --name-only -- 'skills/*/*/SKILL.md' | while read -r f; do [ -f "$f" ] && [ "$(git show "HEAD:$f" 2>/dev/null | sed -n 's/^description:[[:space:]]*//p' | head -1)" != "$(sed -n 's/^description:[[:space:]]*//p' "$f" | head -1)" ] && basename "$(dirname "$f")"; done | tr '\n' ' ')"
+  echo "ship.sh: dry run — would run check.sh$( [ "$run_evals" -eq 1 ] && echo ", eval.sh --case '$case_glob'" )$( [ -n "$changed_desc" ] && echo ", trigger sets for: $changed_desc" )$( [ "$trigger" -eq 1 ] && echo ", trigger-eval.py --skill $target" ), then bump$( [ "$tracked" -eq 1 ] && echo " and commit" )"
   exit 0
 fi
 
@@ -106,10 +109,21 @@ if [ "$run_evals" -eq 1 ]; then
   fi
 fi
 
-if [ "$trigger" -eq 1 ] && [ -f "evals/triggers/$target.json" ]; then
-  baseline="$(grep -E "^\| \`$target\` \|" evals/triggers/README.md | head -1)"
-  scripts/trigger-eval.py --skill "$target" --json /tmp/ship-trigger.json | head -1
-  python3 - "$baseline" <<'EOF' || { echo "ship.sh: trigger rate fell below the baseline — not bumping" >&2; exit 1; }
+# A description is a trigger, and a changed trigger ships only at or above its baseline. Every
+# staged SKILL.md whose description differs from HEAD runs its trigger set (three runs per
+# prompt); --trigger adds the target skill's set even when its description did not change.
+trigger_skills="$( { git diff --cached --name-only -- 'skills/*/*/SKILL.md' | while read -r f; do
+    [ -f "$f" ] || continue
+    if [ "$(git show "HEAD:$f" 2>/dev/null | sed -n 's/^description:[[:space:]]*//p' | head -1)" != "$(sed -n 's/^description:[[:space:]]*//p' "$f" | head -1)" ]; then
+      basename "$(dirname "$f")"
+    fi
+  done; [ "$trigger" -eq 1 ] && echo "$target"; } | sort -u )"
+for skill in $trigger_skills; do
+  [ -f "evals/triggers/$skill.json" ] || { echo "ship.sh: $skill's description changed and it has no trigger set — add one under evals/triggers/"; continue; }
+  echo "ship.sh: $skill's description changed — running its trigger set against the baseline"
+  baseline="$(grep -E "^\| \`$skill\` \|" evals/triggers/README.md | head -1)"
+  scripts/trigger-eval.py --skill "$skill" --runs 3 --json /tmp/ship-trigger.json | head -1
+  python3 - "$baseline" <<'EOF' || { echo "ship.sh: $skill's trigger rate fell below its baseline — not bumping" >&2; exit 1; }
 import json, re, sys
 r = json.load(open("/tmp/ship-trigger.json"))["summary"]
 m = re.findall(r"(\d+)/(\d+)", sys.argv[1])
@@ -121,7 +135,7 @@ neg = r["should_not_trigger"]["passed"] / max(r["should_not_trigger"]["total"], 
 print(f"ship.sh: trigger should-fire {pos:.0%} (baseline {base_pos:.0%}), near-miss {neg:.0%} (baseline {base_neg:.0%})")
 sys.exit(0 if pos >= base_pos and neg >= base_neg else 1)
 EOF
-fi
+done
 
 # --- 3. Bump, commit, tell -------------------------------------------------------------
 python3 - "$manifest" "$next" <<'EOF'

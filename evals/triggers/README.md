@@ -41,6 +41,8 @@ scripts/trigger-eval.py --skill plan-change --model claude-sonnet-5 --json out.j
 ```
 
 A prompt passes when its trigger rate lands on the right side of 0.5. Exit 1 on any failure.
+`scripts/ship.sh` runs the set itself, three runs per prompt, for every staged skill whose
+description differs from HEAD, and refuses to bump below the baseline row in this file.
 Runs need a logged-in CLI. Each prompt costs one to three short turns: the process is killed
 as soon as the skill fires, three other tool calls have been seen, or the message ends.
 
