@@ -14,8 +14,8 @@ friction is noted silently and raised **once, at the end of the run** — never 
 Each owns exactly one destination for that friction.
 
 - **[improve-skill](./improve-skill/SKILL.md)** — Fix one of your own skills, in either
-  plugin, from an observed friction. Shows the exact diff, 🛑 stops for approval, then
-  commits, bumps the version and tells you to `plugin update` so the fix actually ships.
+  plugin, from an observed friction. Shows the exact diff, 🛑 asks for approval, then
+  ships it through `scripts/ship.sh` so the fix reaches the next session.
 - **[find-skill-gaps](./find-skill-gaps/SKILL.md)** — Read the cross-session ledger in
   [`observations/SIGNALS.md`](../../observations/SIGNALS.md) and propose a **new** skill only
   on two independent signals — 🛑 gated on the idea before drafting, and on the draft before

@@ -1,267 +1,111 @@
 # jankolenko-skills
 
 Composable, **portable** agent skills for shipping ticketed work, packaged as a
-[Claude Code plugin](https://code.claude.com/docs/en/plugins).
-
-Everything here works against any Jira/Confluence Data Center instance and any git repo —
-nothing tracked in this repository is bound to one employer, programme or codebase, and
-[`scripts/check-portable.py`](./scripts/check-portable.py) keeps it that way. The workflows
-and rules that *are* bound to one live beside them in an untracked
-[`projects/`](./projects/README.md) folder, shipped as the `jankolenko-projects` plugin,
+[Claude Code plugin](https://code.claude.com/docs/en/plugins). Everything here works against
+any Jira or Confluence Data Center instance and any git repository; nothing tracked names one
+employer, programme or codebase, and [`scripts/check-portable.py`](./scripts/check-portable.py)
+keeps it that way. What is bound to one team lives in the untracked
+[`projects/`](./projects/README.md) folder and ships as the `jankolenko-projects` plugin,
 which depends on this one and not the other way round
 ([`adr/0005`](./.agents/adr/0005-projects-folder.md)).
 
-The unit of design here is the **atom**: a small skill that does one thing and declares its
-inputs and outputs by name, so other skills can call it. `implement-ticket` is not a monolith —
-it is the wiring between atoms that are each useful on their own.
+The unit of design is the **atom**: a small skill that does one thing and declares its
+inputs and outputs by name, so other skills can call it. `implement-ticket` is the wiring
+between atoms that are each useful on their own.
 
 ## The skills
 
-Skills sort into **buckets** by what they are about — `engineering/`, `productivity/` and
-`meta/` — each at exactly `skills/<bucket>/<skill-name>/SKILL.md`. What only one team can
-use is not a bucket; it sits in the untracked `projects/` folder, one subfolder per
-repository.
+Skills sort into buckets by domain, each at `skills/<bucket>/<skill-name>/SKILL.md`, and
+refer to each other by qualified name (`jankolenko-skills:git-commit`), the string the
+`Skill` tool takes. Within a bucket, integrations feed atoms and atoms compose into
+orchestrators; roles are declared in each skill, not drawn as folders
+([`adr/0002`](./.agents/adr/0002-domain-buckets.md)).
 
-What a skill *does in a pipeline* is a separate axis, and it is the one that matters for
-composing them. Every skill declares one of three **roles**, and read in that order they are
-the dataflow: **integrations** feed **atoms**, atoms compose into **orchestrators**,
-orchestrators specialise into the project workflows under `projects/`, and `meta/`
-watches all of it. Roles are
-deliberately not folders — see
-[`.agents/adr/0002-domain-buckets.md`](./.agents/adr/0002-domain-buckets.md).
+### `engineering/`
 
-Skills refer to each other by **qualified name** — `jankolenko-skills:git-commit`, never
-bare `git-commit`. That is the string the `Skill` tool takes, so a step reads the same way it
-runs, and it stays unambiguous now that the skills ship from two plugins of mine plus
-whatever else you have installed.
-
-### `engineering/` — everything that moves a diff toward a PR
-
-#### Integrations — your Jira and Confluence
-
-Talks to **any** Jira / Confluence **Server or Data Center** instance over the REST API with
-a personal access token. You point `$JIRA_URL` and `$CONFLUENCE_URL` at your own hosts; the
-token is what decides what you can see. No browser, no SSO dance, no MCP server to authorize.
-
-> **Not Atlassian Cloud.** These speak Jira REST v2 with wiki markup and Confluence
-> `/rest/api/content` with storage-format XHTML, authenticating with a Bearer PAT. Cloud is a
-> different API (Jira v3 + ADF, Confluence under `/wiki`) with `email:api_token` Basic auth,
-> and will not authenticate here.
+The two integrations talk to any Jira or Confluence **Server or Data Center** instance over
+REST with a personal access token: Jira REST v2 with wiki markup, Confluence
+`/rest/api/content` with storage-format XHTML, Bearer auth. Atlassian Cloud is a different
+API and will not authenticate here.
 
 | Skill | What it does |
 | --- | --- |
-| **[atlassian-jira](./skills/engineering/atlassian-jira/SKILL.md)** | Read and update tickets on your Jira instance — fetch as Markdown, search by text or JQL, transition status, comment, create and edit issues |
-| **[atlassian-confluence](./skills/engineering/atlassian-confluence/SKILL.md)** | Read pages from your Confluence instance as Markdown, macros expanded and tables intact. Search, list and download attachments. Can add or update **one delimited section** on a page |
+| [atlassian-jira](./skills/engineering/atlassian-jira/SKILL.md) | Read and update tickets: fetch as Markdown, search by text or JQL, transition, comment, create, edit |
+| [atlassian-confluence](./skills/engineering/atlassian-confluence/SKILL.md) | Read pages as Markdown, search, download attachments, add or update one delimited section |
+| [find-repository](./skills/engineering/find-repository/SKILL.md) | Work out which local repository a task belongs to, and refuse rather than guess |
+| [plan-change](./skills/engineering/plan-change/SKILL.md) | Read the code, then decide what to do to it: files, steps, risks, lanes |
+| [clarify-goal](./skills/engineering/clarify-goal/SKILL.md) | Turn a blocked plan into answered questions, one decision at a time with a recommendation |
+| [git-create-branch](./skills/engineering/git-create-branch/SKILL.md) | Branch with a conventional name: `feature/`, `bugfix/`, `hotfix/` + key + slug |
+| [write-tests](./skills/engineering/write-tests/SKILL.md) | Write tests in the repository's existing runner, layout and style |
+| [critique-plan](./skills/engineering/critique-plan/SKILL.md) | Review the diff against the plan: what is missing, what is unplanned, whether it should exist |
+| [git-commit](./skills/engineering/git-commit/SKILL.md) | Stage by path and commit with a conventional message; never pushes |
+| [git-pr-push-and-open](./skills/engineering/git-pr-push-and-open/SKILL.md) | Show the diff, stop for approval, then push and open the PR |
+| [git-pr-address-review](./skills/engineering/git-pr-address-review/SKILL.md) | Work the review comments on a PR: apply or decline each with a reason, one ledger row each |
+| [record-learnings](./skills/engineering/record-learnings/SKILL.md) | Write durable constraints back to `CLAUDE.md`, a spec section or the ticket |
+| [prepare-local-environment](./skills/engineering/prepare-local-environment/SKILL.md) | Install, build and start what the repository runs on, then prove the app rendered |
+| [implement-ticket](./skills/engineering/implement-ticket/SKILL.md) | Orchestrates the whole run: ticket → repo → plan → branch → build → test → critique → review → PR → In Review → learnings |
 
-#### Atoms — reusable anywhere
-
-Nothing instance-specific, nothing Jira-specific. They accept explicit inputs, and resolve a
-ticket key on their own only if `atlassian-jira` happens to be installed.
-
-| Skill | What it does |
-| --- | --- |
-| **[find-repository](./skills/engineering/find-repository/SKILL.md)** | Work out which local git repo a task belongs to — and refuse rather than guess |
-| **[plan-change](./skills/engineering/plan-change/SKILL.md)** | Read the code, then decide what to do to it: files, steps, risks — and whether the work splits into independent lanes |
-| **[clarify-goal](./skills/engineering/clarify-goal/SKILL.md)** | Turn a blocked plan into answered questions — facts get looked up, decisions go to you one at a time with a recommendation, answers fold back into the goal |
-| **[git-create-branch](./skills/engineering/git-create-branch/SKILL.md)** | Branch with a conventional name: `feature/`, `bugfix/`, `hotfix/` + key + slug |
-| **[write-tests](./skills/engineering/write-tests/SKILL.md)** | Write tests matching the repo's existing runner, layout and style |
-| **[critique-plan](./skills/engineering/critique-plan/SKILL.md)** | Review the diff against the *plan*, not for bugs — what's missing, what's unplanned, whether it should exist |
-| **[git-commit](./skills/engineering/git-commit/SKILL.md)** | Stage and commit with a conventional message. Local only — never pushes |
-| **[git-pr-push-and-open](./skills/engineering/git-pr-push-and-open/SKILL.md)** | Show the diff, **stop for human approval**, then push and open the PR |
-| **[git-pr-address-review](./skills/engineering/git-pr-address-review/SKILL.md)** | Work the review comments on a PR — apply the ones that earn a change, decline the rest with a reason, one ledger row each |
-| **[record-learnings](./skills/engineering/record-learnings/SKILL.md)** | Write durable constraints back to `CLAUDE.md`, a spec section or the ticket — and drop everything that wasn't durable |
-| **[prepare-local-environment](./skills/engineering/prepare-local-environment/SKILL.md)** | Install, build and start whatever this repo runs on — then prove the app rendered before handing you the URL |
-
-#### Orchestrators — workflows
+### `productivity/`
 
 | Skill | What it does |
 | --- | --- |
-| **[implement-ticket](./skills/engineering/implement-ticket/SKILL.md)** | Ticket → context → repo → plan → branch → implement → test → critique → review → PR → *In Review* → learnings. Bails out when the ticket is too ambiguous to act on |
+| [explain](./skills/productivity/explain/SKILL.md) | Explain code, a principle, a metric or how to build X in Y, plainly and accurately |
+| [draft-reply](./skills/productivity/draft-reply/SKILL.md) | Turn a pasted thread and a rough draft into a short reply that checks out and answers everything asked |
 
-### `productivity/` — not about shipping a change
+### `meta/`
 
-Useful with no repo open at all. The bucket exists so the boundary was drawn before there
-were three, not after.
-
-| Skill | What it does |
-| --- | --- |
-| **[explain](./skills/productivity/explain/SKILL.md)** | Explain the thing you're stuck on — code, a principle, a metric, or how to build X in Y — in plain words that stay technically accurate, closed with an everyday analogy |
-| **[draft-reply](./skills/productivity/draft-reply/SKILL.md)** | Turn a pasted thread, and usually a rough draft of the answer, into a reply that is short, checks out, and answers everything that was actually asked — the tightening is the easy part; the value is catching a number quoted from memory and the second question the draft never answered |
-
-### `projects/` — untracked, one folder per repository
-
-Instance-specific material — a workflow wired to one programme, one repo, one Confluence
-space; a rule that holds in one codebase and not in one you have never seen; the ticket, PR
-and commit behind a general rule — lives in [`projects/`](./projects/README.md), gitignored
-except for the README that documents its shape. Skills there ship as the
-`jankolenko-projects` plugin, rooted at that folder and declaring this plugin as a hard
-dependency; rules there are injected by the session-start hook only inside their own
-repository. Nothing here needs any of it.
-
-### `meta/` — the skill layer improving itself
-
-The learning loop that `record-learnings` closes for work repos, closed for the skills
-themselves. A session-start hook (in [`hooks/`](./hooks)) injects one standing rule: while
-any skill from this plugin runs, friction is noted silently and raised **once, at the end of
-the run** — never mid-pipeline.
+The learning loop, closed for the skills themselves. A session-start hook
+([`hooks/`](./hooks)) injects the four standing rules and one habit: friction with a skill is
+raised once, at the end of the run.
 
 | Skill | What it does |
 | --- | --- |
-| **[improve-skill](./skills/meta/improve-skill/SKILL.md)** | Fix one of your own skills, in either plugin, from an observed friction — shows the exact diff, 🛑 stops for approval, then commits, bumps the version and tells you to `plugin update` so the fix actually ships |
-| **[find-skill-gaps](./skills/meta/find-skill-gaps/SKILL.md)** | Read the cross-session ledger in [`observations/SIGNALS.md`](./observations/SIGNALS.md) and propose a **new** skill only on two independent signals — 🛑 gated on the idea before drafting, and on the draft before it lands |
-| **[record-engineering-rule](./skills/meta/record-engineering-rule/SKILL.md)** | Decide where a convention a coding run learned belongs — the general [`ENGINEERING.md`](./ENGINEERING.md), which names the shape of a failure and never a repo or ticket, or one repository's `projects/<repository>/ENGINEERING.md` — routes most candidates to `record-learnings` or `improve-skill` instead, and 🛑 gates the rest |
-| **[find-session-improvements](./skills/meta/find-session-improvements/SKILL.md)** | Sweep a finished session for what the skill layer should have learned from it and route each finding to the skill that owns it, behind one 🛑 triage gate — re-derives findings from the transcript, because in a long session noticing depends on recall and recall is what compaction drops |
+| [improve-skill](./skills/meta/improve-skill/SKILL.md) | Fix one of your own skills from an observed friction, gated on the exact diff, then ship it |
+| [find-skill-gaps](./skills/meta/find-skill-gaps/SKILL.md) | Propose a new skill from the [signals ledger](./observations/SIGNALS.md) once a gap has two independent signals |
+| [record-engineering-rule](./skills/meta/record-engineering-rule/SKILL.md) | Decide where a coding convention belongs, the general [`ENGINEERING.md`](./ENGINEERING.md) or one repository's rules, gated on the diff |
+| [find-session-improvements](./skills/meta/find-session-improvements/SKILL.md) | Sweep a finished session for what the skill layer should learn and route each finding to its owner behind one triage gate |
 
 `find-skill-gaps` and `find-session-improvements` are started by hand
 (`/jankolenko-skills:find-skill-gaps`); the model cannot invoke them, so their descriptions
-cost nothing in the skill listing. All four are bound by
-[`.agents/authoring.md`](./.agents/authoring.md) — the written-down conventions every skill
-here follows — which defers generic skill-writing mechanics to
-`anthropic-skills:skill-creator` through one swappable reference.
+cost nothing in the skill listing.
 
-## How they compose
+## Safety
 
-Every skill declares `## Inputs` and `## Output` with **named fields**, so a caller wires by
-name instead of guessing:
-
-```
-atlassian-jira  ──ticket.title──▶  git-create-branch   (slug)
-                ──ticket.type───▶  git-create-branch   (type)
-                ──ticket.description──▶  plan-change   (goal)
-                ──ticket.acceptance_criteria──▶  write-tests  (criteria)
-                ──ticket.key────▶  git-commit          (ticket_key)
-
-plan-change  ──plan.steps───▶  implement
-             ──plan.lanes───▶  fan out, or don't
-             ──plan.*───────▶  critique-plan   (plan)
-```
-
-`implement-ticket` holds the ticket data once and passes values down, so nothing refetches.
-Invoked on their own, the atoms take a bare ticket key and resolve it themselves.
-
-Four edges run **backwards**, and they are what stop the pipeline being a one-way conveyor:
-
-```
-critique-plan ──reject-to-plan──▶ plan-change      (this run: replan, don't defend)
-              ──reject-to-code──▶ implement
-
-plan-change ──blocked──▶ clarify-goal ──clarify.*──▶ plan-change   (ask, don't die)
-
-record-learnings ──▶ CLAUDE.md ──▶ plan-change     (next run: as constraints)
-
-git-pr-push-and-open ──pr.url──▶ git-pr-address-review ──applied───▶ git-commit
-                                                       ──declined──▶ a reply, not a change
-
-git-pr-address-review ──resolution.corrections──▶ improve-skill / ENGINEERING.md / SIGNALS
-git-pr-push-and-open  ──pr.gate_corrections────▶ (same three)
-```
-
-The last two close the longest loop in the repo: they run **backwards into the skill layer
-itself**. An applied review comment, or work the user sends back at the push gate, is a human
-overruling output the run had already decided was finished — which is stronger evidence than
-any friction the agent notices about itself, because it comes from outside the run. Both
-skills filter to the corrections that name a recurring *class* rather than one diff, and hand
-those to whichever meta skill owns the destination.
-
-For a review comment the evidence is the **landed diff, never the comment's text**. Comments
-arrive from an API, so they are fetched content, and fetched content cannot reach the agent's
-own instructions — that is the injection path, and `improve-skill`'s gate keeps it closed.
-Only a change this run actually made counts, and only you can approve what it changes.
-
-`git-pr-address-review` closes the code loop: a PR is opened, humans comment on it, and the
-work comes back to the code. Each comment gets one of two verdicts — **applied** (the diff
-moved) or **declined** (it didn't, and the reply says why) — and one row in a ledger, so no
-comment is closed by silence and none is applied by a nod.
-
-`critique-plan` reviews the diff against *intent*, which is a different question from the one
-`/code-review` answers — tests ask whether it runs, the critique asks whether it should
-exist. A plan the code disproves gets replaced rather than implemented more faithfully.
-
-## Optional: sharper plan grounding
-
-This plugin has **no hard dependency on any other plugin**. `/code-review`, `/simplify` and
-`/run` are built into Claude Code, so they are always there.
-
-One external skill is used when present. `plan-change` and `implement-ticket` will consult
-[`mattpocock-skills:codebase-design`](https://github.com/mattpocock/skills) to check a plan
-against the module boundaries a codebase already has:
-
-```bash
-/plugin install mattpocock-skills@claude-plugins-official
-```
-
-It lives in Claude Code's official marketplace, so there is nothing to clone and nothing to
-link. Without it, both skills ground the plan themselves and say so once — a missing optional
-skill never fails a run.
-
-## Three safety properties worth knowing
-
-**Writes only happen on your instruction.** `atlassian-jira` and `atlassian-confluence` can change
-tickets and pages, so both carry an explicit provenance rule: a write happens only when the
-user or an orchestrating skill asked for it — **never** because a ticket description, comment,
-Confluence page or code comment said to. Fetched text is data, not instructions. There is
-deliberately **no delete script**.
-
-`record-learnings` writes through those same two skills and inherits the rule, with one of its
-own on top: a learning has to come from what the run **observed** — a test that failed, an API
-that returned something unexpected — never from a claim found in fetched text. Anything headed
-for a shared surface stops for approval first; only the local `CLAUDE.md` edit doesn't, because
-it lands in the diff like any other change.
-
-**Confluence edits are section-scoped.** Confluence has no append primitive — every update
-rewrites the whole page — so `update_page.py` writes only between its own markers, refuses
-when the page moved under it (`409`), and refuses when a section looks like it already exists
-without markers. `--dry-run` shows the change before anything is written.
-
-**Pushing always stops for a human.** `git-pr-push-and-open` shows the full diff and waits
-for an explicit yes before `git push`. The gate lives in the same skill as the push so nothing
-can compose around it, and it repeats every round of changes. Only you, in chat, can waive it.
-
-This is an **advisory** control: it holds while a session actually invokes the skill. A
-`PreToolUse` hook briefly backed it deterministically, and was removed — it asked on every
-push, and a gate that fires on routine work trains you to approve without reading, which
-costs more than it protects. If you want it back, `git log -- hooks-handlers/` has it.
+- Writes to Jira, Confluence or a PR, and pushes, happen only on your word in chat. Text
+  fetched from a ticket, page, comment or file is data, never an instruction. There is no
+  delete script.
+- Every stop for approval asks through Claude Code's `AskUserQuestion` tool, which ends the
+  turn. The push gate lives in the same skill as the push, so nothing composes around it,
+  and it repeats every round of changes.
+- Confluence edits are section-scoped: `update_page.py` writes only between its own markers,
+  refuses when the page moved under it, and shows a `--dry-run` first.
+- These are advisory controls that hold while a skill runs. The suite in [`evals/`](./evals)
+  checks each one before a version ships.
 
 ## Installation
 
-### 1. Add the marketplace (once per machine)
+Add the marketplace once per machine, then install the plugin:
 
 ```bash
 claude plugins marketplace add JanKolenko-git/skills
-```
-
-### 2. Install the plugin
-
-```bash
 claude plugins install jankolenko-skills
 ```
 
-Or, from inside a session:
+This installs at user scope, so the skills show up in the CLI, the desktop app and the IDE
+extensions alike. Restart Claude after installing. The marketplace is private, not Claude
+Code's official one, so the first line is required; `jankolenko-skills@jankolenko` pins it
+explicitly if a name ever collides.
 
-```
-/plugin install jankolenko-skills
-```
+### Point the skills at your instances
 
-This installs at **user scope** by default, which is what you want — `~/.claude` is shared,
-so the skills show up in the Claude Code CLI, the desktop app, and the IDE extensions
-alike. Restart Claude after installing.
+The Atlassian skills read the host and the credential from the environment at runtime. There
+are no defaults: an unset URL stops with a setup message rather than guessing, and tokens
+live on your machine, never in this repo. Create one personal access token in each product
+(profile menu → *Personal Access Tokens*); they are per-product, so a Jira token gets a `401`
+from Confluence.
 
-> This is a private marketplace, not Claude Code's official one, so step 1 is required —
-> `claude plugins install jankolenko-skills` on a machine that hasn't added the marketplace
-> will not find anything. After step 1 it resolves by name; `jankolenko-skills@jankolenko`
-> pins it explicitly if you ever have a name collision.
-
-### 3. Point the skills at your instances, and set your tokens
-
-The Atlassian skills read both the host and the credential from the environment at runtime.
-There are **no defaults** — an unset URL stops with a setup message rather than guessing.
-**Tokens live on your machine, never in this repo.**
-
-Create one token in each product. They are per-product: a Jira token gets a `401` from
-Confluence. In each, open the profile menu → *Personal Access Tokens*.
-
-Add all four to `~/.zshenv` (not `~/.zshrc` — `.zshenv` is read by non-interactive shells
-too, which is how the agent runs commands):
+Add all four to `~/.zshenv`, not `~/.zshrc`: `.zshenv` is read by the non-interactive shells
+the agent runs commands in. Then lock the file down.
 
 ```bash
 export JIRA_URL='https://jira.example.com'
@@ -270,30 +114,13 @@ export CONFLUENCE_URL='https://confluence.example.com'
 export CONFLUENCE_PERSONAL_TOKEN='...'
 ```
 
-Lock the file down, since it now holds secrets:
-
 ```bash
 chmod 600 ~/.zshenv
 ```
 
-Open a new terminal, then check all four are visible:
-
-```bash
-env | grep -c 'JIRA_URL\|JIRA_PERSONAL_TOKEN\|CONFLUENCE_URL\|CONFLUENCE_PERSONAL_TOKEN'
-```
-
-That should print `4`.
-
-### 4. Point `find-repository` at your code (optional)
-
-`find-repository` looks in the current directory, then `$REPO_ROOT`, then `~/Developer`, `~/code`,
-`~/src`, `~/projects`, `~/repos`. If your repositories live somewhere else, set it:
-
-```bash
-export REPO_ROOT="$HOME/work"
-```
-
-### Environment variables
+`find-repository` looks in the current directory, then `$REPO_ROOT`, then `~/Developer`,
+`~/code`, `~/src`, `~/projects`, `~/repos`; set `REPO_ROOT` if your repositories live
+elsewhere.
 
 | Variable | Required | Use |
 | --- | --- | --- |
@@ -307,14 +134,12 @@ export REPO_ROOT="$HOME/work"
 | `BITBUCKET_TOKEN` | no | HTTP access token, for `git-pr-address-review` on a Bitbucket PR |
 | `BITBUCKET_URL` | no | Bitbucket Data Center base URL, e.g. `https://bitbucket.example.com`. Leave unset for Bitbucket Cloud |
 
-The atoms need none of these — only the two Atlassian integrations do.
-
-TLS verification is **on** by default. The insecure escape hatches exist for TLS-inspecting
-proxy environments and should stay unset.
+The atoms need none of these; only the two Atlassian integrations do. TLS verification is on
+by default.
 
 ## Usage
 
-The skills are model-invoked: just ask, and the agent reaches for them.
+The skills are model-invoked: ask, and the agent reaches for them.
 
 ```
 solve PROJ-1234
@@ -325,13 +150,12 @@ find PROJ tickets in review that mention caching
 move PROJ-1234 to In Review and comment with the PR link
 which repo is PROJ-1234 about?
 what is INP, and what actually moves it?
-explain how CDN caching decides a hit from a miss
 open a PR for this branch
 address the review comments on <pr-url>
 ```
 
-You can also run the scripts yourself. They are stdlib-only Python 3 — nothing to install,
-and every script takes `--help`:
+The scripts are stdlib-only Python 3 and every one takes `--help`, so they run on their own
+too:
 
 ```bash
 python3 ~/.claude/plugins/**/skills/engineering/atlassian-jira/fetch_ticket.py PROJ-1155
@@ -339,117 +163,62 @@ python3 ~/.claude/plugins/**/skills/engineering/atlassian-jira/fetch_ticket.py P
 
 ## Requirements
 
-- Python 3 (stdlib only — no `pip install`)
-- A Jira / Confluence **Server or Data Center** instance you can reach (Cloud is not supported)
-- Network access to it — most self-hosted instances sit behind a VPN
+- Python 3, stdlib only
+- A Jira / Confluence Server or Data Center instance you can reach (most sit behind a VPN)
 - A personal access token per product
-- `gh` CLI, if you want `git-pr-push-and-open` to open the PR rather than hand you a compare link
-- `gh` (GitHub) or `BITBUCKET_TOKEN` (Bitbucket), if you want `git-pr-address-review` to read
-  and reply to review comments rather than work from pasted text
+- `gh` CLI, if `git-pr-push-and-open` is to open the PR rather than hand you a compare link
+- `gh` (GitHub) or `BITBUCKET_TOKEN` (Bitbucket), if `git-pr-address-review` is to read and
+  reply to review comments rather than work from pasted text
 
 ## Troubleshooting
 
 | Symptom | Cause |
 | --- | --- |
 | `CONFLUENCE_PERSONAL_TOKEN is not set` | Token exported in `~/.zshrc` instead of `~/.zshenv`, or the terminal predates the change |
-| `HTTP 401 — token was rejected` | Token expired, or a Jira token is being used against Confluence (they don't cross over) |
-| `HTTP 403` | The account genuinely lacks access to that ticket or space — or, on a write, lacks permission to change it |
-| `no transition leads to …` | The workflow doesn't allow that status from the current one. Run `get_transitions.py` to see what it does allow |
-| `JIRA_URL is not set` | The instance URL was never exported — see step 3 |
-| `cannot reach ...` | Wrong host, or not on the network/VPN it sits behind |
+| `HTTP 401 — token was rejected` | Token expired, or a Jira token is being used against Confluence |
+| `HTTP 403` | The account lacks access to that ticket or space, or, on a write, permission to change it |
+| `no transition leads to …` | The workflow does not allow that status from the current one; `get_transitions.py` lists what it does allow |
+| `JIRA_URL is not set` | The instance URL was never exported |
+| `cannot reach ...` | Wrong host, or not on the network or VPN it sits behind |
 | `find-repository` finds nothing | Set `REPO_ROOT`, or run from inside the repo |
-| Bitbucket comment update returns `409` | Someone edited the thread mid-run — `git-pr-address-review` re-reads the comment `version` and retries once |
+| Bitbucket comment update returns `409` | Someone edited the thread mid-run; `git-pr-address-review` re-reads the comment `version` and retries once |
 
 Exit codes distinguish the cases for scripting: `1` setup or bad input, `2` HTTP/auth,
 `3` forbidden, `4` not found, `5` network unreachable.
 
 ## Development
 
-Skills live in [`skills/`](./skills) under a **bucket**, sorted by domain: `engineering/`
-for anything that moves a change toward a merged PR, `productivity/` for skills useful with
-no repo open, `meta/` for skills that operate on the skill layer itself. What encodes
-conventions only one team recognises is not a bucket — it leaves `skills/` for the untracked
-[`projects/`](./projects/README.md) folder, one subfolder per repository, and ships from
-there as the `jankolenko-projects` plugin
-([`adr/0005`](./.agents/adr/0005-projects-folder.md)). Every skill sits at exactly
-`skills/<bucket>/<skill-name>/SKILL.md`: one bucket level, never two, and the folder name is
-the skill's `name` verbatim. Grouping a bucket still wants — a set of integrations, a
-programme — goes in its [`README.md`](./skills), not in another folder; see
-[`.agents/adr/0001-one-bucket-level.md`](./.agents/adr/0001-one-bucket-level.md).
-
-A skill's **role** — integration, atom, orchestrator — is a declared property rather than a
-folder, stated in its opening thesis and used to group its bucket `README.md`. Role is the
-axis that changes as a skill grows a second caller; domain is the one that doesn't, so domain
-is what the filesystem holds ([`adr/0002`](./.agents/adr/0002-domain-buckets.md)).
-
-Adding a skill is four edits — the folder, its bucket `README.md`, the table above, and the
-`skills` array in [`.claude-plugin/plugin.json`](./.claude-plugin/plugin.json). This checks
-all four and exits non-zero on drift:
+How a skill is written, named and shipped is in
+[`.agents/authoring.md`](./.agents/authoring.md); the structural decisions and their rejected
+alternatives are in [`.agents/adr/`](./.agents/adr). One command checks layout, portability,
+the token budgets and the manifests:
 
 ```bash
-./scripts/list-skills.sh
+scripts/check.sh
 ```
 
-New skills follow [`.agents/authoring.md`](./.agents/authoring.md) — most importantly
-`## Inputs` and `## Output` with named fields, which is what makes a skill callable by
-another skill instead of only by a human, and the rule that a skill refers to another as
-`plugin:name`. That file governs the project skills under `projects/` too; there is no
-second copy. [`CLAUDE.md`](./CLAUDE.md) has the layout contract and what must stay in sync;
-[`.agents/adr/`](./.agents/adr) has the structural decisions and their rejected alternatives.
-
-Validate the manifests before pushing, and check that nothing tracked names a project — a
-ticket key, a PR or commit in a provenance line, a private package scope:
+Sessions load skills from the versioned plugin cache, so an edit ships only after a version
+bump and an update. `scripts/ship.sh` runs the checks and the evals covering the change,
+bumps, commits and prints the update command:
 
 ```bash
-claude plugin validate .
-./scripts/check-portable.py
+git add <files>
+scripts/ship.sh <skill-name> -m "docs(<skill>): <what changed>"
 ```
 
-Neither that nor `list-skills.sh` checks **behaviour** — a reword that quietly drops a gate
-passes both. [`evals/`](./evals) covers that: one case per expensive refusal, run before any
-version bump. See [`evals/README.md`](./evals/README.md).
-
-```bash
-CLAUDE_CODE_WALNUT_SPIRE=1 claude plugin eval . --allow-tools Bash Write Edit
-```
-
-Working on the skills locally, without reinstalling on every edit:
-
-```bash
-claude plugin marketplace add ~/Developer/skills
-claude plugin marketplace add ~/Developer/skills/projects   # the project plugin, if you keep one
-```
-
-That registers **Directory** marketplaces pointing at your working tree, so each plugin is
-rebuilt from the local files. A commit is enough to ship a general change to yourself — no
-push needed — and a project change is not even that, since the folder is untracked. Sessions
-still load from the versioned cache, so bump the plugin's `version`, then:
-
-```bash
-claude plugin update jankolenko-skills@jankolenko
-```
-
-The `@jankolenko` suffix is **required** — the bare name fails with "Plugin not found",
-because `update` resolves against the qualified `plugin@marketplace` id it was installed
-under. Restart Claude afterwards; the running session keeps its old cache.
-
-The project plugin has its **own** marketplace, so its id is
-`jankolenko-projects@jankolenko-projects`. Rather than remembering which is which, ask:
-
-```bash
-./scripts/which-plugin.sh <skill-name>
-```
-
-It prints the source path, the `plugin.json` to bump, the exact `update` command for
-whichever plugin ships that skill, and whether the path is tracked — a project skill is not,
-so there is nothing to commit. `jankolenko-skills:improve-skill` uses it for the same reason.
+To work from this tree, register it as a Directory marketplace once
+(`claude plugin marketplace add ~/Developer/skills`, and `~/Developer/skills/projects` for the
+project plugin); a commit then ships to yourself without a push. `scripts/which-plugin.sh
+<skill>` prints which plugin ships a skill and its exact update command; the `@marketplace`
+suffix is required. Behaviour is checked by [`evals/`](./evals): one case per expensive
+refusal, run by `ship.sh` before any bump ([`evals/README.md`](./evals/README.md)).
 
 ## Security
 
 No credentials are committed to this repository, and none should be. The Python clients read
 tokens from the environment only; `_client.py` in each Atlassian skill is the single place
-auth is handled, and `send_json` is the single place a write can originate. If a token ever lands
-in a commit, rotate it in Atlassian — rewriting history is not enough.
+auth is handled, and `send_json` the single place a write can originate. If a token ever
+lands in a commit, rotate it in Atlassian; rewriting history is not enough.
 
 ## License
 

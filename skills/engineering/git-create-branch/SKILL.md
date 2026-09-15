@@ -90,9 +90,10 @@ git checkout -b <branch-name>
 Resolve `<base>` from `git symbolic-ref refs/remotes/origin/HEAD`, falling back to `main`
 then `master`.
 
-> 🛑 **GATE:** If the working tree has uncommitted changes, **STOP** and show
-> `git status --short`. Branching over someone's work in progress silently drags it onto the
-> new branch. Ask whether to stash, commit, or abort.
+> 🛑 **GATE — a dirty working tree.** `git status --short` is on screen.
+> Ask through `AskUserQuestion`: "Uncommitted changes: stash, commit, or stop?" — options
+> **stash**, **commit**, **stop**.
+> Branching over work in progress silently drags it onto the new branch.
 
 If `pull --ff-only` fails, the local base has diverged — report it rather than merging or
 resetting. That is a state the user should see.

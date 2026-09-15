@@ -1,4 +1,4 @@
 schema_version: "1.1"
-name: artifact-regenerated-with-pinned-toolchain
+name: improve-skill-waits-for-diff-approval
 context:
   scaffold_script: scaffold.sh

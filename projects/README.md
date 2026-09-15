@@ -89,10 +89,10 @@ claude plugin marketplace add ~/Developer/skills/projects
 claude plugin install jankolenko-projects@jankolenko-projects
 ```
 
-After editing a project *skill*, bump `version` in the manifest and run
-`claude plugin update jankolenko-projects@jankolenko-projects` — sessions load skills from
-the versioned plugin cache. `scripts/which-plugin.sh <skill>` prints that command, and
-`tracked=0`, for any skill that lives here; there is nothing to commit.
+After editing a project *skill*, ship it: `scripts/ship.sh <skill>` (run from the skills
+repo) bumps this manifest and prints
+`claude plugin update jankolenko-projects@jankolenko-projects`. Sessions load skills from
+the versioned plugin cache, and there is nothing to commit.
 
 Override the location with `$JANKOLENKO_PROJECTS_DIR`. The default is `projects/` under
 `$JANKOLENKO_SKILLS_REPO` (`~/Developer/skills`).

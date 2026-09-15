@@ -6,7 +6,7 @@ set -uo pipefail
 # from the versioned plugin cache, so an edit is invisible until the manifest is bumped and
 # the plugin updated; this script owns that whole loop and refuses to bump on a red suite.
 #
-# Usage: scripts/ship.sh [-m <commit message>] [--minor] [--no-evals] [--case <glob>]
+# Usage: scripts/ship.sh [-m <commit message>] [--minor | --major] [--no-evals] [--case <glob>]
 #                        [--trigger] [--dry-run] <skill-name | general | projects>
 #
 #   <skill-name>  resolves the plugin that ships it (which-plugin.sh); evals default to
@@ -16,6 +16,7 @@ set -uo pipefail
 #   projects      the jankolenko-projects plugin; untracked, so bump and update only
 #   -m            commit message; required for a tracked change unless --dry-run
 #   --minor       bump the minor version (the skill set or plugin.json paths changed)
+#   --major       bump the major version (a skill removed, a contract or gate changed shape)
 #   --no-evals    skip the eval run (say why in the commit body)
 #   --dry-run     show the target, version and staged files; change nothing
 #
@@ -30,11 +31,12 @@ while [ $# -gt 0 ]; do
   case "$1" in
     -m) message="${2:-}"; shift 2 ;;
     --minor) bump="minor"; shift ;;
+    --major) bump="major"; shift ;;
     --no-evals) run_evals=0; shift ;;
     --case) case_glob="${2:-}"; shift 2 ;;
     --trigger) trigger=1; shift ;;
     --dry-run) dry_run=1; shift ;;
-    -h|--help) sed -n '3,22p' "$0"; exit 0 ;;
+    -h|--help) sed -n '3,23p' "$0"; exit 0 ;;
     -*) echo "ship.sh: unknown flag $1" >&2; exit 1 ;;
     *) target="$1"; shift ;;
   esac
@@ -65,7 +67,8 @@ current="$(python3 -c "import json;print(json.load(open('$manifest'))['version']
 next="$(python3 - "$current" "$bump" <<'EOF'
 import sys
 major, minor, patch = (int(x) for x in sys.argv[1].split("."))
-print(f"{major}.{minor + 1}.0" if sys.argv[2] == "minor" else f"{major}.{minor}.{patch + 1}")
+bump = sys.argv[2]
+print(f"{major + 1}.0.0" if bump == "major" else f"{major}.{minor + 1}.0" if bump == "minor" else f"{major}.{minor}.{patch + 1}")
 EOF
 )"
 

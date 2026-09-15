@@ -6,7 +6,10 @@ set -euo pipefail
 # one (this repo) and the project one (the untracked projects/ folder inside it).
 #
 # Prints shell-assignable lines: repo, skill_md, manifest, plugin, marketplace, update,
-# tracked. `tracked` is 1 when $repo is under version control (commit the edit) and 0 when
+# tracked, scripts (this repo's scripts/ in the working copy, so a skill can run ship.sh
+# from anywhere). Reach this script through the plugin's own copy —
+# "${CLAUDE_SKILL_DIR}/../../../scripts/which-plugin.sh" — it locates the working copy;
+# the cache copy is never what gets edited. `tracked` is 1 when $repo is under version control (commit the edit) and 0 when
 # it is the untracked projects/ folder (bump the manifest in place; nothing to commit).
 # Exits 1 if the skill is in neither, 2 if it is somehow in both.
 #
@@ -19,8 +22,21 @@ if [ -z "$skill" ]; then
   exit 1
 fi
 
-# Both roots are overridable so a clone anywhere still works.
-skills_repo="${JANKOLENKO_SKILLS_REPO:-$HOME/Developer/skills}"
+# The env override wins; then the working copy you are inside, so a clone anywhere — and a
+# copy inside an eval sandbox, whose home is throwaway — resolves to itself; then the
+# default location.
+skills_repo="${JANKOLENKO_SKILLS_REPO:-}"
+if [ -z "$skills_repo" ]; then
+  here="$PWD"
+  while [ "$here" != "/" ] && [ -n "$here" ]; do
+    if [ -d "$here/skills" ] && [ -f "$here/.claude-plugin/plugin.json" ] \
+       && grep -q '"name"[[:space:]]*:[[:space:]]*"jankolenko-skills"' "$here/.claude-plugin/plugin.json"; then
+      skills_repo="$here"; break
+    fi
+    here="$(dirname "$here")"
+  done
+fi
+skills_repo="${skills_repo:-$HOME/Developer/skills}"
 projects_dir="${JANKOLENKO_PROJECTS_DIR:-$skills_repo/projects}"
 
 found_repo=""
@@ -63,12 +79,14 @@ market="$found_repo/.claude-plugin/marketplace.json"
 plugin="$(sed -n 's/.*"name"[[:space:]]*:[[:space:]]*"\([^"]*\)".*/\1/p' "$manifest" | head -1)"
 marketplace="$(sed -n 's/.*"name"[[:space:]]*:[[:space:]]*"\([^"]*\)".*/\1/p' "$market" | head -1)"
 
-cat <<EOF
-repo="$found_repo"
-skill_md="$found_md"
-manifest="$manifest"
-plugin="$plugin"
-marketplace="$marketplace"
-update="claude plugin update $plugin@$marketplace"
-tracked=$found_tracked
-EOF
+# printf rather than a heredoc: a heredoc needs a temp file, which a sandboxed session
+# (the eval runner's, for one) may not be allowed to create.
+printf '%s\n' \
+  "repo=\"$found_repo\"" \
+  "skill_md=\"$found_md\"" \
+  "manifest=\"$manifest\"" \
+  "plugin=\"$plugin\"" \
+  "marketplace=\"$marketplace\"" \
+  "update=\"claude plugin update $plugin@$marketplace\"" \
+  "tracked=$found_tracked" \
+  "scripts=\"$skills_repo/scripts\""

@@ -23,7 +23,16 @@ run() {
   echo
 }
 
+# The four standing rules are stated once, in the session-start hook. A skill points at one
+# with `Standing rule: …` and restates none; these are the shapes a restatement takes.
+standing_rules() {
+  local hits
+  hits="$(grep -rniE 'never (an )?instructions?|not (an )?instructions?|provenance rule|injection|fetched (text|content)|never because (a |fetched)|never write credentials' skills --include=SKILL.md | grep -v 'Standing rule:' || true)"
+  [ -z "$hits" ] || { echo "$hits"; return 1; }
+}
+
 run "layout (list-skills.sh)"        scripts/list-skills.sh
+run "standing rules stated once"     standing_rules
 run "portable (check-portable.py)"   scripts/check-portable.py
 run "budgets (measure.py)"           scripts/measure.py
 # A nested `claude` refuses to start while CLAUDECODE marks an outer session; validation
