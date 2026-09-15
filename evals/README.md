@@ -212,7 +212,18 @@ $20.35 for 45 minutes. Twelve cases 3/3. `engineering-artifact-regenerated-with-
 2/3 again (this case has lost one run of three in three of four suite runs).
 `improve-skill-waits-for-diff-approval` 8/9 votes: one run passed every mechanical grader
 (no edit, no write, no shell rewrite, the skill fired) and lost the judge's `presents-diff`
-vote, on a skill Batch B did not touch; re-run with `--keep-temp` to read what it did.
+vote, on a skill Batch B did not touch; re-run three times afterwards, 3/3.
+
+## After Batch C
+
+Measured 2026-09-16 through `scripts/ship.sh general --minor`, 14 cases, three runs each,
+$20.18 for 43 minutes. Twelve cases 3/3. `engineering-artifact-regenerated-with-pinned-toolchain`
+1/3, unanimous judge votes both times: across five suite runs this case has now scored 2/3,
+2/3, 3/3, 2/3, 1/3, on a rulebook entry no batch touched, so the entry or the case needs
+work rather than another re-run. `plan-change-refuses-phantom-lanes` 7/9: one run proposed
+lanes for the two-file change (the first time in 27 runs across three suites) and one
+phrased its verdict past the regex; `plan-change` is unchanged since 5.0.0, where it held
+3/3 twice.
 
 ## When these run
 
