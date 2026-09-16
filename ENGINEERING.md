@@ -142,6 +142,40 @@ _Source: Power of 10 §5 and §7. Promoted when a library option went from objec
 a minor and a JavaScript host still passing the object lost its deferral silently in
 production._
 
+## Comments explain why, not what, in two sentences at most
+
+```ts
+// increment the counter
+count++;                                                // no — the code already said this
+
+/**
+ * Rendered width of a gallery image. From 960px the grid is two columns beside the
+ * sidebar: (min(1920px, 100vw) - sidebar) / 2, with the sidebar at 370/434/480px …
+ * (nine more lines: a browser quirk, an assumption, the layout that would break it)
+ */
+const sizes = '(min-width: 1440px) calc(50vw - 240px)'  // no — 240 is a name the
+                                                        //   comment is standing in for
+
+const SIDEBAR_WIDTH_PX = { desktop: 480 }
+// Ignores the scrollbar on purpose: Chrome counts an upscaled image at its file size
+// for LCP, so an understated slot costs more than an overstated one.
+const sizes = `(min-width: 1440px) calc(50vw - ${SIDEBAR_WIDTH_PX.desktop / 2}px)` // yes
+```
+
+The compiler documents what; a name documents a value. A comment is at most two short
+sentences, a line each, carrying only what neither can: the constraint that forced this
+shape, the bug that made the obvious version wrong, the check that looks redundant and is
+load-bearing. One that wants a paragraph stands in for a name the code lacks, a bare number,
+an unnamed step, an assumption nothing asserts; name it in the code and keep the sentence
+that is left. Say a reason once, where it lives, a pointer at most at the call site.
+
+Exception: a docblock on a library's published surface may say what it does, still in two
+sentences.
+
+_Source: Google, Apple and kernel style guides converge. Sharpened when a rationale copied to
+three call sites read as leftover; promoted when a twelve-line comment spelled out widths the
+code kept as bare numbers and review asked for names._
+
 ## A comment that states a behaviour is checked like the code it describes
 
 ```ts
@@ -341,28 +375,6 @@ convention.
 
 _Source: Google TypeScript Style Guide; a large TypeScript codebase — 4702 named exports to
 138 default._
-
-## Comments explain why, not what
-
-```ts
-// increment the counter
-count++; // no — the code already said this
-
-// Retry once on 429 before surfacing: the ranking API rate-limits per region and the
-// second attempt almost always lands in a different bucket.
-if (res.status === 429) return retryOnce(req); // yes
-```
-
-The compiler documents what. A comment earns its place carrying what the code cannot: the
-constraint that forced this shape, the bug that made the obvious version wrong, the check that
-looks redundant and is load-bearing. Say a reason once, where it lives: on the component, with
-a pointer at most at the call site. Three copies of one why are three places for it to go
-stale.
-
-Exception: docblocks on a public API, where describing what it does is the job.
-
-_Source: Google, Apple and kernel style guides converge. Sharpened when one rationale was
-repeated at three call sites and a reviewer read a copy as leftover._
 
 ## The change includes the deletion
 

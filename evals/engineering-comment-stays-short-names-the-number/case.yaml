@@ -1,0 +1,4 @@
+schema_version: "1.1"
+name: engineering-comment-stays-short-names-the-number
+context:
+  scaffold_script: scaffold.sh

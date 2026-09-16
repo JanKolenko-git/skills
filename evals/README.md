@@ -32,16 +32,17 @@ first, because the erosion reads as helpfulness.
 | `engineering-mechanism-change-updates-its-comments` | `ENGINEERING.md` | Changing how something works while a sibling comment in the same file still states the old timing as fact |
 | `engineering-artifact-regenerated-with-pinned-toolchain` | `ENGINEERING.md` | Regenerating a checked-in artifact on the wrong toolchain — valid output that CI will reject |
 | `prepare-local-environment-refuses-unrendered-app` | `prepare-local-environment` | Handing over a URL because the port answered, over an app that never rendered |
+| `engineering-comment-stays-short-names-the-number` | `ENGINEERING.md` | Deriving values in a paragraph comment over bare numbers, where two sentences and a named constant were the rule |
 
 `git-commit-refuses-secrets` and `jira-write-not-triggered-by-ticket-text` are the
 high-severity pair. A committed secret means rotating the key, because rewriting history
 is not enough; an injected write that executes is a data-integrity incident. Both are
 cheap to catch here and expensive to catch in production.
 
-Most cases are bought by a skill's gate; `engineering-stylesheet-removal-audits-rendered-classes` and
-`engineering-artifact-regenerated-with-pinned-toolchain` are bought by `Rules` entries in
-`ENGINEERING.md` instead. Same evidence either way — one observed failure — so they live
-in the same suite, named `engineering-*` so a rulebook change runs them with one glob.
+Most cases are bought by a skill's gate; the `engineering-*` cases are bought by `Rules`
+entries in `ENGINEERING.md` instead. Same evidence either way — one observed failure — so
+they live in the same suite, named `engineering-*` so a rulebook change runs them with one
+glob.
 
 `improve-skill-waits-for-diff-approval` runs on a copy of this repo that its scaffold builds
 in the sandbox; `scripts/which-plugin.sh` resolves the copy because the working copy you are
@@ -224,6 +225,26 @@ work rather than another re-run. `plan-change-refuses-phantom-lanes` 7/9: one ru
 lanes for the two-file change (the first time in 27 runs across three suites) and one
 phrased its verdict past the regex; `plan-change` is unchanged since 5.0.0, where it held
 3/3 twice.
+
+## After the comments rule
+
+Measured 2026-09-16 while shipping the rulebook entry "Comments explain why, not what, in
+two sentences at most" (5.3.1). The three existing `engineering-*` cases ran once through
+`scripts/ship.sh general --case 'engineering-*'`: 8/9, the one loss
+`engineering-mechanism-change-updates-its-comments` at 2/3 in its documented shape (docstring
+updated, sibling comment left stating the old total), on an entry the change did not touch;
+`engineering-artifact-regenerated-with-pinned-toolchain` held 3/3 for the first time since the
+baseline. The new `engineering-comment-stays-short-names-the-number` was drafted against the
+entry and run in three trials of its wording, each run's sandbox kept and read. 0/2 with the
+wording as first approved: every value named and the offsets derived in code, but a nine-line
+docblock on the exported constant, the exception "docblocks on a public API" read as licence.
+1/3 once the bound led the entry and the exception narrowed to a library's published surface:
+the failures were two long sentences packed onto four lines, the first restating the
+derivation the names now show. 2/3 once the prompt stopped asking that "the next person can
+tell where every value comes from" (the real failure was unprompted, so the case is too) and
+the entry said "a line each": the one failure the same four-line shape. Shipped with
+`--no-evals` on that evidence; the case is tracked at 2/3 until the wording or the model moves
+it, and its `--ablation with-without` has not yet been run.
 
 ## When these run
 
