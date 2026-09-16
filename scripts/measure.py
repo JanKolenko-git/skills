@@ -24,8 +24,8 @@ CHARS_PER_TOKEN = 4  # a rough, deliberately simple estimate; consistent across 
 
 BUDGETS = {
     "description_chars": 350,          # per model-invoked skill: description + when_to_use
-    "description_total_chars": 5700,  # sum over the model-invoked skills in skills/
-    "body_words": 1100,                # per skill, prose words (fenced code excluded)
+    "description_total_chars": 5800,  # sum over the model-invoked skills in skills/; 18 listed at ~320 each
+    "body_words": 1400,                # per skill, prose words (fenced code excluded); 1378 is diagnosing-bugs, a verbatim mirror
     "body_lines": 500,                 # Anthropic's ceiling for a SKILL.md body
     "hook_chars": 950,                # the additionalContext the session-start hook injects
     "engineering_words": 2200,         # ENGINEERING.md, prose words
@@ -57,6 +57,7 @@ TARGETS = {
         "git-commit": 350,
         "write-tests": 350,
         "git-create-branch": 300,
+        "diagnosing-bugs": 1378,  # verbatim mirror of upstream; tracks it, not the plan
     },
 }
 DEFAULT_TARGET_WORDS = 500

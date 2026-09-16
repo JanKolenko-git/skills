@@ -37,6 +37,10 @@ them by name instead of guessing.
   `feature/`/`bugfix/`/`hotfix/` + key + slug when it has no convention of its own.
 - **[write-tests](./write-tests/SKILL.md)** — Write tests matching the repo's existing runner,
   layout and assertion style, against the acceptance criteria rather than the internals.
+- **[diagnosing-bugs](./diagnosing-bugs/SKILL.md)** — Diagnosis loop for hard bugs and
+  performance regressions: build a tight, red-capable feedback loop before reading code for
+  a theory, then reproduce, minimise, hypothesise, instrument, fix with a regression test,
+  clean up. A verbatim copy of `mattpocock-skills:diagnosing-bugs` (MIT).
 - **[critique-plan](./critique-plan/SKILL.md)** — Review the diff against the *plan*, not for
   bugs: what's missing, what's unplanned, whether it should exist.
 - **[git-commit](./git-commit/SKILL.md)** — Stage and commit with a conventional message.

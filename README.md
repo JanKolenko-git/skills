@@ -36,6 +36,7 @@ API and will not authenticate here.
 | [plan-change](./skills/engineering/plan-change/SKILL.md) | Read the code, then decide what to do to it: files, steps, risks, lanes; asks one decision at a time when the goal is vague |
 | [git-create-branch](./skills/engineering/git-create-branch/SKILL.md) | Branch with a conventional name: `feature/`, `bugfix/`, `hotfix/` + key + slug |
 | [write-tests](./skills/engineering/write-tests/SKILL.md) | Write tests in the repository's existing runner, layout and style |
+| [diagnosing-bugs](./skills/engineering/diagnosing-bugs/SKILL.md) | Diagnosis loop for hard bugs and performance regressions: a red-capable feedback loop first, then reproduce, minimise, hypothesise, instrument, fix, clean up |
 | [critique-plan](./skills/engineering/critique-plan/SKILL.md) | Review the diff against the plan: what is missing, what is unplanned, whether it should exist |
 | [git-commit](./skills/engineering/git-commit/SKILL.md) | Stage by path and commit with a conventional message; never pushes |
 | [git-pr-push-and-open](./skills/engineering/git-pr-push-and-open/SKILL.md) | Show the diff, stop for approval, then push and open the PR |
