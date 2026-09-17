@@ -24,8 +24,8 @@ CHARS_PER_TOKEN = 4  # a rough, deliberately simple estimate; consistent across 
 
 BUDGETS = {
     "description_chars": 350,          # per model-invoked skill: description + when_to_use
-    "description_total_chars": 5800,  # sum over the model-invoked skills in skills/; 18 listed at ~320 each
-    "body_words": 1400,                # per skill, prose words (fenced code excluded); 1378 is diagnosing-bugs, a verbatim mirror
+    "description_total_chars": 6000,  # sum over the model-invoked skills in skills/; 18 listed at ~330 each
+    "body_words": 1100,                # per skill, prose words (fenced code excluded)
     "body_lines": 500,                 # Anthropic's ceiling for a SKILL.md body
     "hook_chars": 950,                # the additionalContext the session-start hook injects
     "engineering_words": 2200,         # ENGINEERING.md, prose words
@@ -39,25 +39,27 @@ TARGETS = {
     "engineering_words": 2200,
     "body_words": {
         "git-pr-address-review": 800,
-        "implement-ticket": 700,
+        "implement": 700,
         "record-engineering-rule": 600,
         "prepare-local-environment": 650,
         "atlassian-jira": 650,
         "find-session-improvements": 500,
         "atlassian-confluence": 550,
         "improve-skill": 450,
-        "plan-change": 650,
+        "plan": 650,
         "record-learnings": 450,
         "explain": 450,
         "git-pr-push-and-open": 450,
         "draft-reply": 400,
-        "critique-plan": 450,
+        "check": 700,
         "find-skill-gaps": 400,
         "find-repository": 350,
         "git-commit": 350,
-        "write-tests": 350,
+        "test": 400,
         "git-create-branch": 300,
-        "diagnosing-bugs": 1378,  # verbatim mirror of upstream; tracks it, not the plan
+        "debug": 650,
+        "architect": 450,
+        "document": 450,
     },
 }
 DEFAULT_TARGET_WORDS = 500

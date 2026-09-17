@@ -5,8 +5,8 @@
 
 SKILLS_REPO="${JANKOLENKO_SKILLS_REPO:-$HOME/Developer/skills}"
 
-# The working copy is the good source. A session can run where it does not exist (an eval
-# sandbox, another machine); fall back to the plugin cache, which ships the same files, and
+# The working copy is the good source. A session can run where it does not exist (another
+# machine); fall back to the plugin cache, which ships the same files, and
 # stay silent rather than point at a path that is not there.
 if [ ! -f "$SKILLS_REPO/ENGINEERING.md" ]; then
   SKILLS_REPO="${CLAUDE_PLUGIN_ROOT:-$SKILLS_REPO}"

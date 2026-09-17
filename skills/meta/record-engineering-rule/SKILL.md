@@ -91,12 +91,10 @@ eval "$("${CLAUDE_SKILL_DIR}/../../../scripts/which-plugin.sh" record-engineerin
 ```
 
 Apply the diff in `$repo`, never in the plugin cache. A project rule ends here: the hook
-reads `projects/` directly. For a general rule, offer (not do) an eval case named
-`engineering-*`: one prompt that invites the failure the rule was bought with, one grader
-that fails on it (`evals/README.md`). Then `git -C "$repo" add ENGINEERING.md` and
+reads `projects/` directly. For a general rule, `git -C "$repo" add ENGINEERING.md` and
 
 ```bash
-"$scripts/ship.sh" general --case 'engineering-*' -m "docs(engineering): <the rule, in one line>"
+"$scripts/ship.sh" general -m "docs(engineering): <the rule, in one line>"
 ```
 
 A `check-portable.py` hit means a coordinate stayed in the general file: move it, never

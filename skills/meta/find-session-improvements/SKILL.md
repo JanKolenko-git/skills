@@ -83,7 +83,7 @@ Each finding with its evidence quoted, its destination and the size of the chang
 discards one line each; a wrongly dropped finding is invisible unless it is named.
 
 ```
-1. improve-skill · plan-change            lane test read as advisory; ran serially  → ~3-line diff
+1. improve-skill · plan                   lane test read as advisory; ran serially  → ~3-line diff
 2. SIGNALS append                         drove the monitoring UI by hand, 2nd time → one dated line
 3. record-engineering-rule                review caught an unbounded retry          → new Baseline rule
 

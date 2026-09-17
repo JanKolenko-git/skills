@@ -14,7 +14,7 @@ set -euo pipefail
 # Exits 1 if the skill is in neither, 2 if it is somehow in both.
 #
 # Usage: scripts/which-plugin.sh <skill-name>
-#        eval "$(scripts/which-plugin.sh plan-change)" && echo "$update"
+#        eval "$(scripts/which-plugin.sh plan)" && echo "$update"
 
 skill="${1:-}"
 if [ -z "$skill" ]; then
@@ -23,7 +23,7 @@ if [ -z "$skill" ]; then
 fi
 
 # The env override wins; then the working copy you are inside, so a clone anywhere — and a
-# copy inside an eval sandbox, whose home is throwaway — resolves to itself; then the
+# copy on another machine, whose home is throwaway — resolves to itself; then the
 # default location.
 skills_repo="${JANKOLENKO_SKILLS_REPO:-}"
 if [ -z "$skills_repo" ]; then
@@ -80,7 +80,7 @@ plugin="$(sed -n 's/.*"name"[[:space:]]*:[[:space:]]*"\([^"]*\)".*/\1/p' "$manif
 marketplace="$(sed -n 's/.*"name"[[:space:]]*:[[:space:]]*"\([^"]*\)".*/\1/p' "$market" | head -1)"
 
 # printf rather than a heredoc: a heredoc needs a temp file, which a sandboxed session
-# (the eval runner's, for one) may not be allowed to create.
+# may not be allowed to create.
 printf '%s\n' \
   "repo=\"$found_repo\"" \
   "skill_md=\"$found_md\"" \

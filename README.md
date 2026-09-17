@@ -10,7 +10,7 @@ which depends on this one and not the other way round
 ([`adr/0005`](./.agents/adr/0005-projects-folder.md)).
 
 The unit of design is the **atom**: a small skill that does one thing and declares its
-inputs and outputs by name, so other skills can call it. `implement-ticket` is the wiring
+inputs and outputs by name, so other skills can call it. `implement` is the wiring
 between atoms that are each useful on their own.
 
 ## The skills
@@ -33,17 +33,23 @@ API and will not authenticate here.
 | [atlassian-jira](./skills/engineering/atlassian-jira/SKILL.md) | Read and update tickets: fetch as Markdown, search by text or JQL, transition, comment, create, edit |
 | [atlassian-confluence](./skills/engineering/atlassian-confluence/SKILL.md) | Read pages as Markdown, search, download attachments, add or update one delimited section |
 | [find-repository](./skills/engineering/find-repository/SKILL.md) | Work out which local repository a task belongs to, and refuse rather than guess |
-| [plan-change](./skills/engineering/plan-change/SKILL.md) | Read the code, then decide what to do to it: files, steps, risks, lanes; asks one decision at a time when the goal is vague |
+| [plan](./skills/engineering/plan/SKILL.md) | Read the code, then decide what to do to it: files, steps, risks, lanes; asks one decision at a time when the goal is vague, and stops on a decision that outlives the change |
+| [architect](./skills/engineering/architect/SKILL.md) | Settle a decision that outlives one change, a provider, data model, pattern or stack, and record it as an ADR or a spec section; started by hand |
 | [git-create-branch](./skills/engineering/git-create-branch/SKILL.md) | Branch with a conventional name: `feature/`, `bugfix/`, `hotfix/` + key + slug |
-| [write-tests](./skills/engineering/write-tests/SKILL.md) | Write tests in the repository's existing runner, layout and style |
-| [diagnosing-bugs](./skills/engineering/diagnosing-bugs/SKILL.md) | Diagnosis loop for hard bugs and performance regressions: a red-capable feedback loop first, then reproduce, minimise, hypothesise, instrument, fix, clean up |
-| [critique-plan](./skills/engineering/critique-plan/SKILL.md) | Review the diff against the plan: what is missing, what is unplanned, whether it should exist |
+| [test](./skills/engineering/test/SKILL.md) | Write tests in the repository's existing runner, layout and style, with a strategy per kind of file |
+| [debug](./skills/engineering/debug/SKILL.md) | Find and fix a bug's root cause: a feedback loop that goes red first, then reproduce, minimise, rank hypotheses, instrument, fix with a regression test, clean up |
+| [check](./skills/engineering/check/SKILL.md) | Confirm a change does what it was meant to and breaks nothing else: the diff against the plan, the behaviour run for evidence, the same surfaces compared against the base branch |
+| [document](./skills/engineering/document/SKILL.md) | Write the prose about a change from its real diff: PR description, changelog entry, release notes, postmortem, ticket summary; started by hand |
 | [git-commit](./skills/engineering/git-commit/SKILL.md) | Stage by path and commit with a conventional message; never pushes |
 | [git-pr-push-and-open](./skills/engineering/git-pr-push-and-open/SKILL.md) | Show the diff, stop for approval, then push and open the PR |
 | [git-pr-address-review](./skills/engineering/git-pr-address-review/SKILL.md) | Work the review comments on a PR: apply or decline each with a reason, one ledger row each |
 | [record-learnings](./skills/engineering/record-learnings/SKILL.md) | Write durable constraints back to `CLAUDE.md`, a spec section or the ticket |
 | [prepare-local-environment](./skills/engineering/prepare-local-environment/SKILL.md) | Install, build and start what the repository runs on, then prove the app rendered |
-| [implement-ticket](./skills/engineering/implement-ticket/SKILL.md) | Orchestrates the whole run: ticket → repo → plan → branch → build → test → critique → review → PR → In Review → learnings |
+| [implement](./skills/engineering/implement/SKILL.md) | Orchestrates the whole run: ticket → repo → plan → branch → build → test → check → review → PR → In Review → learnings |
+
+`architect` and `document` are started by hand (`/jankolenko-skills:architect <decision>`,
+`/jankolenko-skills:document pr`); the model cannot invoke them, so their descriptions cost
+nothing in the skill listing, and a ticket run that owes a decision stops and names the first.
 
 ### `productivity/`
 
@@ -79,8 +85,8 @@ cost nothing in the skill listing.
   and it repeats every round of changes.
 - Confluence edits are section-scoped: `update_page.py` writes only between its own markers,
   refuses when the page moved under it, and shows a `--dry-run` first.
-- These are advisory controls that hold while a skill runs. The suite in [`evals/`](./evals)
-  checks each one before a version ships.
+- These are advisory controls that hold while a skill runs, read in the diff before a
+  version ships.
 
 ## Installation
 
@@ -152,6 +158,8 @@ which repo is PROJ-1234 about?
 what is INP, and what actually moves it?
 open a PR for this branch
 address the review comments on <pr-url>
+debug this: the badge count doesn't update after removing an item
+does this branch do what PROJ-1234 asked, and break nothing against main?
 ```
 
 The scripts are stdlib-only Python 3 and every one takes `--help`, so they run on their own
@@ -198,7 +206,7 @@ scripts/check.sh
 ```
 
 Sessions load skills from the versioned plugin cache, so an edit ships only after a version
-bump and an update. `scripts/ship.sh` runs the checks and the evals covering the change,
+bump and an update. `scripts/ship.sh` runs the checks,
 bumps, commits and prints the update command:
 
 ```bash
@@ -210,8 +218,7 @@ To work from this tree, register it as a Directory marketplace once
 (`claude plugin marketplace add ~/Developer/skills`, and `~/Developer/skills/projects` for the
 project plugin); a commit then ships to yourself without a push. `scripts/which-plugin.sh
 <skill>` prints which plugin ships a skill and its exact update command; the `@marketplace`
-suffix is required. Behaviour is checked by [`evals/`](./evals): one case per expensive
-refusal, run by `ship.sh` before any bump ([`evals/README.md`](./evals/README.md)).
+suffix is required.
 
 ## Security
 

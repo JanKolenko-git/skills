@@ -1,6 +1,6 @@
 ---
 name: atlassian-jira
-description: Read and update Jira Server/Data Center tickets over REST: fetch as Markdown, search by JQL or text, attachments, transition, comment, create, edit. Use when a Jira URL or a key like PROJ-1155 appears and the user wants it read, its status checked, moved, commented on or created. Not Jira Cloud. Implementing a ticket end to end is implement-ticket.
+description: Read and update Jira Server/Data Center tickets over REST: fetch as Markdown, search by JQL or text, attachments, transition, comment, create, edit. Use when a Jira URL or a key like PROJ-1155 appears and the user wants it read, its status checked, moved, commented on or created. Not Jira Cloud. Implementing a ticket end to end is implement.
 argument-hint: <ticket-key | jira-url | jql> [mode=read|comment|transition|create|edit]
 ---
 

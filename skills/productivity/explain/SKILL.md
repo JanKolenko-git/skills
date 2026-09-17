@@ -83,5 +83,5 @@ fires, a value reported in the wrong unit.
 
 - Terminal prose only. No files, no artifacts, no "shall I write this up?".
 - Explains; does not build. Once the user wants the change made, that is
-  `jankolenko-skills:plan-change` and the implementation skills.
+  `jankolenko-skills:plan` and the implementation skills.
 - A yes/no question gets yes or no first.

@@ -75,12 +75,9 @@ wherever the session is:
 "$scripts/ship.sh" <skill> -m "docs(<skill>): <the friction, in one line>"
 ```
 
-It runs the checks and the eval cases named `<skill>-*` (`--case '<glob>'` widens it when
-the change touches a gate another case covers), refuses to bump on red, bumps, commits when
-tracked, and prints the update command; quote that verbatim. Red → show the user the
-failing case: either the diff broke the gate, or the case protects behaviour the change was
-meant to alter, and rewriting it is their call. `--no-evals` only on the user's say-so,
-with the reason in the commit body. No matching case → say so and offer one.
+It runs the checks, refuses to bump on red, bumps, commits when tracked, and prints the
+update command; quote that verbatim. Red → show the user the failing check; the fix goes
+in the diff.
 
 ## Notes
 

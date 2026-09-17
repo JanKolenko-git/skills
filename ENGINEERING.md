@@ -440,8 +440,8 @@ _Source: Gary Bernhardt, "Boundaries" (2012) — functional core, imperative she
 ## What deliberately is not here
 
 Test structure, commit messages, branch naming and whether a change should exist belong to
-the skills that own them (`write-tests`, `git-commit`, `git-create-branch`, `plan-change`
-and `critique-plan`). Considered and rejected, so they are not re-proposed: declare at
+the skills that own them (`test`, `git-commit`, `git-create-branch`, `plan`
+and `check`). Considered and rejected, so they are not re-proposed: declare at
 narrowest scope (the linter covers it), formatting (Prettier enforces it), thread a
 cancellation signal (promote it if a run gets bitten), make invalid states unrepresentable.
 Power of 10 §1, §3, §8 and §9 have no honest analogue in TypeScript.

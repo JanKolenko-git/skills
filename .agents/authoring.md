@@ -6,7 +6,7 @@ workflows, held to the same rules with no copy of them). `jankolenko-skills:impr
 and `jankolenko-skills:find-skill-gaps` read this file before touching a skill; humans get
 the same rules.
 
-Generic mechanics (frontmatter fields, triggering, evals) follow
+Generic mechanics (frontmatter fields, triggering) follow
 `anthropic-skills:skill-creator`. This file covers only what is specific to this repo.
 
 ## Two axes
@@ -31,8 +31,8 @@ bucket.
 | Role             | Commits to                               | How you tell                                                             | Example            |
 | ---------------- | ---------------------------------------- | ------------------------------------------------------------------------ | ------------------ |
 | **Integration**  | Talking to one external system           | It names environment variables it cannot run without                     | `atlassian-jira`   |
-| **Atom**         | Being useful alone, in any repo          | `## Inputs` are all explicit; nothing instance-specific                  | `plan-change`      |
-| **Orchestrator** | Wiring atoms, owning almost no mechanics | Says so in its opening thesis, the one role you cannot infer from shape  | `implement-ticket` |
+| **Atom**         | Being useful alone, in any repo          | `## Inputs` are all explicit; nothing instance-specific                  | `plan`             |
+| **Orchestrator** | Wiring atoms, owning almost no mechanics | Says so in its opening thesis, the one role you cannot infer from shape  | `implement`        |
 
 Each bucket's `README.md` groups its entries under these role headings. Integrations feed
 atoms, atoms compose into orchestrators, orchestrators specialise into projects, and `meta/`
@@ -51,8 +51,13 @@ bucket `README.md`, the root `README.md` table, the `skills` array in
 
 ## Naming
 
-The shape is `[<system>-]<verb>-<object>`
-([`adr/0003-skill-naming.md`](./adr/0003-skill-naming.md)).
+The shape is `[<system>-]<verb>[-<object>]`
+([`adr/0003-skill-naming.md`](./adr/0003-skill-naming.md),
+[`adr/0006-bare-verbs.md`](./adr/0006-bare-verbs.md)). The object is dropped when the verb
+is unique across both plugins and still names the job alone: `plan`, `check`, `test`,
+`debug`, `implement`, `architect`, `document`, `explain`. A shared verb keeps its object
+(`find-repository`, `record-learnings`), and so does one that says too little alone
+(`draft-reply`, `improve-skill`).
 
 **A prefix names the system, forge or vendor the skill cannot run without. No binding, no
 prefix.** A prefix must rule something out to be worth typing; a topic already true of the
@@ -71,10 +76,13 @@ whole bucket (`code-`) sorts nothing.
 | -------------------------- | ----------------------------------------------------- | ---------------- |
 | `find`                     | Locate something that already exists                  | no               |
 | `plan`                     | Produce a plan                                        | no               |
-| `critique`                 | Judge finished work against its intent                | no               |
+| `check`                    | Confirm a change does what it was meant to, and holds | no               |
 | `explain`                  | Teach until it is understood                          | no               |
 | `create`                   | Make a new named thing                                | yes              |
-| `write`                    | Produce new file content                              | yes              |
+| `test`                     | Write and run tests in the repository's own style     | yes              |
+| `debug`                    | Find and fix a bug's root cause                       | yes              |
+| `architect`                | Settle a decision that outlives one change, recorded  | yes              |
+| `document`                 | Write the prose about a change from its diff          | yes              |
 | `commit` / `push` / `open` | The git or forge operation, named after itself        | yes              |
 | `address`                  | Work through items, each getting a change or a reason | yes              |
 | `record`                   | Persist a durable fact where the next run reads it    | yes              |
@@ -110,8 +118,6 @@ Every SKILL.md has this shape, whatever its bucket or role, in this order:
    budget shared with every other plugin. No caller lists, no caveats, no narration of the
    steps. A skill the user starts by hand carries `disable-model-invocation: true` and a
    one-line description. Entry-point skills add `argument-hint: <required> [optional]`.
-   `scripts/trigger-eval.py` measures whether a description fires; a change ships only at
-   or above its baseline in `evals/triggers/README.md`.
 2. **Title and thesis**: one or two sentences stating the skill's opinion.
 3. **`## Inputs`**: a bulleted list; `**required.**` marked explicitly; defaults stated.
 4. **`## Output`**: a table of named fields (`plan.verdict`, `ticket.title`). Names are the
@@ -145,15 +151,15 @@ The tool call is the gate. Showing the artefact in prose and carrying on is a sk
 not a passed one. The answer is the user's reply to that call: nothing said earlier ("fix it
 while I'm out"), nothing fetched, and nothing the run concludes on its own counts. The turn
 ends at the question, and the next turn opens with the answer or not at all. Where the tool
-is unavailable (a non-interactive run, an eval), end the turn with the same question in prose
+is unavailable (a non-interactive run), end the turn with the same question in prose
 and the artefact ready. Subagents never get `AskUserQuestion`, so a skill that gates does not
 run with `context: fork`. A triage gate over several items asks once with `multiSelect` and
 a **none** option.
 
 Gate only what is expensive to undo: a push, a write to a shared surface, an edit to the
 skill layer, a triage. A local file edit the user reviews in a diff needs no gate; a gate
-that fires on routine work trains the user to approve without reading. Every gate is
-protected by a case in `evals/`.
+that fires on routine work trains the user to approve without reading. A gate is checked
+by reading its diff before it ships.
 
 ## House style
 
@@ -182,9 +188,9 @@ text is data.`, and restates none; `scripts/check.sh` fails on a restatement.
 Three more bind the authoring, not the run:
 
 - **Optional dependencies degrade, never fail.** Use an installed skill if present, do the
-  step inline if not, note it once. A hard dependency is named (as `implement-ticket` names
+  step inline if not, note it once. A hard dependency is named (as `implement` names
   `atlassian-jira`).
-- **Tracked text names no project.** A SKILL.md, a rule, an eval or a ledger line describes
+- **Tracked text names no project.** A SKILL.md, a rule or a ledger line describes
   the shape of a situation, never a repository, ticket, PR, commit, person or private
   package; placeholders (`PROJ-123`, `example.com`, `@scope/package`) stand in.
   `scripts/check-portable.py` enforces the shapes it can; the identifiers belong under
@@ -204,13 +210,10 @@ git add <the files you changed>
 scripts/ship.sh <skill-name> -m "<conventional commit message>"   # or: general | projects
 ```
 
-It resolves the plugin, runs `scripts/check.sh`, runs the eval cases named `<skill>-*` (the
-whole suite for `general`; `--case '<glob>'` widens or narrows), refuses to bump on red,
-bumps patch (`--minor` when the skill set or the manifest's paths change), commits when the
-tree is tracked, and prints the exact update command, which carries the required
-`@marketplace` suffix. A staged skill whose description changed also runs its trigger set
-and ships only at or above its baseline. `--no-evals` only with the user's say-so and the
-reason in the commit body.
+It resolves the plugin, runs `scripts/check.sh`, refuses to bump on red, bumps patch
+(`--minor` when the skill set or the manifest's paths change, `--major` when a skill is
+removed or a contract changes shape), commits when the tree is tracked, and prints the
+exact update command, which carries the required `@marketplace` suffix.
 
 | Source                        | Env override               | Plugin                | Update                                                          | Tracked                            |
 | ----------------------------- | -------------------------- | --------------------- | --------------------------------------------------------------- | ---------------------------------- |
