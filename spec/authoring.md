@@ -37,9 +37,9 @@ growing mechanics is telling you an atom is missing.
 
 The shape is `[<system>-]<verb>[-<object>]`. The object is dropped when the verb is unique in
 the plugin and still names the job alone: `plan`, `check`, `test`, `debug`, `implement`,
-`architect`, `document`, `explain`. A shared verb keeps its object (`find-repository`,
-`record-learnings`), and so does one that says too little alone (`draft-reply`,
-`improve-skill`).
+`architect`, `document`, `explain`, `walkthrough`. A shared verb keeps its object
+(`find-repository`, `record-learnings`), and so does one that says too little alone
+(`draft-reply`, `improve-skill`).
 
 **A prefix names the system, forge or vendor the skill cannot run without. No binding, no
 prefix.** A prefix must rule something out to be worth typing; a topic already true of every
@@ -67,7 +67,7 @@ skill (`code-`) sorts nothing.
 | `commit` / `push` / `open` | The git or forge operation, named after itself        | yes              |
 | `address`                  | Work through items, each getting a change or a reason | yes              |
 | `record`                   | Persist a durable fact where the next run reads it    | yes              |
-| `prepare`                  | Put an environment into a state a human can use next  | yes              |
+| `walkthrough`              | Run a change, then map what changed and how to see it | yes              |
 | `implement`                | Orchestrate a full build                              | yes              |
 
 Integrations carry no verb: each exposes many behind modes. Spell words out

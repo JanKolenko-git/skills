@@ -50,7 +50,7 @@ API and will not authenticate here.
 | [git-pr-push-and-open](./skills/git-pr-push-and-open/SKILL.md) | Show the diff, stop for approval, then push and open the PR |
 | [git-pr-address-review](./skills/git-pr-address-review/SKILL.md) | Work the review comments on a PR: apply or decline each with a reason, one ledger row each |
 | [record-learnings](./skills/record-learnings/SKILL.md) | Write durable constraints back to `CLAUDE.md`, a spec section or the ticket |
-| [prepare-local-environment](./skills/prepare-local-environment/SKILL.md) | Install, build and start what the repository runs on, then prove the app rendered |
+| [walkthrough](./skills/walkthrough/SKILL.md) | Get a branch or PR running, then hand over each change against the base branch: before, after, how the code did it, the steps to test it there |
 | [implement](./skills/implement/SKILL.md) | Orchestrates the whole run: ticket → repo → plan → branch → build → test → check → review → PR → In Review → learnings |
 
 `architect` and `document` are started by hand (`/jankolenko-skills:architect <decision>`,
@@ -166,6 +166,8 @@ open a PR for this branch
 address the review comments on <pr-url>
 debug this: the badge count doesn't update after removing an item
 does this branch do what PROJ-1234 asked, and break nothing against main?
+test PR 123 by hand
+what changed on this branch, and how do I try each change?
 ```
 
 The scripts are stdlib-only Python 3 and every one takes `--help`, so they run on their own

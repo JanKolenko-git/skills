@@ -77,10 +77,10 @@ The check runs first, because polishing code that should not exist is waste, and
 the change and compares the base branch so a regression is caught before a reviewer sees
 it. `reject-to-plan` → Step 3 with what the code revealed, branch and ticket untouched;
 `reject-to-code` → Step 6, then 7, then check again; `blocked` → supply what it named
-(`jankolenko-skills:prepare-local-environment` when the app would not start), check again,
-or carry the blocked behaviours into the gate summary; `accept` → review. A second
-`reject-to-plan` on the same ticket means the goal is not understood: bail out with both
-plans and what the code showed about each.
+(`jankolenko-skills:walkthrough` with `scope=environment` when the app would not start),
+check again, or carry the blocked behaviours into the gate summary; `accept` → review. A
+second `reject-to-plan` on the same ticket means the goal is not understood: bail out with
+both plans and what the code showed about each.
 
 ## Step 10 — Ship
 
