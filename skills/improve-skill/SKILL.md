@@ -1,6 +1,6 @@
 ---
 name: improve-skill
-description: Fix one of this plugin's own skills from an observed problem, gated on the exact diff, then ship it. Use when friction with a jankolenko-skills or jankolenko-projects skill is named, or the user asks to fix, update, improve or split a skill.
+description: Fix one of this plugin's own skills from an observed problem, gated on the exact diff, then ship it. Use when friction with a jankolenko-skills skill is named, or the user asks to fix, update, improve or split a skill.
 argument-hint: <skill-name> — <what happened / what should change>
 ---
 
@@ -24,19 +24,16 @@ the wrong reason. No observed friction, no proposal.
 | `improve.version` | The new plugin version, once bumped |
 | `improve.status` | `applied` / `declined` / `out-of-scope` |
 
-## Step 1 — Resolve which plugin owns the skill
+## Step 1 — Find the skill in the working copy
 
-```bash
-source /dev/stdin <<< "$("${CLAUDE_SKILL_DIR}/../../../scripts/which-plugin.sh" <skill>)"   # repo, skill_md, manifest, plugin, update, tracked, scripts
-```
-
-Edit `$skill_md`, never the plugin cache, which every update regenerates. A non-zero exit
-means the skill is not ours: stop with `improve.status = out-of-scope`, offer to wrap or
-replace it, and log a missing capability to `observations/SIGNALS.md` instead.
+The working copy is `~/Developer/skills`, and the skill is
+`~/Developer/skills/skills/<skill>/SKILL.md`. Edit that file, never the plugin cache under
+`~/.claude/plugins/cache/`, which every update regenerates. No such file means the skill is
+not ours: stop with `improve.status = out-of-scope` and offer to wrap or replace it.
 
 ## Step 2 — Read, then classify
 
-Read `.agents/authoring.md`, then the whole target SKILL.md.
+Read `~/Developer/skills/spec/authoring.md`, then the whole target SKILL.md.
 
 | Class | Looks like | Fix |
 | --- | --- | --- |
@@ -44,7 +41,7 @@ Read `.agents/authoring.md`, then the whole target SKILL.md.
 | Structure | The rule existed but was not found in time | Move it to where it is read |
 | Contract | A field missing, unnamed or refetched | Extend `## Inputs` / `## Output` |
 | Scope | Two jobs in one skill | Split along a real seam |
-| Drift | A convention in `.agents/authoring.md` broken | Bring it back in line |
+| Drift | A convention in `spec/authoring.md` broken | Bring it back in line |
 
 ## Step 3 — Draft the minimal diff
 
@@ -58,8 +55,8 @@ Done when: the diff is on screen and nothing is written to the skill file.
 
 > 🛑 **GATE — editing the skill layer.** The observation, the class and the exact diff are
 > on screen.
-> Ask through `AskUserQuestion`: "Apply this diff to `<skill_md>`?" — options **approve**,
-> **change**, **stop**.
+> Ask through `AskUserQuestion`: "Apply this diff to `skills/<skill>/SKILL.md`?" — options
+> **approve**, **change**, **stop**.
 > approve → Step 5. change → redo Step 3 with what they said, then this gate again.
 > stop → end with `improve.status = declined` and the diff in `improve.diff`.
 > "Fix it" and "get it done while I'm out" start the work; they do not approve wording
@@ -68,19 +65,22 @@ Done when: the diff is on screen and nothing is written to the skill file.
 
 ## Step 5 — Apply and ship
 
-Apply the diff at `$skill_md`, stage it (`git -C "$repo" add "$skill_md"`), then ship from
-wherever the session is:
+Apply the diff. Bump `version` in `~/Developer/skills/.claude-plugin/plugin.json`: patch for a
+fix, minor for a split, which also adds the new skill's row to the root `README.md`. Then
+validate and commit from wherever the session is:
 
 ```bash
-"$scripts/ship.sh" <skill> -m "docs(<skill>): <the friction, in one line>"
+claude plugin validate ~/Developer/skills/.claude-plugin/plugin.json
+git -C ~/Developer/skills add <each path you changed> .claude-plugin/plugin.json
+git -C ~/Developer/skills commit -m "docs(<skill>): <the friction, in one line>"
 ```
 
-It runs the checks, refuses to bump on red, bumps, commits when tracked, and prints the
-update command; quote that verbatim. Red → show the user the failing check; the fix goes
-in the diff.
+A failed validation goes back to the user; the fix goes in the diff. End by quoting
+`claude plugin update jankolenko-skills@jankolenko`, which makes the fix live from the next
+session.
 
 ## Notes
 
 - One improvement per invocation. A script a skill ships is an ordinary code change.
-- If the conventions are wrong rather than the skill, propose the `.agents/authoring.md`
-  change instead: same gate, same `ship.sh`.
+- If the conventions are wrong rather than the skill, propose the `spec/authoring.md`
+  change instead: same gate, same shipping.

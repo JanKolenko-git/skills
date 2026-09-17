@@ -15,16 +15,14 @@ is promoted to Rules with the evidence; a rule that proved wrong is deleted.
 
 Only what would hold in a repository you have never seen: the **shape** of the failure, never
 a repository, ticket, pull request, commit, person or private package. A rule that holds only
-in repositories you can list is a project rule and lives in that repository's
-`projects/<repository>/ENGINEERING.md`, untracked, beside the coordinates of the runs that
-bought the general ones. `jankolenko-skills:record-engineering-rule` decides which.
+in repositories you can list belongs in that repository's own `CLAUDE.md`.
+`jankolenko-skills:record-engineering-rule` decides which.
 
 ---
 
 # Rules
 
-_Observed. Each entry names the shape of the run that bought it; the run itself is recorded
-in that repository's `projects/<repository>/ENGINEERING.md`._
+_Observed. Each entry names the shape of the run that bought it._
 
 ## Reuse the name a thing already has; give a new one meaning
 

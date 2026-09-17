@@ -6,7 +6,7 @@ set -uo pipefail
 # runs to megabytes, most of it tool output the session already saw and the injected body of
 # every skill that ran; this is what a retrospective needs from it, and nothing else.
 #
-# Usage: scripts/session-spine.sh <session-id> [project-dir]
+# Usage: session-spine.sh <session-id> [project-dir]
 #        project-dir defaults to the current directory; the transcript lives at
 #        ~/.claude/projects/<project-dir with / replaced by ->/<session-id>.jsonl
 

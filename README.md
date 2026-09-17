@@ -2,26 +2,30 @@
 
 Composable, **portable** agent skills for shipping ticketed work, packaged as a
 [Claude Code plugin](https://code.claude.com/docs/en/plugins). Everything here works against
-any Jira or Confluence Data Center instance and any git repository; nothing tracked names one
-employer, programme or codebase, and [`scripts/check-portable.py`](./scripts/check-portable.py)
-keeps it that way. What is bound to one team lives in the untracked
-[`projects/`](./projects/README.md) folder and ships as the `jankolenko-projects` plugin,
-which depends on this one and not the other way round
-([`adr/0005`](./.agents/adr/0005-projects-folder.md)).
+any Jira or Confluence Data Center instance and any git repository; nothing here names one
+employer, programme or codebase.
 
 The unit of design is the **atom**: a small skill that does one thing and declares its
 inputs and outputs by name, so other skills can call it. `implement` is the wiring
 between atoms that are each useful on their own.
 
+## Repository
+
+- [`skills/`](./skills): one folder per skill, `skills/<name>/SKILL.md`
+- [`spec/`](./spec/authoring.md): the contract every skill follows
+- [`template/`](./template/SKILL.md): that contract as a blank skill
+- [`ENGINEERING.md`](./ENGINEERING.md): the rules for the code the skills produce, which every
+  session is pointed at
+- [`.claude-plugin/`](./.claude-plugin): the plugin and marketplace manifests; `plugin.json`
+  carries the session-start hook
+
 ## The skills
 
-Skills sort into buckets by domain, each at `skills/<bucket>/<skill-name>/SKILL.md`, and
-refer to each other by qualified name (`jankolenko-skills:git-commit`), the string the
-`Skill` tool takes. Within a bucket, integrations feed atoms and atoms compose into
-orchestrators; roles are declared in each skill, not drawn as folders
-([`adr/0002`](./.agents/adr/0002-domain-buckets.md)).
+Skills refer to each other by qualified name (`jankolenko-skills:git-commit`), the string the
+`Skill` tool takes. Integrations feed atoms and atoms compose into orchestrators; each skill
+declares its role in its own file.
 
-### `engineering/`
+### Engineering
 
 The two integrations talk to any Jira or Confluence **Server or Data Center** instance over
 REST with a personal access token: Jira REST v2 with wiki markup, Confluence
@@ -30,50 +34,49 @@ API and will not authenticate here.
 
 | Skill | What it does |
 | --- | --- |
-| [atlassian-jira](./skills/engineering/atlassian-jira/SKILL.md) | Read and update tickets: fetch as Markdown, search by text or JQL, transition, comment, create, edit |
-| [atlassian-confluence](./skills/engineering/atlassian-confluence/SKILL.md) | Read pages as Markdown, search, download attachments, add or update one delimited section |
-| [find-repository](./skills/engineering/find-repository/SKILL.md) | Work out which local repository a task belongs to, and refuse rather than guess |
-| [plan](./skills/engineering/plan/SKILL.md) | Read the code, then decide what to do to it: files, steps, risks, lanes; asks one decision at a time when the goal is vague, and stops on a decision that outlives the change |
-| [architect](./skills/engineering/architect/SKILL.md) | Settle a decision that outlives one change, a provider, data model, pattern or stack, and record it as an ADR or a spec section; started by hand |
-| [git-create-branch](./skills/engineering/git-create-branch/SKILL.md) | Branch with a conventional name: `feature/`, `bugfix/`, `hotfix/` + key + slug |
-| [test](./skills/engineering/test/SKILL.md) | Write tests in the repository's existing runner, layout and style, with a strategy per kind of file |
-| [debug](./skills/engineering/debug/SKILL.md) | Find and fix a bug's root cause: a feedback loop that goes red first, then reproduce, minimise, rank hypotheses, instrument, fix with a regression test, clean up |
-| [check](./skills/engineering/check/SKILL.md) | Confirm a change does what it was meant to and breaks nothing else: the diff against the plan, the behaviour run for evidence, the same surfaces compared against the base branch |
-| [document](./skills/engineering/document/SKILL.md) | Write the prose about a change from its real diff: PR description, changelog entry, release notes, postmortem, ticket summary; started by hand |
-| [git-commit](./skills/engineering/git-commit/SKILL.md) | Stage by path and commit with a conventional message; never pushes |
-| [git-pr-push-and-open](./skills/engineering/git-pr-push-and-open/SKILL.md) | Show the diff, stop for approval, then push and open the PR |
-| [git-pr-address-review](./skills/engineering/git-pr-address-review/SKILL.md) | Work the review comments on a PR: apply or decline each with a reason, one ledger row each |
-| [record-learnings](./skills/engineering/record-learnings/SKILL.md) | Write durable constraints back to `CLAUDE.md`, a spec section or the ticket |
-| [prepare-local-environment](./skills/engineering/prepare-local-environment/SKILL.md) | Install, build and start what the repository runs on, then prove the app rendered |
-| [implement](./skills/engineering/implement/SKILL.md) | Orchestrates the whole run: ticket → repo → plan → branch → build → test → check → review → PR → In Review → learnings |
+| [atlassian-jira](./skills/atlassian-jira/SKILL.md) | Read and update tickets: fetch as Markdown, search by text or JQL, transition, comment, create, edit |
+| [atlassian-confluence](./skills/atlassian-confluence/SKILL.md) | Read pages as Markdown, search, download attachments, add or update one delimited section |
+| [find-repository](./skills/find-repository/SKILL.md) | Work out which local repository a task belongs to, and refuse rather than guess |
+| [plan](./skills/plan/SKILL.md) | Read the code, then decide what to do to it: files, steps, risks, lanes; asks one decision at a time when the goal is vague, and stops on a decision that outlives the change |
+| [architect](./skills/architect/SKILL.md) | Settle a decision that outlives one change, a provider, data model, pattern or stack, and record it as an ADR or a spec section; started by hand |
+| [git-create-branch](./skills/git-create-branch/SKILL.md) | Branch with a conventional name: `feature/`, `bugfix/`, `hotfix/` + key + slug |
+| [test](./skills/test/SKILL.md) | Write tests in the repository's existing runner, layout and style, with a strategy per kind of file |
+| [debug](./skills/debug/SKILL.md) | Find and fix a bug's root cause: a feedback loop that goes red first, then reproduce, minimise, rank hypotheses, instrument, fix with a regression test, clean up |
+| [check](./skills/check/SKILL.md) | Confirm a change does what it was meant to and breaks nothing else: the diff against the plan, the behaviour run for evidence, the same surfaces compared against the base branch |
+| [document](./skills/document/SKILL.md) | Write the prose about a change from its real diff: PR description, changelog entry, release notes, postmortem, ticket summary; started by hand |
+| [git-commit](./skills/git-commit/SKILL.md) | Stage by path and commit with a conventional message; never pushes |
+| [git-pr-push-and-open](./skills/git-pr-push-and-open/SKILL.md) | Show the diff, stop for approval, then push and open the PR |
+| [git-pr-address-review](./skills/git-pr-address-review/SKILL.md) | Work the review comments on a PR: apply or decline each with a reason, one ledger row each |
+| [record-learnings](./skills/record-learnings/SKILL.md) | Write durable constraints back to `CLAUDE.md`, a spec section or the ticket |
+| [prepare-local-environment](./skills/prepare-local-environment/SKILL.md) | Install, build and start what the repository runs on, then prove the app rendered |
+| [implement](./skills/implement/SKILL.md) | Orchestrates the whole run: ticket → repo → plan → branch → build → test → check → review → PR → In Review → learnings |
 
 `architect` and `document` are started by hand (`/jankolenko-skills:architect <decision>`,
 `/jankolenko-skills:document pr`); the model cannot invoke them, so their descriptions cost
 nothing in the skill listing, and a ticket run that owes a decision stops and names the first.
 
-### `productivity/`
+### Productivity
 
 | Skill | What it does |
 | --- | --- |
-| [explain](./skills/productivity/explain/SKILL.md) | Explain code, a principle, a metric or how to build X in Y, plainly and accurately |
-| [draft-reply](./skills/productivity/draft-reply/SKILL.md) | Turn a pasted thread and a rough draft into a short reply that checks out and answers everything asked |
+| [explain](./skills/explain/SKILL.md) | Explain code, a principle, a metric or how to build X in Y, plainly and accurately |
+| [draft-reply](./skills/draft-reply/SKILL.md) | Turn a pasted thread and a rough draft into a short reply that checks out and answers everything asked |
 
-### `meta/`
+### Meta
 
-The learning loop, closed for the skills themselves. A session-start hook
-([`hooks/`](./hooks)) injects the four standing rules and one habit: friction with a skill is
-raised once, at the end of the run.
+The learning loop, closed for the skills themselves. The session-start hook points every
+session at [`ENGINEERING.md`](./ENGINEERING.md), injects the four standing rules, and adds one
+habit: friction with a skill is raised once, at the end of the run.
 
 | Skill | What it does |
 | --- | --- |
-| [improve-skill](./skills/meta/improve-skill/SKILL.md) | Fix one of your own skills from an observed friction, gated on the exact diff, then ship it |
-| [find-skill-gaps](./skills/meta/find-skill-gaps/SKILL.md) | Propose a new skill from the [signals ledger](./observations/SIGNALS.md) once a gap has two independent signals |
-| [record-engineering-rule](./skills/meta/record-engineering-rule/SKILL.md) | Decide where a coding convention belongs, the general [`ENGINEERING.md`](./ENGINEERING.md) or one repository's rules, gated on the diff |
-| [find-session-improvements](./skills/meta/find-session-improvements/SKILL.md) | Sweep a finished session for what the skill layer should learn and route each finding to its owner behind one triage gate |
+| [improve-skill](./skills/improve-skill/SKILL.md) | Fix one of these skills from an observed friction, gated on the exact diff, then ship it |
+| [record-engineering-rule](./skills/record-engineering-rule/SKILL.md) | Decide whether a coding convention belongs in [`ENGINEERING.md`](./ENGINEERING.md) or in one repository's `CLAUDE.md`, gated on the diff |
+| [find-session-improvements](./skills/find-session-improvements/SKILL.md) | Sweep a finished session for what the skill layer should learn and route each finding to its owner behind one triage gate |
 
-`find-skill-gaps` and `find-session-improvements` are started by hand
-(`/jankolenko-skills:find-skill-gaps`); the model cannot invoke them, so their descriptions
-cost nothing in the skill listing.
+`find-session-improvements` is started by hand
+(`/jankolenko-skills:find-session-improvements`); the model cannot invoke it, so its
+description costs nothing in the skill listing.
 
 ## Safety
 
@@ -166,7 +169,7 @@ The scripts are stdlib-only Python 3 and every one takes `--help`, so they run o
 too:
 
 ```bash
-python3 ~/.claude/plugins/**/skills/engineering/atlassian-jira/fetch_ticket.py PROJ-1155
+python3 ~/.claude/plugins/**/skills/atlassian-jira/fetch_ticket.py PROJ-1155
 ```
 
 ## Requirements
@@ -196,29 +199,24 @@ Exit codes distinguish the cases for scripting: `1` setup or bad input, `2` HTTP
 
 ## Development
 
-How a skill is written, named and shipped is in
-[`.agents/authoring.md`](./.agents/authoring.md); the structural decisions and their rejected
-alternatives are in [`.agents/adr/`](./.agents/adr). One command checks layout, portability,
-the token budgets and the manifests:
+How a skill is written and named is in [`spec/authoring.md`](./spec/authoring.md). A new skill
+starts as a copy of [`template/SKILL.md`](./template/SKILL.md) in its own `skills/<name>/`
+folder, plus a row in the tables above; the plugin finds it without a manifest entry.
+
+Sessions load the plugin from a versioned cache, so a change ships only after a version bump
+in `.claude-plugin/plugin.json` and an update:
 
 ```bash
-scripts/check.sh
-```
-
-Sessions load skills from the versioned plugin cache, so an edit ships only after a version
-bump and an update. `scripts/ship.sh` runs the checks,
-bumps, commits and prints the update command:
-
-```bash
-git add <files>
-scripts/ship.sh <skill-name> -m "docs(<skill>): <what changed>"
+claude plugin validate .claude-plugin/plugin.json && claude plugin validate .
+git add <files> .claude-plugin/plugin.json
+git commit -m "docs(<skill>): <what changed>"
+claude plugin update jankolenko-skills@jankolenko
 ```
 
 To work from this tree, register it as a Directory marketplace once
-(`claude plugin marketplace add ~/Developer/skills`, and `~/Developer/skills/projects` for the
-project plugin); a commit then ships to yourself without a push. `scripts/which-plugin.sh
-<skill>` prints which plugin ships a skill and its exact update command; the `@marketplace`
-suffix is required.
+(`claude plugin marketplace add ~/Developer/skills`); a commit then ships to yourself without
+a push. `ENGINEERING.md` needs no bump: the session-start hook points at the working copy in
+`~/Developer/skills`, so a saved rule applies at the next session.
 
 ## Security
 
