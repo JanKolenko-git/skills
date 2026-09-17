@@ -27,7 +27,7 @@ the wrong reason. No observed friction, no proposal.
 ## Step 1 — Resolve which plugin owns the skill
 
 ```bash
-eval "$("${CLAUDE_SKILL_DIR}/../../../scripts/which-plugin.sh" <skill>)"   # repo, skill_md, manifest, plugin, update, tracked, scripts
+source /dev/stdin <<< "$("${CLAUDE_SKILL_DIR}/../../../scripts/which-plugin.sh" <skill>)"   # repo, skill_md, manifest, plugin, update, tracked, scripts
 ```
 
 Edit `$skill_md`, never the plugin cache, which every update regenerates. A non-zero exit

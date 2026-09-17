@@ -14,7 +14,7 @@ else's. Two clones that must agree on a path is one clone too many.
 The same week showed a problem the split had not solved: the general repo was still full of
 project references. `ENGINEERING.md` required every Rules entry to "name the run", so twelve
 of twenty rules cited a private repository, a ticket, a PR number or a commit; the signals
-ledger, three eval graders and three SKILL.md lines named one team's stack. The repo claimed
+ledger, three test fixtures and three SKILL.md lines named one team's stack. The repo claimed
 to be bound to no employer and read as one team's tooling anyway. And no rule anywhere said
 whether a *rule* — as opposed to a skill — could be project-specific, or where a rule that
 held for a handful of repositories should go: every routing table collapsed "not universal"

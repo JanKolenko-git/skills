@@ -80,7 +80,7 @@ fails until all four agree), move the cluster's ledger lines to `## Resolved` wi
 outcome and date, stage the new files and the ledger, then ship with a minor bump:
 
 ```bash
-eval "$("${CLAUDE_SKILL_DIR}/../../../scripts/which-plugin.sh" <new-name>)"   # confirms where it landed; sets scripts
+source /dev/stdin <<< "$("${CLAUDE_SKILL_DIR}/../../../scripts/which-plugin.sh" <new-name>)"   # confirms where it landed; sets scripts
 "$scripts/ship.sh" <new-name> --minor -m "feat(skills): add <new-name>"
 ```
 

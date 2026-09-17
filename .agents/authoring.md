@@ -99,7 +99,7 @@ disagrees with the name that invokes it.
 
 Write every reference the agent could act on as `plugin:name`, the string the `Skill` tool
 takes: `jankolenko-skills:git-commit`, `jankolenko-projects:<programme>-<verb>-<object>`,
-`mattpocock-skills:codebase-design`. Built-ins (`/code-review`, `/simplify`, `/run`) have no
+`anthropic-skills:skill-creator`. Built-ins (`/code-review`, `/simplify`, `/run`) have no
 plugin and no prefix. A name discussed as a name (a row in the tables above) stays bare. A
 qualified reference fails loudly when a plugin is renamed or missing, where a bare name
 degrades quietly. Across the plugin boundary the direction is fixed: a `jankolenko-projects`

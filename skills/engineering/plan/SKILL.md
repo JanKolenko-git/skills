@@ -40,8 +40,8 @@ nothing.
 
 Grep for the symptoms, the feature name, the error string; read the files that matter.
 `git log --oneline -15 -- <paths>` explains recent work; existing tests document the
-current contract. If `mattpocock-skills:codebase-design` is installed, check the approach
-against the module boundaries the codebase already has.
+current contract. Check the approach against the module boundaries the codebase already
+has.
 
 ## Step 2 — Decide whether there is anything to build
 

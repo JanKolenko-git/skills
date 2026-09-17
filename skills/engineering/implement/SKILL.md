@@ -43,8 +43,8 @@ refetches. `ticket.*` and `plan.*` stay in context for the whole run.
 | 11 | `jankolenko-skills:atlassian-jira` | `In Review` (`Code Review` is a fine match); then comment `PR opened: <pr.url>. <one sentence>.` |
 | 12 | `jankolenko-skills:record-learnings` | the run's surprises, `destination = repo`; most runs have nothing durable, skip quietly |
 
-`mattpocock-skills:codebase-design`, `/code-review` and `/simplify` are used if installed,
-else done inline with their angles and noted once; `jankolenko-skills:atlassian-jira` is
+`/code-review` and `/simplify` are used if installed, else done inline with their angles
+and noted once; `jankolenko-skills:atlassian-jira` is
 the hard dependency. Every bail-out states what blocks, what was tried, and what would
 unblock it.
 

@@ -41,10 +41,9 @@ less than the object does), and every `git-` and `atlassian-` skill (the prefix 
   cost nothing in the skill listing, and an autonomous ticket run cannot make an
   architecture decision on its own: `plan` returns `blocked` naming the decision, and the
   user runs `/jankolenko-skills:architect`.
-- **Three skills now compete with other plugins on the same prompts**: `debug` with
-  `mattpocock-skills:diagnosing-bugs` and the engineering plugin's `debug`; `check` and `test`
-  with that plugin's review and testing-strategy skills. Which one fires shows in use;
-  disabling the mirror is the user's call now that `debug` replaces it.
+- **`debug`, `check` and `test` share prompts with other plugins' debugging, review and
+  testing skills.** Which one fires shows in use; a competing skill is switched off in the
+  plugin that ships it.
 - **The lexicon gains `check`, `test`, `debug`, `architect` and `document`** and loses
   `critique` and `write`.
 - **Only the names that carried nothing changed.** The role vocabulary (atom, orchestrator),

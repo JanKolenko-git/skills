@@ -45,8 +45,7 @@ them by name instead of guessing.
   strategy per kind of file; the uncommitted diff is the default target.
 - **[debug](./debug/SKILL.md)** — Find and fix a bug's root cause: build a feedback loop that
   goes red on the exact symptom before reading code for a theory, then reproduce, minimise,
-  rank hypotheses, instrument, fix with a regression test, clean up. Descends from
-  `mattpocock-skills:diagnosing-bugs` (MIT), rewritten to the house contract.
+  rank hypotheses, instrument, fix with a regression test, clean up.
 - **[check](./check/SKILL.md)** — Confirm a change does what it was meant to and breaks
   nothing else: the diff against the *plan*, not for bugs; the suite and the changed
   behaviour run for evidence; the same surfaces compared against the base branch. Runs in

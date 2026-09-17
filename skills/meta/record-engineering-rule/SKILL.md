@@ -87,7 +87,7 @@ Done when: the entry reads as `scripts/check-portable.py` will read it.
 ## Step 5 — Apply and ship
 
 ```bash
-eval "$("${CLAUDE_SKILL_DIR}/../../../scripts/which-plugin.sh" record-engineering-rule)"   # repo, scripts
+source /dev/stdin <<< "$("${CLAUDE_SKILL_DIR}/../../../scripts/which-plugin.sh" record-engineering-rule)"   # repo, scripts
 ```
 
 Apply the diff in `$repo`, never in the plugin cache. A project rule ends here: the hook

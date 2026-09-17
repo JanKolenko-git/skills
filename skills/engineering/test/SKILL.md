@@ -1,14 +1,13 @@
 ---
 name: test
-description: Write tests in the repository's own runner, layout and style, covering the acceptance criteria or the bug's repro, not internals; the uncommitted diff is the default target; stops before adding a framework the repo lacks. Use when the user asks to write, add, update or extend tests, add coverage, or test a fix. Test-first is mattpocock-skills:tdd.
+description: Write tests in the repository's own runner, layout and style, covering the acceptance criteria or the bug's repro, not internals; the uncommitted diff is the default target; stops before adding a framework the repo lacks. Use when the user asks to write, add, update or extend tests, add coverage, or test a fix.
 ---
 
 # Test
 
 Write tests that look like they were always there, same runner, same layout, same idioms,
 covering what the change is supposed to *do*. Ordering-agnostic: it works before the
-implementation or after it and imposes no red-green-refactor; that discipline is
-`mattpocock-skills:tdd`.
+implementation or after it, and imposes no red-green-refactor.
 
 ## Inputs
 

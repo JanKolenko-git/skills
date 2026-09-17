@@ -61,9 +61,8 @@ simplest option that fully meets the constraints. Done when: `decision.choice` a
 ## Step 3 — Record it
 
 Write the record in the destination's shape: for an ADR, the repository's existing format,
-else title, status, context, decision, consequences, in under a page, through
-`mattpocock-skills:domain-modeling` when it is installed; for Confluence, one delimited
-section through `jankolenko-skills:atlassian-confluence`, which owns that write and its
+else title, status, context, decision, consequences, in under a page; for Confluence, one
+delimited section through `jankolenko-skills:atlassian-confluence`, which owns that write and its
 gate; for `chat`, the same five parts inline. State each consequence as a constraint the
 next plan inherits. Done when: `decision.record` names the file or section and its status
 is `proposed` or `accepted`.

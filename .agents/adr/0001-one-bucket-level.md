@@ -28,7 +28,7 @@ they were paid for in three places:
   `P1-2-ticket-to-confluence`. Two spellings and a dot that survives in one and not the
   other, needing a four-line footnote in the SKILL.md to explain which one invokes it.
 
-The reference point is [mattpocock/skills](https://github.com/mattpocock/skills), which puts
+The reference point was a public skills plugin that puts
 every skill at exactly `skills/<bucket>/<skill-name>/` and carries the grouping in a bucket
 `README.md` instead.
 
@@ -78,7 +78,7 @@ resolver in `publish_page.py` exists _because_ the depth has changed twice; a th
 level would extend the same tuple again. The cost is not the current links, it is that the
 depth is a variable at all.
 
-**Adopt mattpocock's buckets wholesale** (`engineering/`, `productivity/`, `misc/`,
+**Adopt the reference plugin's buckets wholesale** (`engineering/`, `productivity/`, `misc/`,
 `personal/`, `in-progress/`, `deprecated/`). Rejected: those buckets sort by audience and
 lifecycle. Ours sort by role, and the order _is_ the dataflow — integrations feed atoms, atoms
 compose into orchestrators, orchestrators specialise into projects, meta watches all of it.

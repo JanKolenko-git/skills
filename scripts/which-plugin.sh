@@ -14,7 +14,7 @@ set -euo pipefail
 # Exits 1 if the skill is in neither, 2 if it is somehow in both.
 #
 # Usage: scripts/which-plugin.sh <skill-name>
-#        eval "$(scripts/which-plugin.sh plan)" && echo "$update"
+#        source /dev/stdin <<< "$(scripts/which-plugin.sh plan)" && echo "$update"
 
 skill="${1:-}"
 if [ -z "$skill" ]; then

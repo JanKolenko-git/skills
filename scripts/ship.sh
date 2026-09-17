@@ -49,7 +49,7 @@ case "$target" in
     ;;
   *)
     resolved="$(scripts/which-plugin.sh "$target")" || exit 1
-    eval "$resolved"   # repo, skill_md, manifest, plugin, marketplace, update, tracked
+    source /dev/stdin <<< "$resolved"   # repo, skill_md, manifest, plugin, marketplace, update, tracked
     ;;
 esac
 [ -f "$manifest" ] || { echo "ship.sh: no manifest at $manifest" >&2; exit 1; }

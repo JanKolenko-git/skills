@@ -1,13 +1,13 @@
 # 0002 — Buckets sort by domain, not role
 
-**Status:** accepted · 2026-09-01 · supersedes the "Adopt mattpocock's buckets wholesale"
+**Status:** accepted · 2026-09-01 · supersedes the "Adopt the reference plugin's buckets wholesale"
 alternative rejected in [`0001-one-bucket-level.md`](./0001-one-bucket-level.md)
 
 ## Context
 
 `skills/` sorted by **role**: `integrations/`, `atoms/`, `orchestrators/`, `projects/`,
 `meta/`. [ADR 0001](./0001-one-bucket-level.md) considered adopting
-[mattpocock/skills](https://github.com/mattpocock/skills)' domain buckets and rejected it,
+the reference plugin's domain buckets and rejected it,
 on the grounds that the role order _is_ the dataflow and that this is load-bearing for how
 skills here are wired.
 
@@ -62,7 +62,7 @@ The moves:
 - **The vocabulary survives the folders.** "Atom" and "orchestrator" remain the words the
   README, `authoring.md` and `implement-ticket` are written in. `implement-ticket` still opens
   "This skill is an **orchestrator**"; it just no longer lives in a folder that repeats it.
-  This is the same move mattpocock/skills makes with its user-invoked / model-invoked axis —
+  This is the same move the reference plugin makes with its user-invoked / model-invoked axis —
   a real distinction, documented in `.agents/`, not a directory.
 - **Bucket READMEs now carry the role grouping**, which lets them say _why_ a group coheres
   rather than only that it does. `engineering/README.md` has three role sections.
