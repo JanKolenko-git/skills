@@ -50,17 +50,16 @@ for, and a general rule buried in one repository's file is re-learned everywhere
 3. **No existing rule covers it.** Read `ENGINEERING.md` in full; sharpen a near rule rather
    than add a second.
 
-A Baseline entry a run was bitten by moves to Rules with the evidence (`promoted`); a rule
-that proved wrong is narrowed or deleted (`sharpened`); no source and no run → name it to the
-user, add nothing.
+A Baseline entry a run was bitten by moves to Rules (`promoted`); a rule that proved wrong
+is narrowed or deleted (`sharpened`); no source and no run → name it to the user, add nothing.
 
 ## Step 3 — Draft the minimal change
 
 In the file's own voice: a `##` heading stating the rule as a sentence, a short yes/no code
 example, one sentence of why, the exception (a rule with none is ignored the first time it
-is inconvenient), a `_Source: …_` line, under the section test 1 chose. The source and the
-example name the shape of the run or the citation, never a repository, ticket, PR, commit,
-person or private package: the repository is public.
+is inconvenient), under the section test 1 chose. The example and the commit message name
+the shape of the run or the citation, never a repository, ticket, PR, commit, person or
+private package: the repository is public.
 
 Done when: the entry reads the same to someone who has never seen the repository it came
 from.
@@ -85,7 +84,8 @@ with no version bump. Commit it:
 
 ```bash
 git -C ~/Developer/skills add ENGINEERING.md
-git -C ~/Developer/skills commit -m "docs(engineering): <the rule, in one line>"
+git -C ~/Developer/skills commit -m "docs(engineering): <the rule, in one line>" \
+  -m "<the run's shape or the citation that bought it>"
 ```
 
 ## Notes

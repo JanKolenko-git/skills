@@ -2,27 +2,12 @@
 
 Cross-cutting rules for the **code the skills produce**, read before a skill changes a work
 repo. No skill restates these; a rule only one task cares about stays in that SKILL.md.
-
-## How an entry earns its place
-
-**Rules** — one observed failure, in a real run, that the rule would have caught. Added
-through `jankolenko-skills:record-engineering-rule`. **Baseline** — established practice
-with a named source (Power of 10, a published style guide, a convention a large codebase
-visibly holds). No source outside this file, no entry. A Baseline rule a run later violates
-is promoted to Rules with the evidence; a rule that proved wrong is deleted.
-
-## What a rule may name
-
-Only what would hold in a repository you have never seen: the **shape** of the failure, never
-a repository, ticket, pull request, commit, person or private package. A rule that holds only
-in repositories you can list belongs in that repository's own `CLAUDE.md`.
-`jankolenko-skills:record-engineering-rule` decides which.
+**Rules** were each bought by a failure in a real run; **Baseline** is established
+practice. Entries are added through `jankolenko-skills:record-engineering-rule`.
 
 ---
 
 # Rules
-
-_Observed. Each entry names the shape of the run that bought it._
 
 ## Simple code beats a marginal improvement
 
@@ -47,10 +32,6 @@ number to the user.
 
 Exception: the simple code was wrong for every caller; then fix it as its own change.
 
-_Source: observed — in one change, a responsive-image tweak worth 20–35 KB on some desktop
-screens collected constants, comments and a spec before it was dropped, and a deferred mount
-grew a 36-line scroll helper to 154 lines over three fix rounds before it was reverted._
-
 ## Reuse the name a thing already has; give a new one meaning
 
 ```ts
@@ -69,9 +50,6 @@ domain concept the reader has to reconstruct.
 
 Exception, second half only: genuinely generic code, where a `map` helper's `item` really is
 any item.
-
-_Source: first half observed (this file's founding entry); second half Ousterhout, ‹A
-Philosophy of Software Design› §14._
 
 ## A stylesheet is unused only if the rendered markup says so
 
@@ -96,9 +74,6 @@ control that should be custom-styled.
 
 Exception: classes confirmed absent from the rendered DOM in every state.
 
-_Source: observed — a design system's stylesheet dropped with its JavaScript barrel cost ten
-classes their rules; the component checked had been ported, the controls inside it had not._
-
 ## Generate an artifact with the toolchain the repo pins
 
 ```bash
@@ -115,9 +90,6 @@ change deserves. Read the pin (`.nvmrc`, `.tool-versions`, `engines`) and match 
 generator runs.
 
 Exception: a repo that pins nothing, and generators whose output does not vary by version.
-
-_Source: observed — a lockfile regenerated under a newer Node than the repo pinned rewrote
-1008 lines for one changed package; under the pin, 21._
 
 ## Generated artifacts ship in the commit that changed their source
 
@@ -137,9 +109,6 @@ before calling a change verified.
 
 Exception: artifacts the repo deliberately does not commit. When regeneration needs an
 environment you cannot run, say the artifact is stale; never commit a stale one silently.
-
-_Source: observed — two new exports left a library's generated API report stale; verification
-had been scoped to the two changed files._
 
 ## Parse at the boundary; trust the types inside it
 
@@ -162,10 +131,6 @@ types. A library's public prop or option is a boundary too: JavaScript hosts kee
 the shape you stopped accepting.
 
 Exception: internal calls already behind a validated boundary.
-
-_Source: Power of 10 §5 and §7. Promoted when a library option went from object to string as
-a minor and a JavaScript host still passing the object lost its deferral silently in
-production._
 
 ## Comments explain why, not what, in two sentences at most
 
@@ -197,10 +162,6 @@ that is left. Say a reason once, where it lives, a pointer at most at the call s
 Exception: a docblock on a library's published surface may say what it does, still in two
 sentences.
 
-_Source: Google, Apple and kernel style guides converge. Sharpened when a rationale copied to
-three call sites read as leftover; promoted when a twelve-line comment spelled out widths the
-code kept as bare numbers and review asked for names._
-
 ## A comment that states a behaviour is checked like the code it describes
 
 ```ts
@@ -222,9 +183,6 @@ handles it. A comment you cannot point at code for is a guess.
 Exception: a comment about the world outside the code (a browser quirk, a measured latency,
 a vendor's contract). Date it or cite it.
 
-_Source: observed — one change carried three comments describing mechanisms the code no
-longer had; each was caught by a different reader, none by the author._
-
 ## An edit is verified by reading it back, not by the tool that applied it
 
 ```bash
@@ -243,15 +201,9 @@ test the session cannot run, a config no build loads, a comment.
 Exception: an edit followed by a check that exercises it (the test that now passes, the build
 that compiles). The check is the read-back.
 
-_Source: observed — a patch script asserted the old block was present, never replaced it and
-printed "patched"; the error shipped in the first push._
-
 ---
 
 # Baseline
-
-_Sourced. Each entry names where the practice comes from: a published source, or a convention
-a large codebase visibly holds, described but not named._
 
 ## Every loop, retry and poll carries a bound
 
@@ -268,8 +220,6 @@ trace, no log line. A bound turns that into a failure with a message. Name the c
 `MAX_PAGES` says what it protects, `50` does not.
 
 Exception: a genuine event loop or long-lived consumer, whose shutdown path is then explicit.
-
-_Source: Power of 10 §2._
 
 ## Every result is checked; every promise is awaited or explicitly handled
 
@@ -289,8 +239,6 @@ away. `.catch()` is an answer; `void` documents that you looked at the linter.
 
 Exception: fire-and-forget telemetry, which still gets a `.catch()`.
 
-_Source: Power of 10 §7; `no-floating-promises: "error"` in a production front-end._
-
 ## Strict from the first commit; a suppression carries its reason
 
 ```ts
@@ -305,8 +253,6 @@ A suppression is a claim, and a claim needs a reason a later reader can check an
 reason-free one is indistinguishable from a mistake and outlives the problem by years. New
 code compiles clean under the repo's strictest setting from its first commit. Never loosen
 `tsconfig` to make a change compile.
-
-_Source: Power of 10 §10; `strict: true` in a large TypeScript codebase._
 
 ## Errors are typed, narrowed, and never silently swallowed
 
@@ -329,8 +275,6 @@ a stack.
 Exception: a cleanup path in a `finally`, where a secondary failure must not mask the
 original. Say so in a comment.
 
-_Source: a large TypeScript codebase — 254 catches typed `unknown`, one `Error` hierarchy._
-
 ## Return early; keep the happy path at the left margin
 
 ```ts
@@ -349,8 +293,6 @@ readable and testable alone.
 
 Exception: none worth stating. Guards outnumbering the work means the function does two jobs.
 
-_Source: Linux kernel, Go and Google style guides converge here._
-
 ## A function fits on one screen
 
 A function you cannot see at once is one nobody verifies: reviewers scroll, then trust. Length
@@ -358,8 +300,6 @@ is a symptom of several ideas never named; extract the ideas rather than splitti
 threshold, which is why this rule states no number.
 
 Exception: a flat exhaustive `switch`, a config literal, a generated mapping.
-
-_Source: Power of 10 §4 (which does state one: ~60 lines)._
 
 ## Wait for the third occurrence before abstracting
 
@@ -379,8 +319,6 @@ binds hardest there.
 Exception: a contract you already know — an interface a third party defines, a boundary the
 architecture requires.
 
-_Source: the rule of three (Fowler, ‹Refactoring›)._
-
 ## Export by name, not by default
 
 ```ts
@@ -398,9 +336,6 @@ is **Reuse the name a thing already has**, one level up.
 Exception: frameworks that require it — a Next.js page or route, a config file loaded by
 convention.
 
-_Source: Google TypeScript Style Guide; a large TypeScript codebase — 4702 named exports to
-138 default._
-
 ## The change includes the deletion
 
 ```ts
@@ -415,8 +350,6 @@ Generated code adds far more readily than it removes, so a diff that only grows 
 look.
 
 Exception: a deliberate deprecation window, with a dated removal note and a replacement.
-
-_Source: convergent across large-codebase review practice (Google, Meta)._
 
 ## A new dependency is a liability you are choosing
 
@@ -433,8 +366,6 @@ PR what it costs to ship, what happens when it goes unmaintained, and how much o
 Reach for the platform first: `Intl`, `URL`, `structuredClone`, `AbortSignal.timeout`.
 
 Exception: cryptography, time zones, and anything with a specification longer than this file.
-
-_Source: convergent across Google, Apple and Meta dependency review._
 
 ## Separate the decision from the action
 
@@ -458,8 +389,6 @@ enough to check by reading.
 
 Exception: code that is genuinely all action — a migration, a thin adapter.
 
-_Source: Gary Bernhardt, "Boundaries" (2012) — functional core, imperative shell._
-
 ---
 
 ## What deliberately is not here
@@ -469,4 +398,3 @@ the skills that own them (`test`, `git-commit`, `git-create-branch`, `plan`
 and `check`). Considered and rejected, so they are not re-proposed: declare at
 narrowest scope (the linter covers it), formatting (Prettier enforces it), thread a
 cancellation signal (promote it if a run gets bitten), make invalid states unrepresentable.
-Power of 10 §1, §3, §8 and §9 have no honest analogue in TypeScript.
