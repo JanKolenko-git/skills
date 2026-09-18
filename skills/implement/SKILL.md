@@ -78,17 +78,21 @@ the change and compares the base branch so a regression is caught before a revie
 it. `reject-to-plan` → Step 3 with what the code revealed, branch and ticket untouched;
 `reject-to-code` → Step 6, then 7, then check again; `blocked` → supply what it named
 (`jankolenko-skills:walkthrough` with `scope=environment` when the app would not start),
-check again, or carry the blocked behaviours into the gate summary; `accept` → review. A
-second `reject-to-plan` on the same ticket means the goal is not understood: bail out with
-both plans and what the code showed about each.
+check again, or carry the blocked behaviours into the gate summary; `accept` → review. Fix
+rounds that keep landing on one mechanism, from the check or the review (another edge-case
+branch, another stop condition, another caller wired in to cooperate), mean the mechanism
+fights the codebase: the second such round goes to Step 3 as `reject-to-plan`, not to a
+third patch. A second `reject-to-plan` on the same ticket means the goal is not understood:
+bail out with both plans and what the code showed about each.
 
 ## Step 10 — Ship
 
 > 🛑 `jankolenko-skills:git-pr-push-and-open` owns the review gate: it shows the diff and
 > asks through `AskUserQuestion` before pushing. Do not push around it or answer for the
 > user. Pass `push=waived` only when the user said so in chat at the start of this run.
-> Standing rule: writes only on the user's word in chat. Include anything unresolved from
-> the review in the gate summary.
+> Standing rule: writes only on the user's word in chat. Include in the gate summary
+> anything unresolved from the review, and each part's win against its code cost (lines
+> added, shared files touched), so a marginal part can be cut before it ships.
 
 ## Final report
 

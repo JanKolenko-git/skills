@@ -27,7 +27,7 @@ nothing.
 | Field | Contents |
 | --- | --- |
 | `plan.verdict` | `ready` / `blocked` / `no-change-needed` |
-| `plan.approach` | The approach chosen, the ones rejected, and the fact that decided |
+| `plan.approach` | The approach chosen, the ones rejected, the fact that decided, each part's win against its cost, and the parts dropped |
 | `plan.summary` | The approach, one paragraph |
 | `plan.files` | Each file to touch, with what changes in it |
 | `plan.steps` | Ordered steps, each independently checkable |
@@ -56,9 +56,18 @@ The approach that arrives with the goal is a candidate, not the plan. Name at le
 that differs in mechanism, and compare on what decides it: the whole problem or the symptom
 noticed first; what each assumes, checked now if cheap and otherwise a risk with a detector;
 what breaks it later, including the same caller ten times over in shared code. Take the
-simplest approach that fully solves it, and record in `plan.approach` the choice, the
-rejected ones and the deciding fact. If nothing but the arriving approach fits, say so and
-why.
+simplest approach that solves what is worth solving, and record in `plan.approach` the
+choice, the rejected ones and the deciding fact. If nothing but the arriving approach fits,
+say so and why.
+
+Then price each part of that approach, each sub-goal and each mechanism: what it buys, as a
+number or the measurement that will produce one, against the code it costs, counting files
+outside the feature and shared code it forces to change. Drop or defer a part whose win is
+small next to its cost, and record it in `plan.approach` as
+`dropped: <part>, <win> vs <cost>`; a part `criteria` asked for is dropped only by the user,
+in Step 4. A part that only works by complicating stable code from another concern (a scroll
+helper, a router, a layout contract) gets an angle that leaves that code alone, or goes to
+Step 4 as a decision.
 
 ## Step 4 — Settle what blocks the plan
 

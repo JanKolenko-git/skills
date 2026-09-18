@@ -59,6 +59,11 @@ reply; a fix that misses what the reviewer wanted closes the thread and leaves t
 Concern not real → decline with what the code shows. No concern behind it (preference,
 habit) → judged on its own merits.
 
+A comment can be right and still not earn its change. When applying it adds constants,
+comments or tests that only prop up a part with a small win, whether the part stays is a
+product call: take it to Step 3's gate with the part's measured win on screen and
+**drop the part** as a fourth option.
+
 ## Step 3 — Give each comment a verdict
 
 Apply when the comment is right about this code and makes the PR better. Decline with the

@@ -54,10 +54,11 @@ merge into. Done when: every hunk has been read.
    back to a step. Anything unmapped goes in `check.unplanned`: drive-by refactors,
    renames, a second bug fixed, a dependency added, config touched. Unplanned is undeclared
    and unreviewed against any intent; each either earns a plan step or leaves the diff.
-3. **Should it exist at all?** Now that the code is real: was this the right approach, does
-   the change sit where it belongs, did building it surface something that makes the plan
-   look wrong? A faithful implementation of the wrong idea is the failure this seat exists
-   to catch.
+3. **Should each part exist?** Now that the code is real, ask it of every part of the diff,
+   not once of the whole: does the part's win, priced in the plan or measured here, pay for
+   its code; does it sit where it belongs; did building it surface something that makes the
+   plan look wrong? Code outside the feature that grew to serve it is the tell. A faithful
+   implementation of the wrong idea is the failure this seat exists to catch.
 4. **Does it hold under the plan's premise?** For each condition the plan named (a device,
    a load, a caller, a failure mode), find the line that meets it and the test that
    exercises it. A test that reaches for a convenient stand-in verifies the plan's shape,
