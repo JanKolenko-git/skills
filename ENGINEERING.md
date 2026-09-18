@@ -24,6 +24,33 @@ in repositories you can list belongs in that repository's own `CLAUDE.md`.
 
 _Observed. Each entry names the shape of the run that bought it._
 
+## Simple code beats a marginal improvement
+
+```ts
+// no — a one-shot helper grows a follow loop so a late-mounting section can move under it
+export function scrollToElement(target, offset) {
+  /* 36 lines → 154: stop rules, a time bound, four callers wired in to cooperate */
+}
+
+// yes — the helper stays one-shot; the late section keeps its box and lazy-loads inside it
+<Section style={{ minHeight }}><LazyContent /></Section>
+```
+
+Code is paid for on every later change, so each part of a change has to earn its lines. Put
+a number on what a part buys (bytes, milliseconds, the share of users affected) before
+building it; small next to its code means drop the part. Three tells that a part is not
+earning them: constants, coupling comments and specs whose only job is to keep it correct;
+simple, shared code from another concern that must get complicated for it to work; fix
+rounds that each add a special case. At a tell, stop adding: find the angle where the simple
+code keeps working (another layer, another owner, a stable box), or take the part and its
+number to the user.
+
+Exception: the simple code was wrong for every caller; then fix it as its own change.
+
+_Source: observed — in one change, a responsive-image tweak worth 20–35 KB on some desktop
+screens collected constants, comments and a spec before it was dropped, and a deferred mount
+grew a 36-line scroll helper to 154 lines over three fix rounds before it was reverted._
+
 ## Reuse the name a thing already has; give a new one meaning
 
 ```ts
