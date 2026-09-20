@@ -36,8 +36,9 @@ under [Writes](#writes), only ever touches its own delimited section.
 ## Environment
 
 `CONFLUENCE_URL` and `CONFLUENCE_PERSONAL_TOKEN`, both required, read at runtime, no
-defaults; never hardcode a token or ask for one in chat. PATs are per product, so a Jira
-token gets a `401`. Missing or rejected → tell the user to create one in Confluence (profile
+defaults; never hardcode a token or ask for one in chat. Check that one is set without
+printing it: `[ -n "$CONFLUENCE_PERSONAL_TOKEN" ] && echo set`. PATs are per product, so a
+Jira token gets a `401`. Missing or rejected → tell the user to create one in Confluence (profile
 menu → Personal Access Tokens) and export it, then stop.
 
 ## Scripts

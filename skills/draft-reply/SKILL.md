@@ -1,7 +1,7 @@
 ---
 name: draft-reply
-description: Turn a pasted Slack, Teams, email or PR thread, usually with the user's rough draft, into a reply that is short, checks out and answers everything asked, or write the short status message from the links given. Use when the user asks how to answer a thread, to improve, tighten or shorten a message, or for a teams message about a ticket or PR.
-argument-hint: <pasted thread> [+ your draft]
+description: Turn a pasted Slack, Teams, email or PR thread, usually with the user's rough draft, into a short reply that checks out and answers everything asked, or write a status message or a work report for a period from the record. Use when the user asks how to answer a thread or a pasted question, to tighten a message, or for a teams update or work report.
+argument-hint: <pasted thread> [+ your draft] | <tickets, PRs or a period to report on>
 ---
 
 # Draft Reply
@@ -13,8 +13,10 @@ draft never answers. Catching those is the job; tightening is the easy part.
 
 ## Inputs
 
-- `thread` — **required.** The pasted conversation, in full; what was asked earlier is
-  usually what the reply has to land.
+- `thread` — **required** for a reply. The pasted conversation, in full; what was asked
+  earlier is usually what the reply has to land.
+- `subject` — for a status message or a work report, in place of `thread`: the tickets, PRs
+  or pages to cover, or the period.
 - `draft` — the user's own attempt. It is the starting point and their voice is the target:
   a tightening, not a rewrite in someone else's register.
 - `context` — repos, PRs, tickets or files the claims can be checked against. Without it,
@@ -46,6 +48,10 @@ confident prose; a wrong figure sent to colleagues is corrected in public, and t
 lands on the user. Prefer the figure the reader experiences: compressed transfer size over
 raw bytes, wall-clock over CPU, the percentile that hurts.
 
+A colleague's question pasted with no draft is researched before it is answered: the code,
+the ticket, and for a team process (a release, a deploy, who owns what) Confluence through
+`jankolenko-skills:atlassian-confluence` before inferring it from git history.
+
 ## Step 3 — Cut
 
 Lead with the answer; context and caveats come after, and only if they change what the
@@ -61,6 +67,23 @@ Show `reply.text` on its own, so it can be copied without editing, then the chan
 was cut, corrected, or added because the thread asked for it. A correction to the draft's
 facts is stated plainly ("measured 55 KB, not 70"), never buried where the user might send
 it without noticing.
+
+## A status message or a work report
+
+There is no thread to answer, so the record is the source. For a status message, read each
+ticket, PR or page in `subject` and take the numbers from them. For a report on a period,
+gather the work from `git log --author` across the repositories involved, their pull
+requests, and the ticket keys in branch names and titles.
+
+The shape, unless the user pasted an earlier message to match:
+
+- one line or one table row per ticket;
+- at most three sentences: what changed for the user or the metric, the number, the status
+  last;
+- the link after. A title only when asked.
+
+Write it in the language of the request, in chat, as Markdown ready to paste: no file, no
+artifact. Steps 2 to 4 still apply.
 
 ## Notes
 

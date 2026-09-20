@@ -62,7 +62,7 @@ nothing in the skill listing, and a ticket run that owes a decision stops and na
 | Skill | What it does |
 | --- | --- |
 | [explain](./skills/explain/SKILL.md) | Explain code, a principle, a metric or how to build X in Y, plainly and accurately |
-| [draft-reply](./skills/draft-reply/SKILL.md) | Turn a pasted thread and a rough draft into a short reply that checks out and answers everything asked |
+| [draft-reply](./skills/draft-reply/SKILL.md) | Turn a pasted thread and a rough draft into a short reply that checks out and answers everything asked, or write a status message or a work report from the record |
 
 ### Meta
 
@@ -73,7 +73,7 @@ end of the run.
 
 | Skill | What it does |
 | --- | --- |
-| [improve-skill](./skills/improve-skill/SKILL.md) | Fix one of these skills from an observed friction, gated on the exact diff, then ship it |
+| [improve-skill](./skills/improve-skill/SKILL.md) | Fix, add, rename or reshape one of these skills from an observed friction or a request that recurred, gated on the exact diff, then ship and install it |
 | [record-engineering-rule](./skills/record-engineering-rule/SKILL.md) | Decide whether a coding convention belongs in [`ENGINEERING.md`](./ENGINEERING.md) or in one repository's `CLAUDE.md`, gated on the diff |
 | [find-session-improvements](./skills/find-session-improvements/SKILL.md) | Sweep a finished session for what the skill layer should learn and route each finding to its owner behind one triage gate |
 

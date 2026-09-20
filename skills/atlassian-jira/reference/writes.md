@@ -30,6 +30,14 @@ python3 <skill-dir>/add_comment.py <key-or-url> --stdin < body.txt
 Wiki markup, not Markdown: `{code}...{code}`, `*bold*`, `h3.`. Everyone on the ticket sees
 it, so keep an automated comment to a line or two and say what happened, not how.
 
+## Update the ticket
+
+"Update the ticket" asks for the ticket to catch up with the work, not for one field to
+change. Gather what happened since the last comment: the pull requests and their state, what
+merged, what is deployed. Draft one short comment from that, pass the gate, post it. Then
+transition the ticket when the state moved, such as a merged pull request on a ticket still
+In Progress.
+
 ## Create an issue
 
 ```bash
@@ -39,6 +47,10 @@ python3 <skill-dir>/create_issue.py --project PROJ --type Bug --summary "..." \
 
 Projects differ in what their create screen requires. A `400` echoes Jira's own message
 naming the offending field; read it instead of retrying blind.
+
+Unless the project has its own template, lay the description out under `h3.` headings:
+Problem, Cause, Evidence, Impact, Proposed fix, Open questions. Drop a section that would be
+empty.
 
 ## Edit fields
 

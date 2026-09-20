@@ -176,6 +176,21 @@ Four more bind the authoring, not the run:
   the hook loads into every session in full, so the file stays short. A SKILL.md restates
   none of them.
 
+## Changing the skill layer
+
+A one-skill fix goes straight to a diff. Anything larger, a skill added, renamed, reshaped or
+removed, or a rule that touches several, starts as a plan file the user can comment on, kept
+outside the repository:
+
+1. Ground it in the record: the requests that recurred and the corrections the user typed,
+   quoted. Trigger phrases come from the transcripts, never from asking.
+2. Draft the contract and an example of the output.
+3. Price each edit: the words it adds against what it buys. Drop the marginal ones and say so.
+4. Ask what is still open through `AskUserQuestion`, four questions at a time, the
+   recommended answer first.
+5. Edit only on an explicit go. Show dependent edits as one combined diff, under the gate of
+   `jankolenko-skills:improve-skill`.
+
 ## Shipping
 
 Sessions load the plugin from a versioned copy under `~/.claude/plugins/cache/`, never from
@@ -188,9 +203,12 @@ claude plugin validate .claude-plugin/plugin.json && claude plugin validate .
 git add <the files you changed> .claude-plugin/plugin.json   # after bumping "version"
 git commit -m "<conventional commit message>"
 claude plugin update jankolenko-skills@jankolenko
+claude plugin list        # jankolenko-skills shows the version just bumped
 ```
 
 Bump `version` in `.claude-plugin/plugin.json` before staging: patch by default, minor when a
-skill is added or renamed, major when one is removed or a contract changes shape. The update
+skill is added or renamed, major when one is removed or a contract changes shape. Run the
+update rather than quoting it, confirm the installed version, and report
+`<old> → <new> installed`: a commit without the update is a fix nobody runs. The update
 takes effect at the next session. `ENGINEERING.md` and `WRITING.md` need no bump: the hook
 takes both from the working copy, so a saved rule applies at the next session.

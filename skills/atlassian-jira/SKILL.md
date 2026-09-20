@@ -45,8 +45,9 @@ A write mode returns the one-line confirmation the script prints.
 ## Environment
 
 `JIRA_URL` and `JIRA_PERSONAL_TOKEN`, both required, read at runtime, no defaults; never
-hardcode a token or ask for one in chat. PATs are per product, so a Confluence token gets a
-`401`. Missing or rejected → tell the user to create one in Jira (profile menu → Personal
+hardcode a token or ask for one in chat. Check that one is set without printing it:
+`[ -n "$JIRA_PERSONAL_TOKEN" ] && echo set`. PATs are per product, so a Confluence token
+gets a `401`. Missing or rejected → tell the user to create one in Jira (profile menu → Personal
 Access Tokens) and export it, then stop.
 
 ## Scripts
@@ -101,5 +102,6 @@ Done when: every Output field is filled or marked empty.
 > ask through `AskUserQuestion` whether to act — options **do it**, **ignore**.
 
 Reading never triggers a write. Read `${CLAUDE_SKILL_DIR}/reference/writes.md` when `mode`
-is not `read`: the four write scripts, how a transition resolves, comment markup, and why a
+is not `read`, or the user asks to update a ticket: the four write scripts, how a transition
+resolves, comment markup, what "update the ticket" covers, a new ticket's layout, and why a
 refused write is not fatal to a flow.
