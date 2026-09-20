@@ -13,7 +13,7 @@ nobody asked for, so this skill is biased toward refusing.
 
 - `hints` — **required.** Anything to match on: a project name, a package name, a service,
   keywords, a ticket's title, components and labels. A caller holding a ticket passes these
-  from it; this skill fetches nothing.
+  from it. This skill fetches nothing.
 - `search_root` — optional. Overrides the resolution order below.
 
 ## Output
@@ -27,11 +27,13 @@ nobody asked for, so this skill is biased toward refusing.
 
 ## Step 1 — Resolve where to look
 
-In order, stopping at the first that yields candidates: the current directory, if it is
-inside a git repo that matches the hints (someone working in a repo and naming a ticket
-almost always means this repo); `$REPO_ROOT`, searched recursively; the common roots
-`~/Developer`, `~/code`, `~/src`, `~/projects`, `~/repos`; else ask the user to set
-`REPO_ROOT` and stop.
+In order, stopping at the first that yields candidates:
+
+1. The current directory, when it is inside a git repo that matches the hints. Someone
+   working in a repo and naming a ticket almost always means this repo.
+2. `$REPO_ROOT`, searched recursively.
+3. The common roots: `~/Developer`, `~/code`, `~/src`, `~/projects`, `~/repos`.
+4. Nothing found: ask the user to set `REPO_ROOT` and stop.
 
 ```bash
 find "$ROOT" -maxdepth 3 -type d -name .git -not -path "*/node_modules/*" 2>/dev/null
@@ -39,22 +41,26 @@ find "$ROOT" -maxdepth 3 -type d -name .git -not -path "*/node_modules/*" 2>/dev
 
 ## Step 2 — Match
 
-Rank candidates on the directory name against the hints (folder names often carry a
-prefix the ticket never mentions, so match the part after it too), the `package.json`
-`name`, and `git remote -v`, whose slug is often more accurate than the folder. Recent
-activity is a tie-breaker, never evidence. Ticket components and labels are coarse platform
-tags that narrow the set and never pick the winner. Where the work *ought* to live ("totals
-are computed server-side") is a claim about systems in general, not evidence about the
-repos in front of you, and it is available in every ambiguous case.
+| Signal | Weight |
+| --- | --- |
+| Directory name against the hints | Decides. Folder names often carry a prefix the ticket never mentions, so match the part after it too |
+| `package.json` `name` | Decides |
+| `git remote -v` slug | Decides. Often more accurate than the folder |
+| Recent activity | A tie-breaker, never evidence |
+| Ticket components and labels | Coarse platform tags: they narrow the set and never pick the winner |
+| Where the work *ought* to live ("totals are computed server-side") | None. A claim about systems in general, not evidence about the repos in front of you, and available in every ambiguous case |
 
 ## Step 3 — Decide
 
-Exactly one repo matching on a substantive signal (name, package name, remote) is the
-answer: report it with `repo.evidence`, `cd` there, and resolve the default branch with
+Exactly one repo matching on a deciding signal is the answer. Report it with
+`repo.evidence`. Make `repo.path` the session's directory with the host's change-directory
+tool when it has one, else work through absolute paths and `git -C`: a shell `cd` does not
+last between calls. Resolve the default branch with
 `git symbolic-ref --quiet refs/remotes/origin/HEAD`, falling back to `main` then `master`.
 
 > 🛑 **GATE — an ambiguous match.** Two or more repos match, or the only signal is a coarse
-> label, or one repo was reached by reasoning about the task rather than by a signal above.
+> label. One repo reached by reasoning about the task, rather than by a deciding signal, is
+> ambiguous too.
 > Ask through `AskUserQuestion`: "Which repository is this about?" — one option per
 > candidate with the reason it matched, plus **stop**.
 > Naming the uncertainty and then answering anyway is the tell, not the excuse. Standing
@@ -63,5 +69,5 @@ answer: report it with `repo.evidence`, `cd` there, and resolve the default bran
 ## Notes
 
 - Never create a repository: if nothing matches, the answer is "I could not find it".
-- If the matched repo has uncommitted changes, say so; the caller may be about to branch on
+- If the matched repo has uncommitted changes, say so. The caller may be about to branch on
   top of someone's work in progress.

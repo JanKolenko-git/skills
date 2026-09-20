@@ -6,16 +6,16 @@ context: fork
 
 # Check
 
-Tests ask *does it run*; `/code-review` asks *is it correct*; this skill asks *should it
-exist, and does it hold*: does the diff match the intent it came from, does it behave when
-run, and does everything it touches still behave as the base branch does. It runs in a
-fresh context, on purpose, so the judge does not share the builder's reasoning.
+Tests ask *does it run*, and `/code-review` asks *is it correct*. This skill asks *should it
+exist, and does it hold*: against the intent it came from, when run, and against the base
+branch. It runs in a fresh context, on purpose, so the judge does not share the builder's
+reasoning.
 
 ## Inputs
 
 - `plan` — the `plan.*` fields from `jankolenko-skills:plan`, or any written plan, passed in
   full: this skill cannot see the caller's context. Without one, Step 2 judges against
-  `criteria` and says so; with neither, ask for one rather than inventing it.
+  `criteria` and says so. With neither, ask for one rather than inventing it.
 - `criteria` — acceptance criteria, or the bug's reproduction.
 - `diff` — optional. Defaults to the branch and working tree against `base`.
 - `base` — optional. Defaults to the default branch, `origin/<default>` when there is a remote.
@@ -41,9 +41,8 @@ Not bugs, style, naming, performance or test quality: those belong to `/code-rev
 git fetch -q origin 2>/dev/null; git diff --stat <base>...HEAD && git diff <base>...HEAD
 ```
 
-Read the whole diff; a critique built from the file list cannot answer question 2. Compare
-with the fetched base: a local branch that fell behind measures against history nobody will
-merge into. Done when: every hunk has been read.
+Compare with the fetched base: a local branch that fell behind measures against history
+nobody will merge into. Done when: every hunk has been read.
 
 ## Step 2 — Ask the four questions of intent
 
@@ -52,15 +51,15 @@ merge into. Done when: every hunk has been read.
    in `check.missing` with which half.
 2. **Is there anything the plan did not ask for?** Walk the diff hunk by hunk and map each
    back to a step. Anything unmapped goes in `check.unplanned`: drive-by refactors,
-   renames, a second bug fixed, a dependency added, config touched. Unplanned is undeclared
-   and unreviewed against any intent; each either earns a plan step or leaves the diff.
+   renames, a second bug fixed, a dependency added, config touched. Each either earns a
+   plan step or leaves the diff.
 3. **Should each part exist?** Now that the code is real, ask it of every part of the diff,
-   not once of the whole: does the part's win, priced in the plan or measured here, pay for
-   its code; does it sit where it belongs; did building it surface something that makes the
+   not once of the whole. Does the part's win, priced in the plan or measured here, pay for
+   its code? Does it sit where it belongs? Did building it surface something that makes the
    plan look wrong? Code outside the feature that grew to serve it is the tell. A faithful
    implementation of the wrong idea is the failure this seat exists to catch.
-4. **Does it hold under the plan's premise?** For each condition the plan named (a device,
-   a load, a caller, a failure mode), find the line that meets it and the test that
+4. **Does it hold under the plan's premise?** The plan named conditions: a device, a load,
+   a caller, a failure mode. For each, find the line that meets it and the test that
    exercises it. A test that reaches for a convenient stand-in verifies the plan's shape,
    not its premise: fake timers never block, so they cannot show what a blocked main thread
    does. A premise nothing exercises is a finding, not a pass.
@@ -70,22 +69,24 @@ every hunk maps to a step or a row in `check.unplanned`.
 
 ## Step 3 — Run it and keep the evidence
 
-Run the suite with the repository's own command, then exercise each behaviour the change
-adds or alters the way a caller reaches it: the request and its body for an API, the route
-and what rendered for a page, the command and its output for a CLI. Start the app the way
-the repository documents, else as `run` says; when neither is known, the behaviour is
-`blocked` with what would unblock it. Record each observation in `check.evidence` as you
-make it.
+Run the suite, then exercise each behaviour the change adds or alters the way a caller
+reaches it. For an API, the request and its body. For a page, the route and what rendered.
+For a CLI, the command and its output.
 
-No evidence, no pass: a behaviour reasoned about from the code is `blocked`, however sure
+Start the app the way the repository documents, else as `run` says. When neither is known,
+the behaviour is `blocked` with what would unblock it. Record each observation in
+`check.evidence` as you make it.
+
+No evidence, no pass. A behaviour reasoned about from the code is `blocked`, however sure
 you are, and a run in which nothing started passes nothing. Done when: every behaviour has
 a row with the command or URL, the observation and a verdict.
 
 ## Step 4 — Compare with the base
 
-For each surface the change touches that the plan asked to leave alone, an endpoint, a
-page, a query, a command, a build artefact, capture the same observation on `base` and diff
-the two. A throwaway worktree keeps the comparison honest; a stash leaves new files behind.
+Take each surface the change touches that the plan asked to leave alone: an endpoint, a
+page, a query, a command, a build artefact. Capture the same observation on `base` and diff
+the two. A throwaway worktree keeps the comparison honest, where a stash leaves new files
+behind.
 
 ```bash
 git worktree add -q /tmp/check-base <base> && (cd /tmp/check-base && <install, build, observe>); git worktree remove --force /tmp/check-base
@@ -97,17 +98,24 @@ here. Done when: every shared surface is identical, a regression, or named as sk
 
 ## Step 5 — Route the verdict
 
-By where the fix has to happen: `accept` when the diff implements the plan, nothing is
-undeclared, every behaviour has evidence and no regression is listed; `reject-to-code` when the plan is right and the code,
-its behaviour or a shared surface does not match it yet, the ordinary case; `reject-to-plan`
-when the plan itself is wrong and building it more faithfully makes things worse, with what
-the plan got wrong and what the code revealed; `blocked` when nothing could be exercised,
-with what would unblock it. A second `reject-to-plan` on the same work means the goal is
-not understood: stop and put the question to the user.
+Route by where the fix has to happen:
+
+| Verdict | When | Carries |
+| --- | --- | --- |
+| `accept` | The diff implements the plan, nothing is undeclared, every behaviour has evidence, no regression is listed | |
+| `reject-to-code` | The plan is right, and the code, its behaviour or a shared surface does not match it yet. The ordinary case | The findings |
+| `reject-to-plan` | The plan itself is wrong, and building it more faithfully makes things worse | What the plan got wrong, and what the code revealed |
+| `blocked` | Nothing could be exercised | What would unblock it |
+
+A second `reject-to-plan` on the same work means the goal is not understood: stop and put
+the question to the user.
+
+Done when: the verdict is reported, and every server, worktree and temp file this run
+started is stopped or removed, or named with the command that does it.
 
 ## Notes
 
-- Critique the work, not the worker; a rejection here is cheap, the same one in review is not.
-- A plan written after the code agrees with it by construction; say so.
+- A rejection here is cheap, and the same one in review is not.
+- A plan written after the code agrees with it by construction. Say so.
 - Reports only. A failing behaviour goes to `jankolenko-skills:debug`, a missing one to the
-  builder; nothing here edits code.
+  builder. Nothing here edits code.

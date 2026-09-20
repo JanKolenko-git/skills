@@ -6,7 +6,7 @@ description: Find and fix a bug's root cause through a diagnosis loop: a feedbac
 # Debug
 
 A bug is found by a loop, not by reading code for a theory. One command that goes red on
-this symptom and green once it is fixed is most of the work; bisection, hypotheses and
+this symptom and green once it is fixed is most of the work. Bisection, hypotheses and
 instrumentation only consume it.
 
 ## Inputs
@@ -32,30 +32,37 @@ Standing rule: no secrets in output.
 
 ## Step 1 — Pin the symptom
 
-Write down observed, expected and trigger before touching code; read `CONTEXT.md` and the
-area's ADRs when they exist. A symptom you cannot state precisely has no loop; ask for the
-exact steps, inputs and environment rather than guess. Done when: observed,
-expected and trigger are three concrete lines.
+Write down observed, expected and trigger before touching code, and read the area's ADRs
+when they exist. A symptom you cannot state precisely has no loop: ask for the exact steps,
+inputs and environment rather than guess. Done when: observed, expected and trigger are
+three concrete lines.
 
 ## Step 2 — Build a feedback loop that goes red
 
-Spend the effort here. In rough order of preference: a failing test at the seam that
-reaches the bug; a request against a running dev server; a CLI run diffed against known-good
-output; a headless-browser script asserting on DOM, console or network; a captured trace
-replayed through the code path; a throwaway harness around one function; a loop of random
-inputs for a "sometimes wrong" bug; a bisection harness for `git bisect run`; a differential
-run of two versions; last, a human driving the steps through
-`${CLAUDE_SKILL_DIR}/scripts/hitl-loop.template.sh`.
+Spend the effort here. In order of preference:
 
-Then tighten it: faster (skip unrelated setup), sharper (assert the symptom, not "did not
-crash"), deterministic (pin time, seed randomness, freeze the network). A flaky bug gets a
-higher reproduction rate: loop the trigger, add stress, narrow the timing window until it
-fails often enough to debug against.
+1. A failing test at the seam that reaches the bug.
+2. Against the running app: a request, a CLI run diffed against known-good output, or a
+   headless-browser script asserting on DOM, console or network.
+3. A captured trace replayed through the code path, or a throwaway harness around one
+   function.
+4. For a "sometimes wrong" bug, a loop of random inputs.
+5. For a bug between two known states, a `git bisect run` harness or a differential run of
+   the two versions.
+6. Last, a human driving the steps through
+   `${CLAUDE_SKILL_DIR}/scripts/hitl-loop.template.sh`.
 
-Done when: one command, already run once with its redacted output shown, drives the real
-code path, asserts the user's exact symptom, gives the same verdict every run, finishes in
-seconds and runs unattended. No such command: stop, list what was tried, and ask for an
-environment, a redacted artefact or permission to instrument. No loop, no Step 3.
+A flaky bug gets a higher reproduction rate first: loop the trigger, add stress, and narrow
+the timing window until it fails often enough to debug against.
+
+Done when one command, already run once with its redacted output shown:
+
+- drives the real code path and asserts the user's exact symptom, not "did not crash",
+- gives the same verdict every run: pin time, seed randomness, freeze the network,
+- finishes in seconds, unrelated setup skipped, and runs unattended.
+
+No such command: stop, list what was tried, and ask for an environment, a redacted artefact
+or permission to instrument. No loop, no Step 3.
 
 ## Step 3 — Reproduce and minimise
 
@@ -67,35 +74,42 @@ turns the loop green.
 ## Step 4 — Rank the hypotheses
 
 Write three to five falsifiable hypotheses before testing any, each with its prediction:
-"if X is the cause, changing Y makes the bug disappear." Root cause, not symptom: "the value
-is null here" is what you saw; why it is null is the hypothesis. Show the ranked list to the
-user and continue; they often re-rank it. When the bug appeared between two known states,
-bisect history first. Done when: each hypothesis names the experiment that would refute it.
+"if X is the cause, changing Y makes the bug disappear." Aim at the root cause, not the
+symptom: "the value is null here" is what you saw, and why it is null is the hypothesis.
+Show the ranked list to the user and continue, since they often re-rank it. When the bug
+appeared between two known states, bisect history first. Done when: each hypothesis names
+the experiment that would refute it.
 
 ## Step 5 — Instrument one variable at a time
 
-A breakpoint beats ten logs; targeted logs at the boundaries that separate two hypotheses
-beat logging everything. Tag every log with one prefix, `[DEBUG-a4f2]`, so cleanup is one
-grep. For a performance regression, measure a baseline first and bisect on the number. A refuted hypothesis is discarded with its change; a
-confirmed one is the cause. Done when: `bug.cause` names the evidence.
+A breakpoint beats ten logs, and targeted logs at the boundaries that separate two
+hypotheses beat logging everything. Tag every log with one prefix, `[DEBUG-a4f2]`, so
+cleanup is one grep. For a performance regression, measure a baseline first and bisect on
+the number. A refuted hypothesis is discarded with its change. A confirmed one is the
+cause. Done when: `bug.cause` names the evidence.
 
 ## Step 6 — Fix at the root, with a test
 
 Write the regression test before the fix, at a seam that exercises the bug pattern as it
-occurs at the call site; a seam too shallow to reproduce the chain gives false confidence,
-and no correct seam is itself a finding. Watch it fail, apply the smallest change that
-addresses the cause, watch it pass, re-run the Step 2 loop on the original scenario. Grep
-for siblings: the same cause usually hides behind the same pattern elsewhere. A cause that
-is a design decision rather than a coding mistake is routed to `jankolenko-skills:architect`. Done when: the loop is green on the un-minimised
-scenario, and `bug.test` exists or its absence is explained.
+occurs at the call site. A seam too shallow to reproduce the chain gives false confidence,
+and no correct seam is itself a finding. Watch the test fail, apply the smallest change
+that addresses the cause, watch it pass, then re-run the Step 2 loop on the original
+scenario. Grep for siblings: the same cause usually hides behind the same pattern
+elsewhere. A cause that is a design decision rather than a coding mistake is routed to
+`jankolenko-skills:architect`. Done when: the loop is green on the un-minimised scenario,
+and `bug.test` exists or its absence is explained.
 
 ## Step 7 — Clean up
 
-Done when: the original repro no longer reproduces, the regression test passes, a grep for
-the tag finds no instrumentation, throwaway harnesses are deleted, and the confirmed
-hypothesis is stated in the commit message for the next debugger.
+Done when all of these hold:
+
+- The original repro no longer reproduces, and the regression test passes.
+- A grep for the tag finds no instrumentation, and throwaway harnesses are deleted.
+- Every server, worktree and temp file this run started is stopped or removed, or named
+  with the command that does it.
+- The confirmed hypothesis is stated in the commit message, for the next debugger.
 
 ## Notes
 
-- The diff carries the fix and its test; a feature or a refactor is a separate change.
+- The diff carries the fix and its test. A feature or a refactor is a separate change.
 - Writing the wider suite around the fix is `jankolenko-skills:test`.

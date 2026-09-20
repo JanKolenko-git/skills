@@ -151,6 +151,13 @@ by reading its diff before it ships.
 10. Progressive disclosure: the body holds what every run needs, a reference file the rest.
 11. Emphasis on one line at most per file, or none of it stands out. Aphorisms belong in the
     human docs, not in a skill.
+12. Cut before you compress. Delete what a senior engineer does unasked (read the diff, grep
+    first, run the tests) before shortening the rest. Two clauses joined by a semicolon are
+    two sentences.
+13. A route is a table: verdict to action, mode to behaviour, destination to target.
+14. A skill holds the contract and the output shapes, the gates, the facts of the
+    environment, and the lessons a failure bought. Procedure is spelled out only where the
+    operation is fragile: a write, a push, a release.
 
 ## Standing rules
 

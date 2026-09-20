@@ -19,20 +19,21 @@ goes next.
 
 ## Output
 
-A short report: what was implemented, the PR URL, the ticket's new status, anything skipped
-or unresolved.
+One short paragraph: what was done, the PR link, the ticket's new status, warnings and
+skipped steps, unresolved review findings, and whether the run was re-planned and why. When
+`branch.path` is a worktree, it ends with the command that removes it.
 
 ## The pipeline
 
-Data flows by the field names each skill declares; a value in hand is passed down, nothing
-refetches. `ticket.*` and `plan.*` stay in context for the whole run.
+Data flows by the field names each skill declares. A value in hand is passed down, and
+nothing refetches. `ticket.*` and `plan.*` stay in context for the whole run.
 
 | #  | Skill | Wiring |
 | --- | --- | --- |
 | 1 | `jankolenko-skills:atlassian-jira` (+ `jankolenko-skills:atlassian-confluence`) | → `ticket.*`; 🛑 cannot fetch → stop, never a guessed ticket |
-| 2 | `jankolenko-skills:find-repository` | skipped when `repo` is given; `ticket.title/description/components` → `hints`; → `repo.path`, `cd` there; 🛑 ambiguous → stop with its candidates |
+| 2 | `jankolenko-skills:find-repository` | skipped when `repo` is given; `ticket.title/description/components` → `hints`; → `repo.path`, made the session's directory; 🛑 ambiguous → stop with its candidates |
 | 3 | `jankolenko-skills:plan` | `ticket.*` → `goal`/`criteria`/`candidates`/`constraints`; → `plan.*`; 🛑 verdict |
-| 4 | `jankolenko-skills:git-create-branch` | `ticket.type/priority` → `type`; `ticket.title` → `slug`; `ticket.key` → `ticket_key` |
+| 4 | `jankolenko-skills:git-create-branch` | `ticket.type/priority` → `type`; `ticket.title` → `slug`; `ticket.key` → `ticket_key`; → `branch.*`; 🛑 its gate when the checkout is busy; every later step runs in `branch.path` |
 | 5 | `jankolenko-skills:atlassian-jira` | `mode=transition`, `In Progress`; a refusal is warned about, not fatal |
 | 6 | inline + `jankolenko-skills:test` | `plan.steps`/`plan.lanes`; `ticket.acceptance_criteria` → `criteria` |
 | 7 | `jankolenko-skills:test` | → `tests.result`; 🛑 three failed attempts → stop with the output; never weaken a test |
@@ -44,57 +45,55 @@ refetches. `ticket.*` and `plan.*` stay in context for the whole run.
 | 12 | `jankolenko-skills:record-learnings` | the run's surprises, `destination = repo`; most runs have nothing durable, skip quietly |
 
 `/code-review` and `/simplify` are used if installed, else done inline with their angles
-and noted once; `jankolenko-skills:atlassian-jira` is
-the hard dependency. Every bail-out states what blocks, what was tried, and what would
-unblock it.
+and noted once. `jankolenko-skills:atlassian-jira` is the hard dependency. Every bail-out
+states what blocks, what was tried, and what would unblock it.
 
 ## Step 3 — Plan
 
 Split the ticket: `goal` is the outcome (what is wrong now, what fixed looks like),
 `candidates` any mechanism the ticket proposes. Passed whole, the proposed change becomes
 the goal and the plan reasons about how to build it instead of whether to. A ticket naming
-only a mechanism still has an outcome; state it and say in the report that you inferred it.
+only a mechanism still has an outcome: state it, and say in the report that you inferred it.
 The repo's `## Learned constraints` section of `CLAUDE.md`, if any, is `constraints`.
 
 Route on `plan.verdict` before any branch or ticket change, so a run that should not have
-started leaves no trace: `blocked` → the skill already settled facts and asked its one
-round of decisions, so bail out with `plan.open_questions`, and when it names a decision
-that outlives the ticket, say that `jankolenko-skills:architect` settles it and this run
-starts again after; `no-change-needed` → no code change, no ticket change, report the
-evidence; `ready` → continue.
+started leaves no trace:
+
+| `plan.verdict` | Do |
+| --- | --- |
+| `ready` | Continue |
+| `no-change-needed` | No code change, no ticket change. Report the evidence |
+| `blocked` | Bail out with `plan.open_questions`: the skill already settled facts and asked its one round of decisions. When it names a decision that outlives the ticket, say that `jankolenko-skills:architect` settles it and this run starts again after |
 
 ## Step 6 — Build
 
-Work through `plan.steps` in the conventions of the file being edited, tests written
-alongside; for a bug, confirm the test fails before the fix. `plan.lanes = none` builds
-serially. Named lanes may fan out to subagents, one lane each with its files, steps and
-verification command, only when they are substantial and the user has not asked you to
-stay in-session; read the combined diff yourself before the tests.
+Work through `plan.steps`, tests written alongside. For a bug, confirm the test fails
+before the fix. Named lanes may fan out to subagents, one lane each with its files, steps
+and verification command. Fan out only when the lanes are substantial and the user has not
+asked you to stay in-session. Read the combined diff yourself before the tests.
 
 ## Step 8 — Check, then review
 
-The check runs first, because polishing code that should not exist is waste, and it runs
-the change and compares the base branch so a regression is caught before a reviewer sees
-it. `reject-to-plan` → Step 3 with what the code revealed, branch and ticket untouched;
-`reject-to-code` → Step 6, then 7, then check again; `blocked` → supply what it named
-(`jankolenko-skills:walkthrough` with `scope=environment` when the app would not start),
-check again, or carry the blocked behaviours into the gate summary; `accept` → review. Fix
-rounds that keep landing on one mechanism, from the check or the review (another edge-case
-branch, another stop condition, another caller wired in to cooperate), mean the mechanism
-fights the codebase: the second such round goes to Step 3 as `reject-to-plan`, not to a
-third patch. A second `reject-to-plan` on the same ticket means the goal is not understood:
-bail out with both plans and what the code showed about each.
+The check runs first, because polishing code that should not exist is waste.
+
+| `check.verdict` | Do |
+| --- | --- |
+| `accept` | Review (8b) |
+| `reject-to-code` | Step 6, then 7, then check again |
+| `reject-to-plan` | Step 3 with what the code revealed, branch and ticket untouched |
+| `blocked` | Supply what it named and check again (`jankolenko-skills:walkthrough` with `scope=environment` when the app would not start), or carry the blocked behaviours into the gate summary |
+
+Fix rounds that keep landing on one mechanism mean the mechanism fights the codebase. The
+tell, from the check or the review: another edge-case branch, another stop condition,
+another caller wired in to cooperate. The second such round goes to Step 3 as
+`reject-to-plan`, not to a third patch. A second `reject-to-plan` on the same ticket means
+the goal is not understood: bail out with both plans and what the code showed about each.
 
 ## Step 10 — Ship
 
 > 🛑 `jankolenko-skills:git-pr-push-and-open` owns the review gate: it shows the diff and
 > asks through `AskUserQuestion` before pushing. Do not push around it or answer for the
 > user. Pass `push=waived` only when the user said so in chat at the start of this run.
-> Standing rule: writes only on the user's word in chat. Include in the gate summary
-> anything unresolved from the review, and each part's win against its code cost (lines
+> Standing rule: writes only on the user's word in chat. The gate summary includes anything
+> unresolved from the review. It also lists each part's win against its code cost (lines
 > added, shared files touched), so a marginal part can be cut before it ships.
-
-## Final report
-
-One short paragraph: what was done, the PR link, the ticket's new status, warnings and
-skipped steps, unresolved review findings, and whether the run was re-planned and why.

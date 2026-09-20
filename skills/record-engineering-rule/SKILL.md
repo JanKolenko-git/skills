@@ -6,7 +6,7 @@ argument-hint: <what was learned / what the code got wrong>
 
 # Record Engineering Rule
 
-`jankolenko-skills:improve-skill` fixes how a skill instructs; this skill fixes how the
+`jankolenko-skills:improve-skill` fixes how a skill instructs, and this skill fixes how the
 **code** comes out. `ENGINEERING.md`, which every session is pointed at, holds only what
 would hold in a repository you have never seen. Every rule there is paid for by every future
 session, so the default answer is **no rule**.
@@ -34,32 +34,37 @@ session, so the default answer is **no rule**.
 | How code is written anywhere | this skill |
 | A capability no skill has | nobody yet: name it to the user |
 
-If you can list the repositories it applies to, it belongs to them; "any front-end with a
+If you can list the repositories it applies to, it belongs to them. "Any front-end with a
 lockfile" is not a list. Routed elsewhere → stop with `rule.verdict = routed-elsewhere` and
-name the owner: a repository-specific line in the general file is noise every session pays
+name the owner. A repository-specific line in the general file is noise every session pays
 for, and a general rule buried in one repository's file is re-learned everywhere else.
 
 ## Step 2 — Apply the bar
 
-1. **Provenance, one of two.** A real run failed for want of it (→ **Rules**), or a named
-   source outside this file believes it (→ **Baseline**: Power of 10, a published style
-   guide, a convention a large codebase visibly holds). "Tidier" is neither.
+1. **Provenance, one of two.** A real run failed for want of it (→ **Rules**). Or a named
+   source outside this file believes it (→ **Baseline**): Power of 10, a published style
+   guide, a convention a large codebase visibly holds. "Tidier" is neither.
 2. **The scope survives the wording.** Write the rule as a sentence: still true in the next
    repo, in a language this one has not touched? True only with a repository's name in it
    → back to Step 1.
-3. **No existing rule covers it.** Read `ENGINEERING.md` in full; sharpen a near rule rather
-   than add a second.
+3. **No existing rule covers it.** Read `ENGINEERING.md` in full, and sharpen a near rule
+   rather than add a second.
 
-A Baseline entry a run was bitten by moves to Rules (`promoted`); a rule that proved wrong
-is narrowed or deleted (`sharpened`); no source and no run → name it to the user, add nothing.
+A Baseline entry a run was bitten by moves to Rules (`promoted`). A rule that proved wrong
+is narrowed or deleted (`sharpened`). No source and no run → name it to the user, add
+nothing.
 
 ## Step 3 — Draft the minimal change
 
-In the file's own voice: a `##` heading stating the rule as a sentence, a short yes/no code
-example, one sentence of why, the exception (a rule with none is ignored the first time it
-is inconvenient), under the section test 1 chose. The example and the commit message name
-the shape of the run or the citation, never a repository, ticket, PR, commit, person or
-private package: the repository is public.
+Write the entry in the file's own voice, under the section test 1 chose:
+
+- A `##` heading stating the rule as a sentence.
+- A short yes/no code example.
+- One sentence of why.
+- The exception. A rule with none is ignored the first time it is inconvenient.
+
+The example and the commit message name the shape of the run or the citation, never a
+repository, ticket, PR, commit, person or private package: the repository is public.
 
 Done when: the entry reads the same to someone who has never seen the repository it came
 from.
@@ -91,5 +96,5 @@ git -C ~/Developer/skills commit -m "docs(engineering): <the rule, in one line>"
 ## Notes
 
 - One rule per invocation. This skill owns `ENGINEERING.md` and nothing else.
-- Most runs produce no durable rule; say so and stop. A rule invented to justify the
+- Most runs produce no durable rule. Say so and stop. A rule invented to justify the
   invocation is the one failure this skill cannot recover from.

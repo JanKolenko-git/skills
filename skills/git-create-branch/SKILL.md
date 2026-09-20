@@ -24,6 +24,7 @@ which ticket it answers.
 | `branch.name` | The branch created, e.g. `bugfix/PROJ-1234-cart-vat-rounding` |
 | `branch.base` | What it was branched from |
 | `branch.existed` | `true` if the branch already existed and was checked out instead |
+| `branch.path` | Where the branch is checked out: the repository, or the worktree made for it |
 
 ## Step 1 — Resolve the type
 
@@ -58,19 +59,34 @@ the prefix is in question.
 
 `PROJ-1234 "Cart total is wrong when VAT rounding applies"` → `bugfix/PROJ-1234-cart-vat-rounding`
 
-## Step 4 — Branch from a clean base
+## Step 4 — Branch in place, or in a worktree
+
+A free checkout, clean and on the default branch, branches in place:
 
 ```bash
 git fetch origin && git checkout <base> && git pull --ff-only && git checkout -b <branch-name>
 ```
 
 `<base>` comes from `git symbolic-ref refs/remotes/origin/HEAD`, then `main`, then `master`.
+A busy checkout is dirty or on another branch. The user's word ("in a worktree", "here")
+decides where the branch goes. Without it:
 
-> 🛑 **GATE — a dirty working tree.** `git status --short` is on screen.
-> Ask through `AskUserQuestion`: "Uncommitted changes: stash, commit, or stop?" — options
-> **stash**, **commit**, **stop**.
-> Branching over work in progress silently drags it onto the new branch.
+> 🛑 **GATE — a busy checkout.** `git status --short` and the current branch are on screen.
+> Ask through `AskUserQuestion`: "Where should `<branch-name>` go?" — options **worktree**
+> (recommended), **switch this checkout**, **stop**.
+> worktree → the commands below. switch this checkout → stash what is uncommitted, name the
+> stash in the report, then branch in place. stop → end with nothing changed.
+> A busy checkout may belong to a parallel session, and branching over work in progress
+> drags it onto the new branch.
+
+```bash
+git fetch origin && git worktree add -b <branch-name> ../<repo>-wt-<TICKET-KEY> origin/<base>
+cp -n .env* ../<repo>-wt-<TICKET-KEY>/ 2>/dev/null   # untracked env files come along
+```
+
+The report names the command that removes the worktree:
+`git worktree remove ../<repo>-wt-<TICKET-KEY>`.
 
 A failed `pull --ff-only` means the local base diverged: report it rather than merging or
-resetting. A branch that already exists is checked out, with `branch.existed = true`; never
+resetting. A branch that already exists is checked out, with `branch.existed = true`. Never
 append `-2` to make a fresh one.
