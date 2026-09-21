@@ -130,24 +130,18 @@ export CONFLUENCE_PERSONAL_TOKEN='...'
 chmod 600 ~/.zshenv
 ```
 
-`find-repository` looks in the current directory, then `$REPO_ROOT`, then `~/Developer`,
-`~/code`, `~/src`, `~/projects`, `~/repos`; set `REPO_ROOT` if your repositories live
-elsewhere.
+| Variable | Use |
+| --- | --- |
+| `JIRA_URL` | Base URL of your Jira Data Center instance |
+| `JIRA_PERSONAL_TOKEN` | Personal access token for that instance |
+| `CONFLUENCE_URL` | Base URL of your Confluence Data Center instance |
+| `CONFLUENCE_PERSONAL_TOKEN` | Personal access token for that instance |
 
-| Variable | Required | Use |
-| --- | --- | --- |
-| `JIRA_URL` | for `atlassian-jira` | Base URL of your Jira Data Center instance |
-| `JIRA_PERSONAL_TOKEN` | for `atlassian-jira` | Personal access token for that instance |
-| `CONFLUENCE_URL` | for `atlassian-confluence` | Base URL of your Confluence Data Center instance |
-| `CONFLUENCE_PERSONAL_TOKEN` | for `atlassian-confluence` | Personal access token for that instance |
-| `REPO_ROOT` | no | Where `find-repository` searches for repositories |
-| `JIRA_INSECURE_TLS` | no | Set to `1` only if a TLS-inspecting corporate proxy breaks verification |
-| `CONFLUENCE_INSECURE_TLS` | no | Same, for Confluence |
-| `BITBUCKET_TOKEN` | no | HTTP access token, for `git-pr-address-review` on a Bitbucket PR |
-| `BITBUCKET_URL` | no | Bitbucket Data Center base URL, e.g. `https://bitbucket.example.com`. Leave unset for Bitbucket Cloud |
+These four are every variable the skills read, and only the two Atlassian integrations read
+them; the atoms need none. TLS verification is always on.
 
-The atoms need none of these; only the two Atlassian integrations do. TLS verification is on
-by default.
+`find-repository` looks in the current directory, then `~/Developer`, `~/code`, `~/src`,
+`~/projects`, `~/repos`.
 
 ## Usage
 
@@ -182,9 +176,9 @@ python3 ~/.claude/plugins/**/skills/atlassian-jira/fetch_ticket.py PROJ-1155
 - Python 3, stdlib only
 - A Jira / Confluence Server or Data Center instance you can reach (most sit behind a VPN)
 - A personal access token per product
-- `gh` CLI, if `git-pr-push-and-open` is to open the PR rather than hand you a compare link
-- `gh` (GitHub) or `BITBUCKET_TOKEN` (Bitbucket), if `git-pr-address-review` is to read and
-  reply to review comments rather than work from pasted text
+- `gh` CLI, if `git-pr-push-and-open` is to open the PR rather than hand you a compare link,
+  and if `git-pr-address-review` is to read and reply to review comments rather than work
+  from pasted text
 
 ## Troubleshooting
 
@@ -196,8 +190,7 @@ python3 ~/.claude/plugins/**/skills/atlassian-jira/fetch_ticket.py PROJ-1155
 | `no transition leads to …` | The workflow does not allow that status from the current one; `get_transitions.py` lists what it does allow |
 | `JIRA_URL is not set` | The instance URL was never exported |
 | `cannot reach ...` | Wrong host, or not on the network or VPN it sits behind |
-| `find-repository` finds nothing | Set `REPO_ROOT`, or run from inside the repo |
-| Bitbucket comment update returns `409` | Someone edited the thread mid-run; `git-pr-address-review` re-reads the comment `version` and retries once |
+| `find-repository` finds nothing | The repo sits outside the common roots; give its path, or run from inside it |
 
 Exit codes distinguish the cases for scripting: `1` setup or bad input, `2` HTTP/auth,
 `3` forbidden, `4` not found, `5` network unreachable.

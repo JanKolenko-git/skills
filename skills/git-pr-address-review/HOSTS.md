@@ -1,21 +1,11 @@
 # Hosts
 
-Sections: [GitHub](#github) · [Bitbucket Cloud](#bitbucket-cloud) · [Bitbucket Data Center](#bitbucket-data-center). Read only the one for the host in front of you.
-
-Per-host commands for the three things `git-pr-address-review` needs: **read** the comments,
+The commands for the three things `git-pr-address-review` needs: **read** the comments,
 **reply** to a thread, **resolve** a thread.
 
-Tokens are read from the environment at runtime. Never hardcode one, and never ask the user
-to paste one into chat — if it is missing or rejected, say which variable is needed and stop.
-
-| Host | Detect by | Auth |
-| --- | --- | --- |
-| GitHub | `github.com/<owner>/<repo>/pull/<n>` | `gh auth status` |
-| Bitbucket Cloud | `bitbucket.org/<workspace>/<repo>/pull-requests/<n>` | `BITBUCKET_TOKEN` |
-| Bitbucket Data Center | any other host, `/projects/<KEY>/repos/<slug>/pull-requests/<n>` | `BITBUCKET_TOKEN`, `BITBUCKET_URL` |
-
-Bitbucket's two flavours share a name and nothing else — different URL shape, different API
-version, different JSON. Confirm which one you are on from the URL before issuing a call.
+GitHub is the only host covered, detected by `github.com/<owner>/<repo>/pull/<n>`, and `gh`
+carries the auth. On any other host, say so and work from comment text the user pastes.
+Never ask for a token in chat: if `gh auth status` fails, name that and stop.
 
 ---
 
@@ -77,86 +67,3 @@ gh api graphql -f query='
   }' -F id=<thread-id>
 ```
 
----
-
-## Bitbucket Cloud
-
-API v2.0 at `https://api.bitbucket.org`. Auth: `Authorization: Bearer $BITBUCKET_TOKEN`.
-
-**Read** — inline comments carry `inline.path` and `inline.to`; general ones have no
-`inline` key. `deleted: true` comments still come back and must be skipped:
-
-```bash
-curl -sS -H "Authorization: Bearer $BITBUCKET_TOKEN" \
-  "https://api.bitbucket.org/2.0/repositories/<workspace>/<repo>/pullrequests/<n>/comments?pagelen=100" \
-  | jq '.values[] | select(.deleted != true) | {
-      id, parent: .parent.id, user: .user.display_name,
-      path: .inline.path, line: .inline.to,
-      resolved: (.resolution != null), text: .content.raw
-    }'
-```
-
-Paginate by following `.next` until it is absent.
-
-**Reply** — the `parent` id threads it; omit `parent` and you start a new thread:
-
-```bash
-curl -sS -X POST -H "Authorization: Bearer $BITBUCKET_TOKEN" \
-  -H "Content-Type: application/json" \
-  "https://api.bitbucket.org/2.0/repositories/<workspace>/<repo>/pullrequests/<n>/comments" \
-  -d '{"content": {"raw": "<reply text>"}, "parent": {"id": <comment-id>}}'
-```
-
-**Resolve** — only the thread's root comment can be resolved:
-
-```bash
-curl -sS -X POST -H "Authorization: Bearer $BITBUCKET_TOKEN" \
-  "https://api.bitbucket.org/2.0/repositories/<workspace>/<repo>/pullrequests/<n>/comments/<comment-id>/resolve"
-```
-
----
-
-## Bitbucket Data Center
-
-API v1.0 at `$BITBUCKET_URL` (self-hosted, e.g. `https://bitbucket.example.com`).
-Auth: `Authorization: Bearer $BITBUCKET_TOKEN` — an HTTP access token, not a password.
-
-**Read** — comments arrive through the *activities* feed, not a comments endpoint. Replies
-are nested under `comments[]` on each comment, so recurse rather than reading one level:
-
-```bash
-BASE="$BITBUCKET_URL/rest/api/1.0/projects/<KEY>/repos/<slug>/pull-requests/<n>"
-
-curl -sS -H "Authorization: Bearer $BITBUCKET_TOKEN" "$BASE/activities?limit=100" \
-  | jq '.values[] | select(.action == "COMMENTED") | {
-      id: .comment.id, version: .comment.version,
-      user: .comment.author.displayName,
-      path: .commentAnchor.path, line: .commentAnchor.line,
-      state: .comment.state, text: .comment.text,
-      replies: [.comment.comments[]? | {id, version, text, state}]
-    }'
-```
-
-`state` is `OPEN` or `RESOLVED` — that is the `include: unresolved` filter. Paginate on
-`isLastPage` / `nextPageStart`.
-
-**Reply**:
-
-```bash
-curl -sS -X POST -H "Authorization: Bearer $BITBUCKET_TOKEN" \
-  -H "Content-Type: application/json" "$BASE/comments" \
-  -d '{"text": "<reply text>", "parent": {"id": <comment-id>}}'
-```
-
-**Resolve** — an update needs the comment's **current `version`**, and a stale one returns
-`409`. Re-read the comment for its version immediately before the update; do not reuse the
-version from a fetch made earlier in the run:
-
-```bash
-curl -sS -X PUT -H "Authorization: Bearer $BITBUCKET_TOKEN" \
-  -H "Content-Type: application/json" "$BASE/comments/<comment-id>" \
-  -d '{"version": <version>, "state": "RESOLVED"}'
-```
-
-A `409` means someone edited the thread while you were working. Re-read and retry once; if it
-conflicts again, report it and leave the thread open rather than looping.

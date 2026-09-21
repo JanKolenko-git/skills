@@ -49,7 +49,7 @@ skill (`code-`) sorts nothing.
 | ------------ | ------------------------------------------------------- | ----------------------------------------------- |
 | `atlassian-` | An Atlassian Data Center instance and a per-product PAT | `atlassian-jira`, `atlassian-confluence`        |
 | `git-`       | A git working copy                                      | `git-commit`, `git-create-branch`               |
-| `git-pr-`    | A forge, GitHub or Bitbucket, reached through git       | `git-pr-push-and-open`, `git-pr-address-review` |
+| `git-pr-`    | GitHub, reached through `gh` and git                    | `git-pr-push-and-open`, `git-pr-address-review` |
 
 **One verb, one meaning.**
 

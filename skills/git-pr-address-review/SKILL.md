@@ -1,6 +1,6 @@
 ---
 name: git-pr-address-review
-description: Work through the review comments on a GitHub or Bitbucket PR one at a time: apply the ones that earn a change, decline the rest with a reason, reply on each thread, report a ledger. Use when a PR URL comes with 'address the review', 'resolve the comments', 'check the copilot comments', 'post the replies', or a reviewer's comment to look at.
+description: Work through the review comments on a GitHub PR one at a time: apply the ones that earn a change, decline the rest with a reason, reply on each thread, report a ledger. Use when a PR URL comes with 'address the review', 'resolve the comments', 'check the copilot comments', 'post the replies', or a reviewer's comment to look at.
 ---
 
 # Git PR — Address Review
@@ -12,8 +12,8 @@ and the tests.
 
 ## Inputs
 
-- `pr` — a PR URL (GitHub or Bitbucket) or a number in the current repository. Defaults to
-  the open PR of the current branch. None found: ask for it.
+- `pr` — a GitHub PR URL or a number in the current repository. Defaults to the open PR
+  of the current branch. None found: ask for it.
 - `include` — `unresolved` (default) or `all`.
 - `comments` — optional. Pasted comment text, when the host API is out of reach.
 - `context` — optional. The ticket or plan behind the PR. Without it, *out of scope* is a

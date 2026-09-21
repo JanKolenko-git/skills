@@ -1,6 +1,6 @@
 ---
 name: find-repository
-description: Find the git repository a task belongs to, from a ticket key, package name or keywords: searches $REPO_ROOT and the usual code folders, checks package.json names and remotes, refuses to guess between two matches. Use when the user asks which repo something is about or which repo owns or consumes a package, or work must start with no repo named.
+description: Find the git repository a task belongs to, from a ticket key, package name or keywords: searches the usual code folders, checks package.json names and remotes, refuses to guess between two matches. Use when the user asks which repo something is about or which repo owns or consumes a package, or work must start with no repo named.
 ---
 
 # Find Repository
@@ -31,9 +31,8 @@ In order, stopping at the first that yields candidates:
 
 1. The current directory, when it is inside a git repo that matches the hints. Someone
    working in a repo and naming a ticket almost always means this repo.
-2. `$REPO_ROOT`, searched recursively.
-3. The common roots: `~/Developer`, `~/code`, `~/src`, `~/projects`, `~/repos`.
-4. Nothing found: ask the user to set `REPO_ROOT` and stop.
+2. The common roots: `~/Developer`, `~/code`, `~/src`, `~/projects`, `~/repos`.
+3. Nothing found: ask the user for the path, or to run from inside the repo, and stop.
 
 ```bash
 find "$ROOT" -maxdepth 3 -type d -name .git -not -path "*/node_modules/*" 2>/dev/null

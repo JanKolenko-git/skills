@@ -47,17 +47,6 @@ def _token():
     return token
 
 
-def _ssl_context():
-    # Verification stays on by default. Set CONFLUENCE_INSECURE_TLS=1 only if a
-    # TLS-inspecting corporate proxy breaks an otherwise valid chain.
-    if os.environ.get('CONFLUENCE_INSECURE_TLS') == '1':
-        ctx = ssl.create_default_context()
-        ctx.check_hostname = False
-        ctx.verify_mode = ssl.CERT_NONE
-        return ctx
-    return ssl.create_default_context()
-
-
 def _reject_sso_page(final_url, body, accept):
     """Catch an SSO interception, which arrives as HTTP 200 and would otherwise
     surface as a JSON parse error several frames away from the real cause.
@@ -89,7 +78,8 @@ def fetch(url, accept='application/json', timeout=60):
     })
 
     try:
-        with urllib.request.urlopen(req, context=_ssl_context(), timeout=timeout) as r:
+        ctx = ssl.create_default_context()
+        with urllib.request.urlopen(req, context=ctx, timeout=timeout) as r:
             body = r.read()
             _reject_sso_page(r.geturl(), body, accept)
             return body
@@ -136,7 +126,8 @@ def send_json(path, payload, method='PUT', timeout=60):
     })
 
     try:
-        with urllib.request.urlopen(req, context=_ssl_context(), timeout=timeout) as r:
+        ctx = ssl.create_default_context()
+        with urllib.request.urlopen(req, context=ctx, timeout=timeout) as r:
             raw = r.read()
             _reject_sso_page(r.geturl(), raw, 'application/json')
             return json.loads(raw) if raw.strip() else None
