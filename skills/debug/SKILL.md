@@ -15,6 +15,8 @@ instrumentation only consume it.
   the error, the wrong output, the timing, the steps.
 - `repro` — optional. A test, command, request or recording that already shows it.
 - `constraints` — optional. Environments you may touch, what is already ruled out.
+- `panel` — optional. Off by default. `haiku, sonnet, opus` when the user asks for a panel,
+  several models or a second opinion: three agents rank the hypotheses at Step 4.
 
 ## Output
 
@@ -52,8 +54,8 @@ Spend the effort here. In order of preference:
 6. Last, a human driving the steps through
    `${CLAUDE_SKILL_DIR}/scripts/hitl-loop.template.sh`.
 
-A flaky bug gets a higher reproduction rate first: loop the trigger, add stress, and narrow
-the timing window until it fails often enough to debug against.
+A flaky bug first gets a higher reproduction rate: loop the trigger, add stress, narrow the
+timing window.
 
 Done when one command, already run once with its redacted output shown:
 
@@ -77,8 +79,18 @@ Write three to five falsifiable hypotheses before testing any, each with its pre
 "if X is the cause, changing Y makes the bug disappear." Aim at the root cause, not the
 symptom: "the value is null here" is what you saw, and why it is null is the hypothesis.
 Show the ranked list to the user and continue, since they often re-rank it. When the bug
-appeared between two known states, bisect history first. Done when: each hypothesis names
-the experiment that would refute it.
+appeared between two known states, bisect history first.
+
+With `panel`, seat it here. Print `3 agents: haiku, sonnet, opus, read-only, ≈ <estimate>`
+(about 50K tokens of boot per agent, plus what it reads), then one `Agent` call per model
+in a single message, `model` set per call, the same brief: the three symptom lines, the
+loop command with its red output, the minimised repro, the files it touches, and the ask
+for three to five ranked, falsifiable hypotheses with their refuting experiments. Merge into
+one list, a hypothesis two models name ahead of one only one names. An `Agent` tool
+without a `model` parameter: say so once and continue alone. Instrumenting and the fix
+stay in the session.
+
+Done when: each hypothesis names the experiment that would refute it.
 
 ## Step 5 — Instrument one variable at a time
 
@@ -113,3 +125,4 @@ Done when all of these hold:
 
 - The diff carries the fix and its test. A feature or a refactor is a separate change.
 - Writing the wider suite around the fix is `jankolenko-skills:test`.
+- The panel ranks hypotheses only. A panel over a diff is `jankolenko-skills:review`.

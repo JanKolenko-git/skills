@@ -38,7 +38,7 @@ nothing refetches. `ticket.*` and `plan.*` stay in context for the whole run.
 | 6 | inline + `jankolenko-skills:test` | `plan.steps`/`plan.lanes`; `ticket.acceptance_criteria` → `criteria` |
 | 7 | `jankolenko-skills:test` | → `tests.result`; 🛑 three failed attempts → stop with the output; never weaken a test |
 | 8a | `jankolenko-skills:check` | `plan.*` (in full: it runs in its own context) + `criteria` + diff → `check.verdict` |
-| 8b | `/code-review`, `/simplify` | findings → 6, up to three rounds; what is left goes into the PR and the gate summary |
+| 8b | `/code-review` (`jankolenko-skills:review` when the user asked for a panel), `/simplify` | findings → 6, up to three rounds; what is left goes into the PR and the gate summary |
 | 9 | `jankolenko-skills:git-commit` | `ticket.key` → `ticket_key`; `plan.summary` → `subject`; `Bug` → `fix`, else `feat` |
 | 10 | `jankolenko-skills:git-pr-push-and-open` | `<ticket.key>: <ticket.title>` → `title`, under 70 characters; `summary_points` from the run; 🛑 its gate |
 | 11 | `jankolenko-skills:atlassian-jira` | `In Review` (`Code Review` is a fine match); then comment `PR opened: <pr.url>. <one sentence>.` |

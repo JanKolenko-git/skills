@@ -45,6 +45,7 @@ API and will not authenticate here.
 | [test](./skills/test/SKILL.md) | Write tests in the repository's existing runner, layout and style, with a strategy per kind of file |
 | [debug](./skills/debug/SKILL.md) | Find and fix a bug's root cause: a feedback loop that goes red first, then reproduce, minimise, rank hypotheses, instrument, fix with a regression test, clean up |
 | [check](./skills/check/SKILL.md) | Confirm a change does what it was meant to and breaks nothing else: the diff against the plan, the behaviour run for evidence, the same surfaces compared against the base branch |
+| [review](./skills/review/SKILL.md) | Review a diff for bugs with a panel of three models, haiku, sonnet and opus, each in its own agent on one brief: findings merged by agreement, verified against the code, reported with file, line and failure scenario; one model is `/code-review` |
 | [document](./skills/document/SKILL.md) | Write the prose about a change from its real diff: PR description, changelog entry, release notes, postmortem, ticket summary; started by hand |
 | [git-commit](./skills/git-commit/SKILL.md) | Stage by path and commit with a conventional message; never pushes |
 | [git-pr-push-and-open](./skills/git-pr-push-and-open/SKILL.md) | Show the diff, stop for approval, then push and open the PR |
@@ -160,6 +161,7 @@ open a PR for this branch
 address the review comments on <pr-url>
 debug this: the badge count doesn't update after removing an item
 does this branch do what PROJ-1234 asked, and break nothing against main?
+review this branch with three models
 test PR 123 by hand
 what changed on this branch, and how do I try each change?
 ```
