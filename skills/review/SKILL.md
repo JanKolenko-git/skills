@@ -47,16 +47,14 @@ Done when: the file exists and the touched files are listed with their line coun
 Print one line before anything runs: `3 seats + <files> verifiers, haiku, sonnet, opus,
 read-only, ≈ <estimate>`, at about 50K tokens of boot per agent plus what it reads. Then
 run the workflow by name through the `Workflow` tool: `name: jankolenko-skills:review-panel`,
-`args: { diffPath, repo, base, focus, models }`. It seats one `jankolenko-skills:panelist`
-per model with one brief, merges findings by file and line within three, and sends each
-file's findings to one verifier on the session's model. `/workflows` shows tokens per
-agent while it runs.
+`args: { diffPath, repo, base, focus, models }`. It seats the panel, merges by agreement
+and verifies. The script owns the how. `/workflows` shows tokens per agent while it runs.
 
 | The run | Do |
 | --- | --- |
 | Returns | Step 3 |
 | Returns `panel: false` | Two seats reported the same model. Report the rows as one model's review, name the seats, and say so first |
-| `Workflow` tool absent or disabled | One `Agent` call per model in a single message, `subagent_type: jankolenko-skills:panelist`, `model` per call, the brief from the Find stage of `${CLAUDE_PLUGIN_ROOT}/workflows/review-panel.js`. Merge and verify in the session by the same rules, and say so once |
+| `Workflow` tool absent or disabled | One `Agent` call per model in a single message, `subagent_type: jankolenko-skills:panelist`, `model` per call, the brief read from `${CLAUDE_PLUGIN_ROOT}/workflows/review-panel.js`. Merge and verify in the session by the script's rules, and say so once |
 
 Done when: the run has returned, or the fallback's seats have reported and every row has
 a verdict.

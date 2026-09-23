@@ -17,11 +17,11 @@ invokes the other skill. Adding, renaming or removing a skill is two edits: the 
 its row in the root [`README.md`](../README.md).
 
 Two more component kinds live at the plugin root, each only because a named skill invokes
-it: `agents/<name>.md`, a subagent a skill seats by its scoped name
-(`jankolenko-skills:panelist`), and `workflows/<name>.js`, a dynamic workflow a skill runs
-by name through the `Workflow` tool. A component no skill names is removed. Their
-frontmatter and script rules are Claude Code's own, under `sub-agents` and `workflows` in
-its docs; a workflow holds procedure, the skill that runs it holds the contract.
+it: `agents/<name>.md`, a subagent a skill seats by its scoped name, and
+`workflows/<name>.js`, a dynamic workflow a skill runs by name through the `Workflow`
+tool. A component no skill names is removed. Their frontmatter and script rules are
+Claude Code's own, under `sub-agents` and `workflows` in its docs; a workflow holds
+procedure, the skill that runs it holds the contract.
 
 A skill that encodes conventions only one team recognises does not belong here. The test is
 one question: could someone who has never seen that team's repositories run it?
@@ -91,8 +91,12 @@ takes: `jankolenko-skills:git-commit`, `anthropic-skills:skill-creator`. Built-i
 (`/code-review`, `/simplify`, `/run`) have no plugin and no prefix. A name discussed as a name
 (a row in the tables above) stays bare. A qualified reference fails loudly when a plugin is
 renamed or missing, where a bare name degrades quietly. A subagent or a workflow is named
-the same way, by its scoped name: `jankolenko-skills:panelist`,
-`jankolenko-skills:review-panel`.
+the same way, by its scoped name, `jankolenko-skills:<component>`.
+
+References point one way, from the caller to what it calls. A skill, agent or workflow
+says what it is, what it takes and what it returns, never who uses it, and a caller names
+what it calls without restating how it works. Adding a caller then touches one file, and
+a change inside a component stays inside it.
 
 ## The atom contract
 

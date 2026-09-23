@@ -1,6 +1,6 @@
 {
   "name": "jankolenko-skills",
-  "version": "8.2.0",
+  "version": "8.2.1",
   "description": "Composable, portable agent skills that carry a ticket from Jira or Confluence Data Center through branch, tests and review to an open pull request.",
   "author": {
     "name": "Jan Kolenko",

@@ -1,7 +1,7 @@
 export const meta = {
   name: 'review-panel',
   description: 'Three models review one diff on the same brief; findings merged by agreement, then verified per file',
-  whenToUse: 'A panel review of a diff. Run by jankolenko-skills:review, or directly with a diff file or a base branch.',
+  whenToUse: 'A panel review of a diff: pass a diff file, or a base branch to diff against.',
   phases: [
     { title: 'Scope', detail: 'write the diff to a file when none was given' },
     { title: 'Find', detail: 'one seat per model, the same brief' },

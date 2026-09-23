@@ -1,6 +1,6 @@
 ---
 name: panelist
-description: One seat on a panel of models that all receive the same brief. Launched by jankolenko-skills:review and jankolenko-skills:debug with the brief in the prompt; not for delegation on its own.
+description: One seat on a panel of models that all receive the same brief. Takes the brief in the prompt and returns what the brief asks for; not for delegation on its own.
 tools: Read, Grep, Glob
 maxTurns: 40
 color: purple

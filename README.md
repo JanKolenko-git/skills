@@ -12,8 +12,8 @@ between atoms that are each useful on their own.
 ## Repository
 
 - [`skills/`](./skills): one folder per skill, `skills/<name>/SKILL.md`
-- [`agents/`](./agents): the subagent a skill seats by scoped name, `panelist`
-- [`workflows/`](./workflows): the dynamic workflow a skill runs by name, `review-panel`
+- [`agents/`](./agents): subagents a skill seats by scoped name
+- [`workflows/`](./workflows): dynamic workflows a skill runs by name
 - [`spec/`](./spec/authoring.md): the contract every skill follows
 - [`template/`](./template/SKILL.md): that contract as a blank skill
 - [`ENGINEERING.md`](./ENGINEERING.md): the rules for the code the skills produce, which every
@@ -47,7 +47,7 @@ API and will not authenticate here.
 | [test](./skills/test/SKILL.md) | Write tests in the repository's existing runner, layout and style, with a strategy per kind of file |
 | [debug](./skills/debug/SKILL.md) | Find and fix a bug's root cause: a feedback loop that goes red first, then reproduce, minimise, rank hypotheses, instrument, fix with a regression test, clean up |
 | [check](./skills/check/SKILL.md) | Confirm a change does what it was meant to and breaks nothing else: the diff against the plan, the behaviour run for evidence, the same surfaces compared against the base branch |
-| [review](./skills/review/SKILL.md) | Review a diff for bugs with a panel of three models, haiku, sonnet and opus, each in its own agent on one brief: findings merged by agreement, verified against the code, reported with file, line and failure scenario; one model is `/code-review` |
+| [review](./skills/review/SKILL.md) | Review a diff for bugs with a panel of three models, haiku, sonnet and opus, each in its own agent on one brief: findings merged by agreement, verified against the code, reported with file, line and failure scenario; one model is `/code-review`, and by hand `/jankolenko-skills:review-panel` |
 | [document](./skills/document/SKILL.md) | Write the prose about a change from its real diff: PR description, changelog entry, release notes, postmortem, ticket summary; started by hand |
 | [git-commit](./skills/git-commit/SKILL.md) | Stage by path and commit with a conventional message; never pushes |
 | [git-pr-push-and-open](./skills/git-pr-push-and-open/SKILL.md) | Show the diff, stop for approval, then push and open the PR |
@@ -55,10 +55,6 @@ API and will not authenticate here.
 | [record-learnings](./skills/record-learnings/SKILL.md) | Write durable constraints back to `CLAUDE.md`, a spec section or the ticket |
 | [walkthrough](./skills/walkthrough/SKILL.md) | Get a branch or PR running, then hand over each change against the base branch: before, after, how the code did it, the steps to test it there |
 | [implement](./skills/implement/SKILL.md) | Orchestrates the whole run: ticket → repo → plan → branch → build → test → check → review → PR → In Review → learnings |
-
-`review` seats [`agents/panelist.md`](./agents/panelist.md) three times through
-[`workflows/review-panel.js`](./workflows/review-panel.js), which also runs by hand as
-`/jankolenko-skills:review-panel` and scopes the diff itself.
 
 `architect` and `document` are started by hand (`/jankolenko-skills:architect <decision>`,
 `/jankolenko-skills:document pr`); the model cannot invoke them, so their descriptions cost
