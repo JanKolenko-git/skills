@@ -83,12 +83,13 @@ appeared between two known states, bisect history first.
 
 With `panel`, seat it here. Print `3 agents: haiku, sonnet, opus, read-only, ≈ <estimate>`
 (about 50K tokens of boot per agent, plus what it reads), then one `Agent` call per model
-in a single message, `model` set per call, the same brief: the three symptom lines, the
-loop command with its red output, the minimised repro, the files it touches, and the ask
-for three to five ranked, falsifiable hypotheses with their refuting experiments. Merge into
-one list, a hypothesis two models name ahead of one only one names. An `Agent` tool
-without a `model` parameter: say so once and continue alone. Instrumenting and the fix
-stay in the session.
+in a single message, `subagent_type: jankolenko-skills:panelist`, `model` set per call, the
+same brief: the three symptom lines, the loop command with its red output, the minimised
+repro, the files it touches, and the ask for three to five ranked, falsifiable hypotheses
+with their refuting experiments. Merge into one list, a hypothesis two models name ahead
+of one only one names. Each seat opens with the model it runs on; two the same is one
+model twice, not a panel, so say so. An `Agent` tool without a `model` parameter: say so
+once and continue alone. Instrumenting and the fix stay in the session.
 
 Done when: each hypothesis names the experiment that would refute it.
 

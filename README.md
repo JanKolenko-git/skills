@@ -12,6 +12,8 @@ between atoms that are each useful on their own.
 ## Repository
 
 - [`skills/`](./skills): one folder per skill, `skills/<name>/SKILL.md`
+- [`agents/`](./agents): the subagent a skill seats by scoped name, `panelist`
+- [`workflows/`](./workflows): the dynamic workflow a skill runs by name, `review-panel`
 - [`spec/`](./spec/authoring.md): the contract every skill follows
 - [`template/`](./template/SKILL.md): that contract as a blank skill
 - [`ENGINEERING.md`](./ENGINEERING.md): the rules for the code the skills produce, which every
@@ -53,6 +55,10 @@ API and will not authenticate here.
 | [record-learnings](./skills/record-learnings/SKILL.md) | Write durable constraints back to `CLAUDE.md`, a spec section or the ticket |
 | [walkthrough](./skills/walkthrough/SKILL.md) | Get a branch or PR running, then hand over each change against the base branch: before, after, how the code did it, the steps to test it there |
 | [implement](./skills/implement/SKILL.md) | Orchestrates the whole run: ticket → repo → plan → branch → build → test → check → review → PR → In Review → learnings |
+
+`review` seats [`agents/panelist.md`](./agents/panelist.md) three times through
+[`workflows/review-panel.js`](./workflows/review-panel.js), which also runs by hand as
+`/jankolenko-skills:review-panel` and scopes the diff itself.
 
 `architect` and `document` are started by hand (`/jankolenko-skills:architect <decision>`,
 `/jankolenko-skills:document pr`); the model cannot invoke them, so their descriptions cost
@@ -201,7 +207,8 @@ Exit codes distinguish the cases for scripting: `1` setup or bad input, `2` HTTP
 
 How a skill is written and named is in [`spec/authoring.md`](./spec/authoring.md). A new skill
 starts as a copy of [`template/SKILL.md`](./template/SKILL.md) in its own `skills/<name>/`
-folder, plus a row in the tables above; the plugin finds it without a manifest entry.
+folder, plus a row in the tables above; the plugin finds it without a manifest entry. An
+agent or a workflow is added only for a skill that invokes it, and that skill names it.
 
 Sessions load the plugin from a versioned cache, so a change ships only after a version bump
 in `.claude-plugin/plugin.json` and an update:
