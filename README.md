@@ -18,7 +18,7 @@ between atoms that are each useful on their own.
 - [`template/`](./template/SKILL.md): that contract as a blank skill
 - [`ENGINEERING.md`](./ENGINEERING.md): the rules for the code the skills produce, which every
   session is pointed at
-- [`WRITING.md`](./WRITING.md): the rules for how replies, tickets and messages read, which
+- [`AGENTS.md`](./AGENTS.md): the rules for how replies, tickets and messages read, which
   every session loads in full
 - [`.claude-plugin/`](./.claude-plugin): the plugin and marketplace manifests; `plugin.json`
   carries the session-start hook
@@ -71,7 +71,7 @@ nothing in the skill listing, and a ticket run that owes a decision stops and na
 
 The learning loop, closed for the skills themselves. The session-start hook points every
 session at [`ENGINEERING.md`](./ENGINEERING.md), injects the four standing rules and
-[`WRITING.md`](./WRITING.md), and adds one habit: friction with a skill is raised once, at the
+[`AGENTS.md`](./AGENTS.md), and adds one habit: friction with a skill is raised once, at the
 end of the run.
 
 | Skill | What it does |
@@ -218,7 +218,7 @@ claude plugin update jankolenko-skills@jankolenko
 
 To work from this tree, register it as a Directory marketplace once
 (`claude plugin marketplace add ~/Developer/skills`); a commit then ships to yourself without
-a push. `ENGINEERING.md` and `WRITING.md` need no bump: the session-start hook takes both from
+a push. `ENGINEERING.md` and `AGENTS.md` need no bump: the session-start hook takes both from
 the working copy in `~/Developer/skills`, so a saved rule applies at the next session.
 
 ## Security

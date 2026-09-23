@@ -199,9 +199,9 @@ Four more bind the authoring, not the run:
 - **Rules for the code a skill produces live in [`ENGINEERING.md`](../ENGINEERING.md)**, which
   the hook points every session at, and are added to only through
   `jankolenko-skills:record-engineering-rule`. A SKILL.md restates none of them.
-- **Rules for how replies and messages read live in [`WRITING.md`](../WRITING.md)**, which
-  the hook loads into every session in full, so the file stays short. A SKILL.md restates
-  none of them.
+- **Rules for how replies and messages read live in [`AGENTS.md`](../AGENTS.md)**, which
+  the hook loads into every session in full, so the file stays short and a rule only one
+  skill needs stays in that SKILL.md. A SKILL.md restates none of them.
 
 ## Changing the skill layer
 
@@ -237,5 +237,5 @@ Bump `version` in `.claude-plugin/plugin.json` before staging: patch by default,
 skill is added or renamed, major when one is removed or a contract changes shape. Run the
 update rather than quoting it, confirm the installed version, and report
 `<old> → <new> installed`: a commit without the update is a fix nobody runs. The update
-takes effect at the next session. `ENGINEERING.md` and `WRITING.md` need no bump: the hook
+takes effect at the next session. `ENGINEERING.md` and `AGENTS.md` need no bump: the hook
 takes both from the working copy, so a saved rule applies at the next session.
