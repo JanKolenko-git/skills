@@ -45,7 +45,7 @@ nothing refetches. `ticket.*` and `plan.*` stay in context for the whole run.
 | 12 | `jankolenko-skills:record-learnings` | the run's surprises, `destination = repo`; most runs have nothing durable, skip quietly |
 
 `/code-review` and `/simplify` are used if installed, else done inline with their angles
-and noted once. `jankolenko-skills:atlassian-jira` is the hard dependency. Every bail-out
+and noted once. `jankolenko-skills:atlassian-jira` is the hard dependency. Every stop
 states what blocks, what was tried, and what would unblock it.
 
 ## Step 3 — Plan
@@ -63,14 +63,14 @@ started leaves no trace:
 | --- | --- |
 | `ready` | Continue |
 | `no-change-needed` | No code change, no ticket change. Report the evidence |
-| `blocked` | Bail out with `plan.open_questions`: the skill already settled facts and asked its one round of decisions. When it names a decision that outlives the ticket, say that `jankolenko-skills:architect` settles it and this run starts again after |
+| `blocked` | Stop with `plan.open_questions`: the skill already settled facts and asked its one round of decisions. When it names a decision that outlives the ticket, say that `jankolenko-skills:architect` settles it and this run starts again after |
 
 ## Step 6 — Build
 
 Work through `plan.steps`, tests written alongside. For a bug, confirm the test fails
-before the fix. Named lanes may fan out to subagents, one lane each with its files, steps
-and verification command. Fan out only when the lanes are substantial and the user has not
-asked you to stay in-session. Read the combined diff yourself before the tests.
+before the fix. The lanes in `plan.lanes` may fan out to subagents, one lane each with its
+files, steps and verification command, unless the user asked you to stay in-session. Read
+the combined diff yourself before the tests.
 
 ## Step 8 — Check, then review
 
@@ -87,7 +87,7 @@ Fix rounds that keep landing on one mechanism mean the mechanism fights the code
 tell, from the check or the review: another edge-case branch, another stop condition,
 another caller wired in to cooperate. The second such round goes to Step 3 as
 `reject-to-plan`, not to a third patch. A second `reject-to-plan` on the same ticket means
-the goal is not understood: bail out with both plans and what the code showed about each.
+the goal is not understood: stop with both plans and what the code showed about each.
 
 ## Step 10 — Ship
 

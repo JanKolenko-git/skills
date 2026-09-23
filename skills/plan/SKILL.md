@@ -76,6 +76,9 @@ in Step 4. Some parts work only by complicating stable code from another concern
 helper, a router, a layout contract. Such a part gets an angle that leaves that code alone,
 or goes to Step 4 as a decision.
 
+Done when: `plan.approach` names the choice, the rejected ones, the deciding fact, and each
+dropped part with its win and cost.
+
 ## Step 4 — Settle what blocks the plan
 
 A goal too vague to name files and steps is not planned over. **Facts** come from the code,
@@ -103,11 +106,17 @@ in `plan.answers`: a decision buried in chat is lost to the re-plan. What the us
 answer stays in `plan.open_questions`. One round: if the plan still cannot name files and
 steps, return `plan.verdict = blocked` with the specific question that would unblock it.
 
+Done when: each answer is one line in `plan.answers`, and what the user could not answer is
+in `plan.open_questions`.
+
 ## Step 5 — Write the plan
 
 Name real paths and functions: "add VAT rounding in `cart/totals.ts:calcTax`, widen the
 fixture in `cart/totals.test.ts`", never "update the cart logic". A risk nothing would
 catch is an open question.
+
+Done when: every entry in `plan.files` and `plan.steps` names a real path, and every risk
+in `plan.risks` names what would catch it.
 
 ## Step 6 — Partition into lanes, or refuse to
 
@@ -116,7 +125,8 @@ A split is real only if all four hold:
 - No file is in two lanes.
 - No lane reads another's output: a type, helper or endpoint it introduces.
 - Each lane is verifiable alone.
-- Each lane is substantial.
+- Each lane is substantial: several files with its own verification command, enough to
+  repay a subagent's boot of about 50K tokens.
 
 Then list the lanes with their files and verification command. Otherwise
 `plan.lanes = none`, naming the failed condition. `none` is the common and correct answer

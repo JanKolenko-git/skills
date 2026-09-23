@@ -114,9 +114,11 @@ Every SKILL.md has this shape, whatever its role, in this order:
 4. **`## Output`**: a table of named fields (`plan.verdict`, `ticket.title`). Names are the
    wiring: callers pass fields down by these names, and a caller holding a value passes it;
    nothing refetches.
-5. **`## Step N — <imperative>`**: numbered, each ending in something checkable.
+5. **`## Step N — <imperative>`**: numbered, each ending in something checkable where a run
+   could stop too early.
 6. **Gates**: the block below, wherever the skill stops for the user.
-7. **`## Notes`**: scope boundaries and what the skill deliberately does not do.
+7. **`## Notes`**, when there is a boundary to state: what the skill deliberately does not do,
+   and which skill does.
 
 A body stays under about 1,100 words and 500 lines, because after a compaction each invoked
 skill keeps only its first 5,000 tokens inside a shared 25,000. What every run needs is in
@@ -153,18 +155,22 @@ by reading its diff before it ships.
 
 ## House style
 
-1. Lead with the action: imperative, one instruction per sentence, under 20 words.
+1. A step leads with the action: imperative, one instruction per sentence, under 20 words. A
+   rule or a fact is a statement, just as short.
 2. Reason once, next to the rule it justifies. One sentence of why.
-3. Say what to do, not what to avoid. Prohibitions stay only for the four standing rules.
+3. Say what to do. A prohibition stays for a specific, costly failure, with its reason and
+   the alternative.
 4. One strong word per concept, reused: *refuse*, *gate*, *ledger*, *verdict*, *lane*.
-5. Every step ends in a check: "Done when: every comment has a file, a line and a verdict."
+5. A step ends in a check where a run could call it done too early: "Done when: every
+   comment has a file, a line and a verdict."
 6. A gate is a question the model cannot answer without doing the work.
 7. Concrete beats adjective: a command, a table, a two-line example. No "be careful".
 8. Scripts for what is deterministic and repeated; the skill says which script and when.
 9. Descriptions are triggers (contract item 1).
 10. Progressive disclosure: the body holds what every run needs, a reference file the rest.
-11. Emphasis on one line at most per file, or none of it stands out. Aphorisms belong in the
-    human docs, not in a skill.
+11. Bold marks a required field or a term the skill defines. Emphasis beyond that on one line
+    at most per file, or none of it stands out. Aphorisms belong in the human docs, not in a
+    skill.
 12. Cut before you compress. Delete what a senior engineer does unasked (read the diff, grep
     first, run the tests) before shortening the rest. Two clauses joined by a semicolon are
     two sentences.

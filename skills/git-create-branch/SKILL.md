@@ -89,4 +89,5 @@ The report names the command that removes the worktree:
 
 A failed `pull --ff-only` means the local base diverged: report it rather than merging or
 resetting. A branch that already exists is checked out, with `branch.existed = true`. Never
-append `-2` to make a fresh one.
+append `-2` to make a fresh one: the existing branch holds the ticket's work so far, and a
+second one splits it.

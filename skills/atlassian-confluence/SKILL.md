@@ -58,7 +58,7 @@ python3 ${CLAUDE_SKILL_DIR}/download_attachment.py <download-url> "$TMPDIR/diagr
 A page named without a link is found with `search_pages.py` first. The default `view` body
 has macros expanded; `--format storage` only when the rendered output loses something. A
 non-zero exit → surface its stderr and stop. A `403` → `page.access = no access`, no retry,
-no other route. Never fabricate page contents.
+no other route. Never fabricate page contents: a caller records what comes back as fact.
 
 ## Step 2 — Attachments, when they matter
 

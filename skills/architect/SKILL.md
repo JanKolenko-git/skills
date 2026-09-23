@@ -9,7 +9,7 @@ argument-hint: <the decision to settle> [constraints]
 
 Decide between approaches when the choice will still be true after this change ships, and
 write the decision where the next run reads it. `jankolenko-skills:plan` decides how to
-change the code; this skill decides which way, and why, before a plan depends on it.
+change the code. This skill decides which way, and why, before a plan depends on it.
 
 ## Inputs
 
@@ -53,23 +53,27 @@ holds what could not be answered.
 Name at least two options that differ in mechanism, the user's and yours. Compare them on
 what decides the case, not on a feature list: fit with the stack already in use (reuse
 beats a new dependency), the failure modes each carries, the cost to reverse, who has to
-maintain it. Check an assumption now when it is cheap, a build, a query plan, a benchmark;
-a claim about a library comes from its documentation, read now, not from memory. Take the
+maintain it. Check an assumption now when it is cheap, a build, a query plan, a benchmark.
+A claim about a library comes from its documentation, read now, not from memory. Take the
 simplest option that fully meets the constraints. Done when: `decision.choice` and every
 `decision.rejected` entry name the deciding fact.
 
 ## Step 3 — Record it
 
-Write the record in the destination's shape: for an ADR, the repository's existing format,
-else title, status, context, decision, consequences, in under a page; for Confluence, one
-delimited section through `jankolenko-skills:atlassian-confluence`, which owns that write and its
-gate; for `chat`, the same five parts inline. State each consequence as a constraint the
-next plan inherits. Done when: `decision.record` names the file or section and its status
-is `proposed` or `accepted`.
+Write the record in the destination's shape:
+
+| Destination | Shape |
+| --- | --- |
+| `adr` | The repository's existing ADR format, else title, status, context, decision, consequences, under a page |
+| `confluence` | One delimited section through `jankolenko-skills:atlassian-confluence`, which owns that write and its gate |
+| `chat` | The same five parts inline |
+
+State each consequence as a constraint the next plan inherits. Done when: `decision.record`
+names the file or section and its status is `proposed` or `accepted`.
 
 ## Notes
 
-- Decides and records; builds nothing. The plan that follows takes the choice as a
+- Decides and records. Builds nothing. The plan that follows takes the choice as a
   constraint.
 - A decision with one honest option is not a decision: say so in one line and record
   nothing.

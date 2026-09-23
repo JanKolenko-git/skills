@@ -52,6 +52,8 @@ A colleague's question pasted with no draft is researched before it is answered:
 the ticket, and for a team process (a release, a deploy, who owns what) Confluence through
 `jankolenko-skills:atlassian-confluence` before inferring it from git history.
 
+Done when: every claim is checked, softened, or a row in `reply.unverified`.
+
 ## Step 3 — Cut
 
 Lead with the answer; context and caveats come after, and only if they change what the

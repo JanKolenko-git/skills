@@ -15,5 +15,6 @@ stays in that SKILL.md.
 - A message for colleagues is very short: one to three sentences per ticket or topic, numbers
   taken from the record, the link after.
 - Text meant to be pasted elsewhere goes in its own block, ready to copy.
-- When unsure, ask one focused clarifying question rather than multiple. A short command with
-  one sensible reading is carried out, not answered with a menu.
+- When unsure, ask one focused clarifying question rather than multiple, unless a skill
+  batches its questions. A short command with one sensible reading is carried out, not
+  answered with a menu.

@@ -81,15 +81,20 @@ symptom: "the value is null here" is what you saw, and why it is null is the hyp
 Show the ranked list to the user and continue, since they often re-rank it. When the bug
 appeared between two known states, bisect history first.
 
-With `panel`, seat it here. Print `3 agents: haiku, sonnet, opus, read-only, ≈ <estimate>`
-(about 50K tokens of boot per agent, plus what it reads), then one `Agent` call per model
-in a single message, `subagent_type: jankolenko-skills:panelist`, `model` set per call, the
-same brief: the three symptom lines, the loop command with its red output, the minimised
-repro, the files it touches, and the ask for three to five ranked, falsifiable hypotheses
-with their refuting experiments. Merge into one list, a hypothesis two models name ahead
-of one only one names. Each seat opens with the model it runs on; two the same is one
-model twice, not a panel, so say so. An `Agent` tool without a `model` parameter: say so
-once and continue alone. Instrumenting and the fix stay in the session.
+With `panel`, seat it here. Print `3 agents: haiku, sonnet, opus, read-only, ≈ <estimate>`,
+at about 50K tokens of boot per agent plus what it reads. Then one `Agent` call per model
+in a single message, `subagent_type: jankolenko-skills:panelist`, `model` set per call, all
+on the same brief:
+
+- The three symptom lines.
+- The loop command with its red output.
+- The minimised repro and the files it touches.
+- The ask: three to five ranked, falsifiable hypotheses, each with its refuting experiment.
+
+Merge into one list, a hypothesis two models name ahead of one only one names. Each seat
+opens with the model it runs on. Two the same is one model twice, not a panel, so say so.
+An `Agent` tool without a `model` parameter: say so once and continue alone. Instrumenting
+and the fix stay in the session.
 
 Done when: each hypothesis names the experiment that would refute it.
 
