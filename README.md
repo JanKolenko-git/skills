@@ -79,10 +79,11 @@ end of the run.
 | [improve-skill](./skills/improve-skill/SKILL.md) | Fix, add, rename or reshape one of these skills from an observed friction or a request that recurred, gated on the exact diff, then ship and install it |
 | [record-engineering-rule](./skills/record-engineering-rule/SKILL.md) | Decide whether a coding convention belongs in [`ENGINEERING.md`](./ENGINEERING.md) or in one repository's `CLAUDE.md`, gated on the diff |
 | [find-session-improvements](./skills/find-session-improvements/SKILL.md) | Sweep a finished session for what the skill layer should learn and route each finding to its owner behind one triage gate |
+| [self-improve](./skills/self-improve/SKILL.md) | Compare the skills with Anthropic's current docs by category, once a month, and route each gap to its owner behind one triage gate; each run also updates its own categories |
 
-`find-session-improvements` is started by hand
-(`/jankolenko-skills:find-session-improvements`); the model cannot invoke it, so its
-description costs nothing in the skill listing.
+`find-session-improvements` and `self-improve` are started by hand
+(`/jankolenko-skills:find-session-improvements`, `/jankolenko-skills:self-improve`); the
+model cannot invoke them, so their descriptions cost nothing in the skill listing.
 
 ## Safety
 

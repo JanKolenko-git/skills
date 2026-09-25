@@ -67,6 +67,7 @@ skill (`code-`) sorts nothing.
 | `check`                    | Confirm a change does what it was meant to, and holds | no               |
 | `review`                   | Find a diff's bugs, each with the failure it produces | no               |
 | `explain`                  | Teach until it is understood                          | no               |
+| `self-improve`             | Compare the plugin with the docs, plan the changes    | no               |
 | `create`                   | Make a new named thing                                | yes              |
 | `test`                     | Write and run tests in the repository's own style     | yes              |
 | `debug`                    | Find and fix a bug's root cause                       | yes              |

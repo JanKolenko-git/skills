@@ -8,8 +8,10 @@ argument-hint: <skill-name> — <what happened / what should change>
 
 The friction one run hits becomes the fix every later run inherits. An improvement is
 grounded in what a run observed: a step that misled, a missing input, a gate that fired for
-the wrong reason. No observed friction, no proposal. A new or reshaped skill is grounded the
-same way, in requests that recurred, never in a reference that happens to have one.
+the wrong reason. A platform change under something a skill relies on, quoted from the
+docs, counts too. No observed friction or platform change, no proposal. A new or reshaped
+skill is grounded the same way, in requests that recurred, never in a reference that
+happens to have one.
 
 ## Inputs
 
