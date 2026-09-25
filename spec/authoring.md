@@ -35,7 +35,9 @@ it: `agents/<name>.md`, a subagent a skill seats by its scoped name, and
 `workflows/<name>.js`, a dynamic workflow a skill runs by name through the `Workflow`
 tool. A component no skill names is removed. Their frontmatter and script rules are
 Claude Code's own, under `sub-agents` and `workflows` in its docs; a workflow holds
-procedure, the skill that runs it holds the contract.
+procedure, the skill that runs it holds the contract. A subagent gets `agents/<name>.md`
+only for what a brief cannot give it: a smaller tool set, a turn limit, or standing rules
+several callers share. Any other subagent is briefed by the skill or workflow that starts it.
 
 A skill that encodes conventions only one team recognises does not belong here. The test is
 one question: could someone who has never seen that team's repositories run it?
