@@ -74,21 +74,24 @@ Done when: the diff is on screen and nothing is written to the skill file.
 Apply the diff. Bump `version` in `~/Developer/skills/.claude-plugin/plugin.json`: patch for a
 fix, minor when a skill is added, renamed or split, major when one is removed or a contract
 changes shape. A new or renamed skill also gets its row in the root `README.md`. Then
-validate, commit and install from wherever the session is:
+validate, check what loads, commit and install from wherever the session is:
 
 ```bash
 claude plugin validate ~/Developer/skills/.claude-plugin/plugin.json
+claude --plugin-dir ~/Developer/skills plugin details jankolenko-skills
 git -C ~/Developer/skills add <each path you changed> .claude-plugin/plugin.json
 git -C ~/Developer/skills commit -m "docs(<skill>): <the friction, in one line>"
 claude plugin update jankolenko-skills@jankolenko
 claude plugin list
 ```
 
-A failed validation goes back to the user; the fix goes in the diff. Report
-`<old> → <new> installed`, live from the next session. A commit without the update is a
-fix nobody runs.
+A failed validation goes back to the user; the fix goes in the diff. Validation reads the
+manifest, not what loads. `details` lists the skills the working copy loads, its source
+`jankolenko-skills@inline`. Report `<old> → <new> installed`, live from the next session.
+A commit without the update is a fix nobody runs.
 
-Done when: `claude plugin list` shows the version in `plugin.json`.
+Done when: `details` lists the skills the diff intends, and `claude plugin list` shows the
+version in `plugin.json`.
 
 ## Notes
 

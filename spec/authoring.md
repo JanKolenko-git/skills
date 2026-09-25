@@ -242,6 +242,7 @@ which every update regenerates. Then:
 
 ```bash
 claude plugin validate .claude-plugin/plugin.json && claude plugin validate .
+claude --plugin-dir . plugin details jankolenko-skills   # the skills the working copy loads
 git add <the files you changed> .claude-plugin/plugin.json   # after bumping "version"
 git commit -m "<conventional commit message>"
 claude plugin update jankolenko-skills@jankolenko
