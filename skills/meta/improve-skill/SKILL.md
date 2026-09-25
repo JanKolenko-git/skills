@@ -30,10 +30,10 @@ happens to have one.
 ## Step 1 — Find the skill in the working copy
 
 The working copy is `~/Developer/skills`, and the skill is
-`~/Developer/skills/skills/<skill>/SKILL.md`. Edit that file, never the plugin cache under
-`~/.claude/plugins/cache/`, which every update regenerates. No such file, when the request
-is not to add one, means the skill is not ours: stop with `improve.status = out-of-scope`
-and offer to wrap or replace it.
+`~/Developer/skills/skills/*/<skill>/SKILL.md`, in whichever group holds it. Edit that file,
+never the plugin cache under `~/.claude/plugins/cache/`, which every update regenerates. No
+such file, when the request is not to add one, means the skill is not ours: stop with
+`improve.status = out-of-scope` and offer to wrap or replace it.
 
 ## Step 2 — Read, then classify
 
@@ -61,7 +61,7 @@ Done when: the diff is on screen and nothing is written to the skill file.
 
 > 🛑 **GATE — editing the skill layer.** The observation, the class and the exact diff are
 > on screen.
-> Ask through `AskUserQuestion`: "Apply this diff to `skills/<skill>/SKILL.md`?" — options
+> Ask through `AskUserQuestion`: "Apply this diff to `skills/<group>/<skill>/SKILL.md`?" — options
 > **approve**, **change**, **stop**.
 > approve → Step 5. change → redo Step 3 with what they said, then this gate again.
 > stop → end with `improve.status = declined` and the diff in `improve.diff`.

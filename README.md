@@ -11,7 +11,8 @@ between atoms that are each useful on their own.
 
 ## Repository
 
-- [`skills/`](./skills): one folder per skill, `skills/<name>/SKILL.md`
+- [`skills/`](./skills): one folder per skill, `skills/<group>/<name>/SKILL.md`, in three
+  groups: `engineering`, `meta` and `beta`
 - [`agents/`](./agents): subagents a skill seats by scoped name
 - [`workflows/`](./workflows): dynamic workflows a skill runs by name
 - [`spec/`](./spec/authoring.md): the contract every skill follows
@@ -38,34 +39,21 @@ API and will not authenticate here.
 
 | Skill | What it does |
 | --- | --- |
-| [atlassian-jira](./skills/atlassian-jira/SKILL.md) | Read and update tickets: fetch as Markdown, search by text or JQL, transition, comment, create, edit |
-| [atlassian-confluence](./skills/atlassian-confluence/SKILL.md) | Read pages as Markdown, search, download attachments, add or update one delimited section |
-| [find-repository](./skills/find-repository/SKILL.md) | Work out which local repository a task belongs to, and refuse rather than guess |
-| [plan](./skills/plan/SKILL.md) | Read the code, then decide what to do to it: files, steps, risks, lanes; asks one decision at a time when the goal is vague, and stops on a decision that outlives the change |
-| [architect](./skills/architect/SKILL.md) | Settle a decision that outlives one change, a provider, data model, pattern or stack, and record it as an ADR or a spec section; started by hand |
-| [git-create-branch](./skills/git-create-branch/SKILL.md) | Branch with a conventional name: `feature/`, `bugfix/`, `hotfix/` + key + slug |
-| [test](./skills/test/SKILL.md) | Write tests in the repository's existing runner, layout and style, with a strategy per kind of file |
-| [debug](./skills/debug/SKILL.md) | Find and fix a bug's root cause: a feedback loop that goes red first, then reproduce, minimise, rank hypotheses, instrument, fix with a regression test, clean up |
-| [check](./skills/check/SKILL.md) | Confirm a change does what it was meant to and breaks nothing else: the diff against the plan, the behaviour run for evidence, the same surfaces compared against the base branch |
-| [review](./skills/review/SKILL.md) | Review a diff for bugs with a panel of three models, haiku, sonnet and opus, each in its own agent on one brief: findings merged by agreement, verified against the code, reported with file, line and failure scenario; one model is `/code-review`, and by hand `/jankolenko-skills:review-panel` |
-| [document](./skills/document/SKILL.md) | Write the prose about a change from its real diff: PR description, changelog entry, release notes, postmortem, ticket summary; started by hand |
-| [git-commit](./skills/git-commit/SKILL.md) | Stage by path and commit with a conventional message; never pushes |
-| [git-pr-push-and-open](./skills/git-pr-push-and-open/SKILL.md) | Show the diff, stop for approval, then push and open the PR |
-| [git-pr-address-review](./skills/git-pr-address-review/SKILL.md) | Work the review comments on a PR: apply or decline each with a reason, one ledger row each |
-| [record-learnings](./skills/record-learnings/SKILL.md) | Write durable constraints back to `CLAUDE.md`, a spec section or the ticket |
-| [walkthrough](./skills/walkthrough/SKILL.md) | Get a branch or PR running, then hand over each change against the base branch: before, after, how the code did it, the steps to test it there |
-| [implement](./skills/implement/SKILL.md) | Orchestrates the whole run: ticket → repo → plan → branch → build → test → check → review → PR → In Review → learnings |
-
-`architect` and `document` are started by hand (`/jankolenko-skills:architect <decision>`,
-`/jankolenko-skills:document pr`); the model cannot invoke them, so their descriptions cost
-nothing in the skill listing, and a ticket run that owes a decision stops and names the first.
-
-### Productivity
-
-| Skill | What it does |
-| --- | --- |
-| [explain](./skills/explain/SKILL.md) | Explain code, a principle, a metric or how to build X in Y, plainly and accurately |
-| [draft-reply](./skills/draft-reply/SKILL.md) | Turn a pasted thread and a rough draft into a short reply that checks out and answers everything asked, or write a status message or a work report from the record |
+| [atlassian-jira](./skills/engineering/atlassian-jira/SKILL.md) | Read and update tickets: fetch as Markdown, search by text or JQL, transition, comment, create, edit |
+| [atlassian-confluence](./skills/engineering/atlassian-confluence/SKILL.md) | Read pages as Markdown, search, download attachments, add or update one delimited section |
+| [git-find-repository](./skills/engineering/git-find-repository/SKILL.md) | Work out which local repository a task belongs to, and refuse rather than guess |
+| [plan](./skills/engineering/plan/SKILL.md) | Read the code, then decide what to do to it: files, steps, risks, lanes; asks one decision at a time when the goal is vague, and stops on a decision that outlives the change |
+| [git-create-branch](./skills/engineering/git-create-branch/SKILL.md) | Branch with a conventional name: `feature/`, `bugfix/`, `hotfix/` + key + slug |
+| [test](./skills/engineering/test/SKILL.md) | Write tests in the repository's existing runner, layout and style, with a strategy per kind of file |
+| [debug](./skills/engineering/debug/SKILL.md) | Find and fix a bug's root cause: a feedback loop that goes red first, then reproduce, minimise, rank hypotheses, instrument, fix with a regression test, clean up |
+| [check](./skills/engineering/check/SKILL.md) | Confirm a change does what it was meant to and breaks nothing else: the diff against the plan, the behaviour run for evidence, the same surfaces compared against the base branch |
+| [git-commit](./skills/engineering/git-commit/SKILL.md) | Stage by path and commit with a conventional message; never pushes |
+| [git-pr-push-and-open](./skills/engineering/git-pr-push-and-open/SKILL.md) | Show the diff, stop for approval, then push and open the PR |
+| [git-pr-address-comments](./skills/engineering/git-pr-address-comments/SKILL.md) | Work the review comments on a PR: apply or decline each with a reason, one ledger row each |
+| [walkthrough](./skills/engineering/walkthrough/SKILL.md) | Get a branch or PR running, then hand over each change against the base branch: before, after, how the code did it, the steps to test it there |
+| [implement](./skills/engineering/implement/SKILL.md) | Orchestrates the whole run: ticket → repo → plan → branch → build → test → check → review → PR → In Review → learnings |
+| [explain](./skills/engineering/explain/SKILL.md) | Explain code, a principle, a metric or how to build X in Y, plainly and accurately |
+| [draft-reply](./skills/engineering/draft-reply/SKILL.md) | Turn a pasted thread and a rough draft into a short reply that checks out and answers everything asked, or write a status message or a work report from the record |
 
 ### Meta
 
@@ -76,14 +64,29 @@ end of the run.
 
 | Skill | What it does |
 | --- | --- |
-| [improve-skill](./skills/improve-skill/SKILL.md) | Fix, add, rename or reshape one of these skills from an observed friction or a request that recurred, gated on the exact diff, then ship and install it |
-| [record-engineering-rule](./skills/record-engineering-rule/SKILL.md) | Decide whether a coding convention belongs in [`ENGINEERING.md`](./ENGINEERING.md) or in one repository's `CLAUDE.md`, gated on the diff |
-| [find-session-improvements](./skills/find-session-improvements/SKILL.md) | Sweep a finished session for what the skill layer should learn and route each finding to its owner behind one triage gate |
-| [self-improve](./skills/self-improve/SKILL.md) | Compare the skills with Anthropic's current docs by category, once a month, and route each gap to its owner behind one triage gate; each run also updates its own categories |
+| [improve-skill](./skills/meta/improve-skill/SKILL.md) | Fix, add, rename or reshape one of these skills from an observed friction or a request that recurred, gated on the exact diff, then ship and install it |
+| [record-engineering-rule](./skills/meta/record-engineering-rule/SKILL.md) | Decide whether a coding convention belongs in [`ENGINEERING.md`](./ENGINEERING.md) or in one repository's `CLAUDE.md`, gated on the diff |
+| [record-learnings](./skills/meta/record-learnings/SKILL.md) | Write durable constraints back to `CLAUDE.md`, a spec section or the ticket |
 
-`find-session-improvements` and `self-improve` are started by hand
-(`/jankolenko-skills:find-session-improvements`, `/jankolenko-skills:self-improve`); the
-model cannot invoke them, so their descriptions cost nothing in the skill listing.
+### Beta
+
+New skills, and skills whose contract is being reshaped, until three runs in real work on the
+current contract. Beta is only a folder: a beta skill loads, triggers and is called like any
+other ([`spec/authoring.md`](./spec/authoring.md) § Layout).
+
+| Skill | What it does |
+| --- | --- |
+| [review](./skills/beta/review/SKILL.md) | Review a diff for bugs with a panel of three models, haiku, sonnet and opus, each in its own agent on one brief: findings merged by agreement, verified against the code, reported with file, line and failure scenario; one model is `/code-review`, and by hand `/jankolenko-skills:review-panel` |
+| [architect](./skills/beta/architect/SKILL.md) | Settle a decision that outlives one change, a provider, data model, pattern or stack, and record it as an ADR or a spec section; started by hand |
+| [document](./skills/beta/document/SKILL.md) | Write the prose about a change from its real diff: PR description, changelog entry, release notes, postmortem, ticket summary; started by hand |
+| [find-session-improvements](./skills/beta/find-session-improvements/SKILL.md) | Sweep a finished session for what the skill layer should learn and route each finding to its owner behind one triage gate |
+| [self-improve](./skills/beta/self-improve/SKILL.md) | Compare the skills with Anthropic's current docs by category, once a month, and route each gap to its owner behind one triage gate; each run also updates its own categories |
+
+`architect`, `document`, `find-session-improvements` and `self-improve` are started by hand
+(`/jankolenko-skills:architect <decision>`, `/jankolenko-skills:document pr`,
+`/jankolenko-skills:find-session-improvements`, `/jankolenko-skills:self-improve`); the model
+cannot invoke them, so their descriptions cost nothing in the skill listing, and a ticket run
+that owes a decision stops and names `architect`.
 
 ## Safety
 
@@ -144,7 +147,7 @@ chmod 600 ~/.zshenv
 These four are every variable the skills read, and only the two Atlassian integrations read
 them; the atoms need none. TLS verification is always on.
 
-`find-repository` looks in the current directory, then `~/Developer`, `~/code`, `~/src`,
+`git-find-repository` looks in the current directory, then `~/Developer`, `~/code`, `~/src`,
 `~/projects`, `~/repos`.
 
 ## Usage
@@ -173,7 +176,7 @@ The scripts are stdlib-only Python 3 and every one takes `--help`, so they run o
 too:
 
 ```bash
-python3 ~/.claude/plugins/**/skills/atlassian-jira/fetch_ticket.py PROJ-1155
+python3 ~/.claude/plugins/**/atlassian-jira/fetch_ticket.py PROJ-1155
 ```
 
 ## Requirements
@@ -182,7 +185,7 @@ python3 ~/.claude/plugins/**/skills/atlassian-jira/fetch_ticket.py PROJ-1155
 - A Jira / Confluence Server or Data Center instance you can reach (most sit behind a VPN)
 - A personal access token per product
 - `gh` CLI, if `git-pr-push-and-open` is to open the PR rather than hand you a compare link,
-  and if `git-pr-address-review` is to read and reply to review comments rather than work
+  and if `git-pr-address-comments` is to read and reply to review comments rather than work
   from pasted text
 
 ## Troubleshooting
@@ -195,7 +198,7 @@ python3 ~/.claude/plugins/**/skills/atlassian-jira/fetch_ticket.py PROJ-1155
 | `no transition leads to …` | The workflow does not allow that status from the current one; `get_transitions.py` lists what it does allow |
 | `JIRA_URL is not set` | The instance URL was never exported |
 | `cannot reach ...` | Wrong host, or not on the network or VPN it sits behind |
-| `find-repository` finds nothing | The repo sits outside the common roots; give its path, or run from inside it |
+| `git-find-repository` finds nothing | The repo sits outside the common roots; give its path, or run from inside it |
 
 Exit codes distinguish the cases for scripting: `1` setup or bad input, `2` HTTP/auth,
 `3` forbidden, `4` not found, `5` network unreachable.
@@ -203,7 +206,7 @@ Exit codes distinguish the cases for scripting: `1` setup or bad input, `2` HTTP
 ## Development
 
 How a skill is written and named is in [`spec/authoring.md`](./spec/authoring.md). A new skill
-starts as a copy of [`template/SKILL.md`](./template/SKILL.md) in its own `skills/<name>/`
+starts as a copy of [`template/SKILL.md`](./template/SKILL.md) in its own `skills/beta/<name>/`
 folder, plus a row in the tables above; the plugin finds it without a manifest entry. An
 agent or a workflow is added only for a skill that invokes it, and that skill names it.
 

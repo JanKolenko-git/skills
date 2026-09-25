@@ -31,7 +31,7 @@ nothing refetches. `ticket.*` and `plan.*` stay in context for the whole run.
 | #  | Skill | Wiring |
 | --- | --- | --- |
 | 1 | `jankolenko-skills:atlassian-jira` (+ `jankolenko-skills:atlassian-confluence`) | → `ticket.*`; 🛑 cannot fetch → stop, never a guessed ticket |
-| 2 | `jankolenko-skills:find-repository` | skipped when `repo` is given; `ticket.title/description/components` → `hints`; → `repo.path`, made the session's directory; 🛑 ambiguous → stop with its candidates |
+| 2 | `jankolenko-skills:git-find-repository` | skipped when `repo` is given; `ticket.title/description/components` → `hints`; → `repo.path`, made the session's directory; 🛑 ambiguous → stop with its candidates |
 | 3 | `jankolenko-skills:plan` | `ticket.*` → `goal`/`criteria`/`candidates`/`constraints`; → `plan.*`; 🛑 verdict |
 | 4 | `jankolenko-skills:git-create-branch` | `ticket.type/priority` → `type`; `ticket.title` → `slug`; `ticket.key` → `ticket_key`; → `branch.*`; 🛑 its gate when the checkout is busy; every later step runs in `branch.path` |
 | 5 | `jankolenko-skills:atlassian-jira` | `mode=transition`, `In Progress`; a refusal is warned about, not fatal |

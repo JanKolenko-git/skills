@@ -1,9 +1,9 @@
 ---
-name: git-pr-address-review
+name: git-pr-address-comments
 description: Work through the review comments on a GitHub PR one at a time: apply the ones that earn a change, decline the rest with a reason, reply on each thread, report a ledger. Use when a PR URL comes with 'address the review', 'resolve the comments', 'check the copilot comments', 'post the replies', or a reviewer's comment to look at.
 ---
 
-# Git PR — Address Review
+# Git PR — Address Comments
 
 A human has commented on your PR, and each comment earns a change or earns a reason. The
 failure mode is the **nod**: applying every comment because agreeing is faster than
@@ -129,8 +129,6 @@ One entry per comment, in the PR's order. The user reads this instead of the thr
 ```
 
 Close with the count: *n* comments, *x* applied, *y* declined, *z* deferred.
-`jankolenko-skills:find-session-improvements` reads the `applied` rows: a human changing
-what the run called finished is the strongest evidence the skill layer gets.
 
 ## Notes
 

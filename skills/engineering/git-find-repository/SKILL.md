@@ -1,9 +1,9 @@
 ---
-name: find-repository
+name: git-find-repository
 description: Find the git repository a task belongs to, from a ticket key, package name or keywords: searches the usual code folders, checks package.json names and remotes, refuses to guess between two matches. Use when the user asks which repo something is about or which repo owns or consumes a package, or work must start with no repo named.
 ---
 
-# Find Repository
+# Git Find Repository
 
 Work out which local git repository a task belongs to, and stop rather than guess. Picking
 the wrong repo is expensive: every later step (branch, edits, tests, PR) lands somewhere

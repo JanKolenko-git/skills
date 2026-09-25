@@ -16,7 +16,7 @@ plan.
   uncommitted changes included).
 - `base` — optional. Defaults to the default branch, `origin/<default>` when there is a remote.
 - `repo` — optional. Defaults to the current directory. A named project resolves through
-  `jankolenko-skills:find-repository` if installed.
+  `jankolenko-skills:git-find-repository` if installed.
 - `scope` — optional. `full` (default), or `environment` to stop after Section 1.
 - `why` — optional. The ticket, plan or PR text behind the change. Without it, a ticket key
   in the branch name or PR title is fetched through `jankolenko-skills:atlassian-jira` when

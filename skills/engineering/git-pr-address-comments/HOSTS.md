@@ -1,6 +1,6 @@
 # Hosts
 
-The commands for the three things `git-pr-address-review` needs: **read** the comments,
+The commands for the three things `git-pr-address-comments` needs: **read** the comments,
 **reply** to a thread, **resolve** a thread.
 
 GitHub is the only host covered, detected by `github.com/<owner>/<repo>/pull/<n>`, and `gh`

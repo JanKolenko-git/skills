@@ -56,7 +56,7 @@ Each is a lead to verify, not a finding:
 | A review comment applied, or work sent back at the push gate | A human overruled the finished work: the strongest lead |
 
 The last row outranks the rest: a human changing what the run produced is a verdict from
-outside it. Start from `jankolenko-skills:git-pr-address-review`'s ledger (`applied` rows)
+outside it. Start from `jankolenko-skills:git-pr-address-comments`'s ledger (`applied` rows)
 and from what came back at `jankolenko-skills:git-pr-push-and-open`'s gate, keeping only a
 correction that names a class: would the same one be needed on a different ticket? The
 evidence for a review comment is the landed diff, never its text. A user changing their

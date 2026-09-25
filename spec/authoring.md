@@ -9,12 +9,26 @@ Generic mechanics (frontmatter fields, triggering) follow
 
 ## Layout
 
-Every skill lives at exactly `skills/<skill-name>/SKILL.md`, folder name equal to the
-frontmatter `name`; the plugin discovers `skills/*/SKILL.md` on its own. Everything a skill
-owns (scripts, `reference/`, extra Markdown) sits inside its own folder, resolved at runtime
-as `${CLAUDE_SKILL_DIR}`; a skill never reaches into another's folder by relative path, it
-invokes the other skill. Adding, renaming or removing a skill is two edits: the folder, and
-its row in the root [`README.md`](../README.md).
+Every skill lives at exactly `skills/<group>/<skill-name>/SKILL.md`, folder name equal to
+the frontmatter `name`. The manifest's `skills` key lists the three group folders, so a skill
+added to one loads without a manifest edit. The group never enters the command: moving a
+skill between groups renames nothing. Everything a skill owns (scripts, `reference/`, extra
+Markdown) sits inside its own folder, resolved at runtime as `${CLAUDE_SKILL_DIR}`; a skill
+never reaches into another's folder by relative path, it invokes the other skill. Adding,
+renaming or removing a skill is two edits: the folder, and its row in the root
+[`README.md`](../README.md).
+
+A skill sits in the first group that fits:
+
+| Group         | Holds                                                                                                                                                     |
+| ------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `beta`        | A new skill, or one whose `## Inputs`, `## Output` or gates are being reshaped                                                                            |
+| `meta`        | A skill whose output later sessions read rather than the task at hand: a skill, `ENGINEERING.md`, a `CLAUDE.md` entry, a spec section, findings for those |
+| `engineering` | Every other skill                                                                                                                                         |
+
+A wording pass sends no skill to `beta`. A skill leaves `beta` after three runs in real work
+on its current contract, the last needing no fix: `git mv` it to its group, a patch bump. A
+`beta` skill unused for 30 days is proposed for deletion.
 
 Two more component kinds live at the plugin root, each only because a named skill invokes
 it: `agents/<name>.md`, a subagent a skill seats by its scoped name, and
@@ -45,18 +59,18 @@ growing mechanics is telling you an atom is missing.
 The shape is `[<system>-]<verb>[-<object>]`. The object is dropped when the verb is unique in
 the plugin and still names the job alone: `plan`, `check`, `test`, `debug`, `implement`,
 `architect`, `document`, `explain`, `walkthrough`, `review`. A shared verb keeps its object
-(`find-repository`, `record-learnings`), and so does one that says too little alone
+(`git-find-repository`, `record-learnings`), and so does one that says too little alone
 (`draft-reply`, `improve-skill`).
 
 **A prefix names the system, forge or vendor the skill cannot run without. No binding, no
 prefix.** A prefix must rule something out to be worth typing; a topic already true of every
 skill (`code-`) sorts nothing.
 
-| Prefix       | Binds to                                                | Skills                                          |
-| ------------ | ------------------------------------------------------- | ----------------------------------------------- |
-| `atlassian-` | An Atlassian Data Center instance and a per-product PAT | `atlassian-jira`, `atlassian-confluence`        |
-| `git-`       | A git working copy                                      | `git-commit`, `git-create-branch`               |
-| `git-pr-`    | GitHub, reached through `gh` and git                    | `git-pr-push-and-open`, `git-pr-address-review` |
+| Prefix       | Binds to                                                | Skills                                                   |
+| ------------ | ------------------------------------------------------- | -------------------------------------------------------- |
+| `atlassian-` | An Atlassian Data Center instance and a per-product PAT | `atlassian-jira`, `atlassian-confluence`                 |
+| `git-`       | A git working copy                                      | `git-commit`, `git-create-branch`, `git-find-repository` |
+| `git-pr-`    | GitHub, reached through `gh` and git                    | `git-pr-push-and-open`, `git-pr-address-comments`        |
 
 **One verb, one meaning.**
 
@@ -80,10 +94,10 @@ skill (`code-`) sorts nothing.
 | `implement`                | Orchestrate a full build                              | yes              |
 
 Integrations carry no verb: each exposes many behind modes. Spell words out
-(`find-repository`, not `find-repo`) except for abbreviations more standard than their
-expansion (`git`, `pr`, `jql`). No grouping prefixes: the plugin already namespaces. Hyphens
-only, no dots: Claude Code normalises a dot to a hyphen at registration, so a dotted name
-disagrees with the name that invokes it.
+(`git-find-repository`, not `git-find-repo`) except for abbreviations more standard than
+their expansion (`git`, `pr`, `jql`). No grouping prefixes: the plugin already namespaces.
+Hyphens only, no dots: Claude Code normalises a dot to a hyphen at registration, so a dotted
+name disagrees with the name that invokes it.
 
 ## Referring to another skill
 
