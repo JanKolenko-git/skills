@@ -1,6 +1,6 @@
 {
   "name": "jankolenko-skills",
-  "version": "8.4.4",
+  "version": "8.4.5",
   "description": "Composable, portable agent skills that carry a ticket from Jira or Confluence Data Center through branch, tests and review to an open pull request.",
   "author": {
     "name": "Jan Kolenko",
@@ -27,7 +27,7 @@
     "./skills/beta/"
   ],
   "workflows": [
-    "./skills/beta/review/workflows/"
+    "./skills/engineering/review/workflows/"
   ],
   "hooks": {
     "SessionStart": [

@@ -47,6 +47,7 @@ API and will not authenticate here.
 | [test](./skills/engineering/test/SKILL.md) | Write tests in the repository's existing runner, layout and style, with a strategy per kind of file |
 | [debug](./skills/engineering/debug/SKILL.md) | Find and fix a bug's root cause: a feedback loop that goes red first, then reproduce, minimise, rank hypotheses, instrument, fix with a regression test, clean up |
 | [check](./skills/engineering/check/SKILL.md) | Confirm a change does what it was meant to and breaks nothing else: the diff against the plan, the behaviour run for evidence, the same surfaces compared against the base branch |
+| [review](./skills/engineering/review/SKILL.md) | Review a diff for bugs with a panel of three models, haiku, sonnet and opus, each in its own agent on one brief: findings merged by agreement, verified against the code, reported with file, line and failure scenario; one model is `/code-review`, and by hand `/jankolenko-skills:review-panel` |
 | [git-commit](./skills/engineering/git-commit/SKILL.md) | Stage by path and commit with a conventional message; never pushes |
 | [git-pr-push-and-open](./skills/engineering/git-pr-push-and-open/SKILL.md) | Show the diff, stop for approval, then push and open the PR |
 | [git-pr-address-comments](./skills/engineering/git-pr-address-comments/SKILL.md) | Work the review comments on a PR: apply or decline each with a reason, one ledger row each |
@@ -76,7 +77,6 @@ other ([`spec/authoring.md`](./spec/authoring.md) § Layout).
 
 | Skill | What it does |
 | --- | --- |
-| [review](./skills/beta/review/SKILL.md) | Review a diff for bugs with a panel of three models, haiku, sonnet and opus, each in its own agent on one brief: findings merged by agreement, verified against the code, reported with file, line and failure scenario; one model is `/code-review`, and by hand `/jankolenko-skills:review-panel` |
 | [architect](./skills/beta/architect/SKILL.md) | Settle a decision that outlives one change, a provider, data model, pattern or stack, and record it as an ADR or a spec section; started by hand |
 | [document](./skills/beta/document/SKILL.md) | Write the prose about a change from its real diff: PR description, changelog entry, release notes, postmortem, ticket summary; started by hand |
 | [find-session-improvements](./skills/beta/find-session-improvements/SKILL.md) | Sweep a finished session for what the skill layer should learn and route each finding to its owner behind one triage gate |
