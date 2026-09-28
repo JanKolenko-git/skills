@@ -12,9 +12,9 @@ between atoms that are each useful on their own.
 ## Repository
 
 - [`skills/`](./skills): one folder per skill, `skills/<group>/<name>/SKILL.md`, in three
-  groups: `engineering`, `meta` and `beta`
+  groups: `engineering`, `meta` and `beta`. A skill's scripts, reference files and
+  workflows sit in its own folder
 - [`agents/`](./agents): subagents a skill seats by scoped name
-- [`workflows/`](./workflows): dynamic workflows a skill runs by name
 - [`spec/`](./spec/authoring.md): the contract every skill follows
 - [`template/`](./template/SKILL.md): that contract as a blank skill
 - [`ENGINEERING.md`](./ENGINEERING.md): the rules for the code the skills produce, which every
@@ -208,7 +208,9 @@ Exit codes distinguish the cases for scripting: `1` setup or bad input, `2` HTTP
 How a skill is written and named is in [`spec/authoring.md`](./spec/authoring.md). A new skill
 starts as a copy of [`template/SKILL.md`](./template/SKILL.md) in its own `skills/beta/<name>/`
 folder, plus a row in the tables above; the plugin finds it without a manifest entry. An
-agent or a workflow is added only for a skill that invokes it, and that skill names it.
+agent or a workflow is added only for a skill that invokes it, and that skill names it. An
+agent goes in `agents/`. A workflow goes in the skill's own `workflows/` folder, which the
+`workflows` key in `.claude-plugin/plugin.json` lists.
 
 Sessions load the plugin from a versioned cache, so a change ships only after a version bump
 in `.claude-plugin/plugin.json` and an update:

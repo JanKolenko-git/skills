@@ -54,7 +54,7 @@ and verifies. The script owns the how. `/workflows` shows tokens per agent while
 | --- | --- |
 | Returns | Step 3 |
 | Returns `panel: false` | Two seats reported the same model. Report the rows as one model's review, name the seats, and say so first |
-| `Workflow` tool absent or disabled | One `Agent` call per model in a single message, `subagent_type: jankolenko-skills:panelist`, `model` per call, the brief read from `${CLAUDE_PLUGIN_ROOT}/workflows/review-panel.js`. Merge and verify in the session by the script's rules, and say so once |
+| `Workflow` tool absent or disabled | One `Agent` call per model in a single message, `subagent_type: jankolenko-skills:panelist`, `model` per call, the brief read from `${CLAUDE_SKILL_DIR}/workflows/review-panel.js`. Merge and verify in the session by the script's rules, and say so once |
 
 Done when: the run has returned, or the fallback's seats have reported and every row has
 a verdict.

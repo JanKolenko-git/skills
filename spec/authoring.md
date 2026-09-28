@@ -12,11 +12,11 @@ Generic mechanics (frontmatter fields, triggering) follow
 Every skill lives at exactly `skills/<group>/<skill-name>/SKILL.md`, folder name equal to
 the frontmatter `name`. The manifest's `skills` key lists the three group folders, so a skill
 added to one loads without a manifest edit. The group never enters the command: moving a
-skill between groups renames nothing. Everything a skill owns (scripts, `reference/`, extra
-Markdown) sits inside its own folder, resolved at runtime as `${CLAUDE_SKILL_DIR}`; a skill
-never reaches into another's folder by relative path, it invokes the other skill. Adding,
-renaming or removing a skill is two edits: the folder, and its row in the root
-[`README.md`](../README.md).
+skill between groups renames nothing. Everything a skill owns (scripts, `reference/`,
+`workflows/`, extra Markdown) sits inside its own folder, resolved at runtime as
+`${CLAUDE_SKILL_DIR}`; a skill never reaches into another's folder by relative path, it
+invokes the other skill. Adding, renaming or removing a skill is two edits: the folder, and
+its row in the root [`README.md`](../README.md).
 
 A skill sits in the first group that fits:
 
@@ -30,14 +30,17 @@ A wording pass sends no skill to `beta`. A skill leaves `beta` after three runs 
 on its current contract, the last needing no fix: `git mv` it to its group, a patch bump. A
 `beta` skill unused for 30 days is proposed for deletion.
 
-Two more component kinds live at the plugin root, each only because a named skill invokes
-it: `agents/<name>.md`, a subagent a skill seats by its scoped name, and
-`workflows/<name>.js`, a dynamic workflow a skill runs by name through the `Workflow`
-tool. A component no skill names is removed. Their frontmatter and script rules are
-Claude Code's own, under `sub-agents` and `workflows` in its docs; a workflow holds
-procedure, the skill that runs it holds the contract. A subagent gets `agents/<name>.md`
-only for what a brief cannot give it: a smaller tool set, a turn limit, or standing rules
-several callers share. Any other subagent is briefed by the skill or workflow that starts it.
+Two more component kinds exist only because a named skill invokes them, and a component no
+skill names is removed. A subagent a skill seats by its scoped name is `agents/<name>.md` at
+the plugin root, where any skill can seat it. A dynamic workflow a skill runs by name
+through the `Workflow` tool is `workflows/<name>.js` inside that skill's folder. Claude Code
+looks only in the root `workflows/` unless told otherwise, so the manifest's `workflows` key
+lists each skill's `workflows/` folder, and renaming, moving or removing that skill edits
+the key too. Their frontmatter and script rules are Claude Code's own, under `sub-agents`
+and `workflows` in its docs; a workflow holds procedure, the skill that runs it holds the
+contract. A subagent gets `agents/<name>.md` only for what a brief cannot give it: a smaller
+tool set, a turn limit, or standing rules several callers share. Any other subagent is
+briefed by the skill or workflow that starts it.
 
 A skill that encodes conventions only one team recognises does not belong here. The test is
 one question: could someone who has never seen that team's repositories run it?
