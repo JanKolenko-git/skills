@@ -208,7 +208,8 @@ def _markers(name):
 
 
 def _splice(body, name, heading, block):
-    """Return the new page body, and what happened ('updated' | 'appended').
+    """Return the new page body, what happened ('updated' | 'appended'), and the
+    section the block replaces, or None when it is appended.
 
     Confluence has no append primitive: every update PUTs the whole body with an
     incremented version. So the section is delimited by comment markers, and only
@@ -222,7 +223,8 @@ def _splice(body, name, heading, block):
     i, j = body.find(start), body.find(end)
 
     if i != -1 and j != -1 and j > i:
-        return body[:i] + block + body[j + len(end):], 'updated'
+        current = body[i:j + len(end)]
+        return body[:i] + block + body[j + len(end):], 'updated', current
 
     if i != -1 or j != -1:
         die(f'the page contains only one of the two {name!r} markers, so the section '
@@ -235,7 +237,7 @@ def _splice(body, name, heading, block):
             f'section by hand, or pass a different --marker.', EXIT_SETUP)
 
     sep = '' if body.endswith('\n') or not body else '\n'
-    return f'{body}{sep}{block}', 'appended'
+    return f'{body}{sep}{block}', 'appended', None
 
 
 def cmd_update_section(args):
@@ -262,13 +264,20 @@ def cmd_update_section(args):
 
     start, end = _markers(args.marker)
     block = f'{start}\n{content}\n{end}'
-    new_body, action = _splice(body, args.marker, args.heading, block)
+    new_body, action, current = _splice(body, args.marker, args.heading, block)
 
     if args.dry_run:
-        print(f'DRY RUN — would have {action} the {args.marker!r} section')
-        print(f'  page:    {page.get("title")} ({page_id}) v{version}')
-        print(f'  body:    {len(body)} chars -> {len(new_body)} chars')
-        print(f'  url:     {page_url(page)}')
+        # The gate needs the artefact on screen: the section as it would be written
+        # and the one it replaces, not a character count.
+        verb, joiner = ('update', 'on') if current is not None else ('append', 'to')
+        print(f'DRY RUN: would {verb} {args.marker!r} {joiner} "{page.get("title")}" '
+              f'({page_id}, v{version} -> v{version + 1})')
+        if current is not None:
+            print('--- current section')
+            print(current)
+        print('+++ new section')
+        print(block)
+        print(page_url(page))
         return
 
     # A 409 here means the page moved between this read and the write; the client
@@ -335,7 +344,9 @@ def build_parser():
                                    'as literal text. The section is wrapped in '
                                    '<!-- <marker> START --> ... <!-- <marker> END -->: the '
                                    'first run appends it, later runs replace only what '
-                                   'sits between the markers. --dry-run first.')
+                                   'sits between the markers. --dry-run first: it '
+                                   'prints the section as it would be written and the '
+                                   'one it replaces.')
     p.add_argument('page', help='page URL or numeric page ID')
     p.add_argument('--marker', required=True,
                    help='stable section name, e.g. ticket-report:PROJ-4821')

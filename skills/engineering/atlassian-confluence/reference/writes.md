@@ -27,9 +27,9 @@ The command wraps the content in comment markers and writes only between them:
 
 The first run appends the block; later runs replace its contents in place, so nothing a
 colleague wrote elsewhere on the page is touched and re-running does not stack copies.
-Always `--dry-run` first and show the user what would change: Confluence has no append
-primitive, every update PUTs the whole body, and the blast radius of a mistake is the entire
-page.
+Always `--dry-run` first: it prints the section as it would be written and the current one
+it replaces, which is the artefact the gate shows. Confluence has no append primitive, every
+update PUTs the whole body, and the blast radius of a mistake is the entire page.
 
 ## What `update-section` refuses
 
