@@ -1,20 +1,27 @@
-"""Shared HTTP/auth helpers for the jira skill.
+"""Shared HTTP and auth helpers for the Atlassian skills.
 
-Targets Jira Server / Data Center: REST v2, wiki markup, and a personal access
-token sent as a Bearer credential. Jira Cloud is a different API (v3, ADF) with
-different auth, and will not work here.
+Targets Jira or Confluence Server / Data Center with a personal access token sent
+as a Bearer credential. Atlassian Cloud is a different API with different auth,
+and will not work here.
 
-Reads JIRA_URL and JIRA_PERSONAL_TOKEN from the environment.
-Never hardcode a token here — this file is safe to read and share.
+Reads <PRODUCT>_URL and <PRODUCT>_PERSONAL_TOKEN from the environment. Never
+hardcode a token here: this file is safe to read and share.
+
+This file is identical in atlassian-jira and atlassian-confluence except for the
+PRODUCT line, on purpose: a skill never imports across folders. A fix here goes
+into both copies, and `diff` proves they still match.
 """
 import json
 import os
-import re
 import ssl
 import sys
 import urllib.error
-import urllib.parse
 import urllib.request
+
+PRODUCT = 'Jira'
+
+ENV_URL = f'{PRODUCT.upper()}_URL'
+ENV_TOKEN = f'{PRODUCT.upper()}_PERSONAL_TOKEN'
 
 # Exit codes, so callers can distinguish "no access" from "broken setup".
 EXIT_SETUP = 1
@@ -30,19 +37,27 @@ def die(msg, code=EXIT_SETUP):
 
 
 def base_url():
-    url = os.environ.get('JIRA_URL', '')
+    url = os.environ.get(ENV_URL, '')
     if not url:
-        die('JIRA_URL is not set. Point it at your Jira Data Center instance, '
-            'e.g. export JIRA_URL=https://jira.example.com (in ~/.zshenv).')
+        die(f'{ENV_URL} is not set. Point it at your {PRODUCT} Data Center instance, '
+            f'e.g. export {ENV_URL}=https://{PRODUCT.lower()}.example.com (in ~/.zshenv).')
     return url.rstrip('/')
 
 
 def _token():
-    token = os.environ.get('JIRA_PERSONAL_TOKEN', '')
+    token = os.environ.get(ENV_TOKEN, '')
     if not token:
-        die('JIRA_PERSONAL_TOKEN is not set. In Jira, open the profile menu -> '
-            'Personal Access Tokens, create one, then export it (e.g. in ~/.zshenv).')
+        die(f'{ENV_TOKEN} is not set. In {PRODUCT}, open the profile menu -> Personal '
+            f'Access Tokens, create one, then export it (e.g. in ~/.zshenv). Tokens are '
+            f'per product: a token for the other product gets a 401 here.')
     return token
+
+
+def absolute(url):
+    """A path becomes a URL on the instance; an absolute URL passes through."""
+    if url.startswith('http://') or url.startswith('https://'):
+        return url
+    return f'{base_url()}{url}'
 
 
 def _reject_sso_page(final_url, body, accept):
@@ -53,26 +68,27 @@ def _reject_sso_page(final_url, body, accept):
     Microsoft login page, so this is not an auth failure the token can fix.
     """
     if 'login.microsoftonline.com' in final_url or '/openid-login' in final_url:
-        die('redirected to the Microsoft SSO login page instead of reaching the Jira '
-            'API, so the request never arrived. This is a network problem, not a token '
-            'problem — connect to the corporate network or VPN and retry. If it '
-            'persists while on VPN, JIRA_PERSONAL_TOKEN may have been revoked; create a '
-            'fresh one in Jira.', EXIT_HTTP)
+        die(f'redirected to the Microsoft SSO login page instead of reaching the {PRODUCT} '
+            f'API, so the request never arrived. This is a network problem, not a token '
+            f'problem — connect to the corporate network or VPN and retry. If it persists '
+            f'while on VPN, {ENV_TOKEN} may have been revoked; create a fresh one in '
+            f'{PRODUCT}.', EXIT_HTTP)
     # Only when JSON was asked for: an attachment may legitimately be HTML.
     if 'json' in accept and body[:512].lstrip()[:1] == b'<':
         die(f'expected JSON from {final_url} but got an HTML page — most likely a login '
-            f'or captive portal in front of Jira rather than Jira itself.', EXIT_HTTP)
+            f'or captive portal in front of {PRODUCT} rather than {PRODUCT} itself.',
+            EXIT_HTTP)
 
 
-def fetch(url, accept='application/json', timeout=60):
-    """GET a URL with the PAT attached. Returns raw bytes; exits on failure."""
-    if not url.startswith('http'):
-        url = f'{base_url()}{url}'
-
-    req = urllib.request.Request(url, headers={
-        'Authorization': f'Bearer {_token()}',
-        'Accept': accept,
-    })
+def _request(url, accept, data=None, method=None, timeout=60):
+    """Every HTTP call goes through here: the PAT header, the SSO check, and one
+    mapping from HTTP status to exit code. Returns the raw body; exits on failure.
+    """
+    headers = {'Authorization': f'Bearer {_token()}', 'Accept': accept}
+    writing = data is not None
+    if writing:
+        headers['Content-Type'] = 'application/json'
+    req = urllib.request.Request(url, data=data, method=method, headers=headers)
 
     try:
         ctx = ssl.create_default_context()
@@ -86,97 +102,45 @@ def fetch(url, accept='application/json', timeout=60):
         except Exception:
             detail = ''
         if e.code == 401:
-            die('HTTP 401 — JIRA_PERSONAL_TOKEN was rejected. It has probably expired; '
-                'create a fresh one in Jira.', EXIT_HTTP)
+            die(f'HTTP 401 — {ENV_TOKEN} was rejected. It has probably expired; create a '
+                f'fresh one in {PRODUCT}.', EXIT_HTTP)
+        if e.code == 403 and writing:
+            die(f'HTTP 403 — the token is valid but this account may not change {url}. '
+                f'{detail}', EXIT_FORBIDDEN)
         if e.code == 403:
             die(f'HTTP 403 — no access to {url}', EXIT_FORBIDDEN)
         if e.code == 404:
             die(f'HTTP 404 — not found: {url}', EXIT_NOTFOUND)
+        if e.code == 409:
+            die('HTTP 409 — it changed since it was read, so writing now would overwrite '
+                'someone else\'s edit. Re-read it and apply the update again.', EXIT_HTTP)
+        # A 400 on a write usually names the field the screen does not accept, in the
+        # body, so it is passed through rather than flattened.
         die(f'HTTP {e.code} — {detail}', EXIT_HTTP)
     except urllib.error.URLError as e:
-        die(f'cannot reach {url} ({e.reason}). Is the host right, and are you on '
-            f'the network or VPN it sits behind?', EXIT_NETWORK)
+        die(f'cannot reach {url} ({e.reason}). Is the host right, and are you on the '
+            f'network or VPN it sits behind?', EXIT_NETWORK)
+
+
+def fetch(url, accept='application/json', timeout=60):
+    """GET a path or URL with the PAT attached. Returns raw bytes; exits on failure."""
+    return _request(absolute(url), accept, timeout=timeout)
 
 
 def get_json(path):
     return json.loads(fetch(path))
 
 
-def send_json(path, payload, method='POST', timeout=60):
-    """POST/PUT a JSON body with the PAT attached.
+def send_json(path, payload, method, timeout=60):
+    """POST or PUT a JSON body with the PAT attached.
 
-    Returns the decoded response, or None when Jira answers with an empty body —
-    transitions and field edits both reply 204 No Content on success.
+    Returns the decoded response, or None on an empty body: Jira answers a
+    transition or a field edit with 204 No Content.
 
     Writes are deliberately kept in this one function so there is a single place
-    to audit what can change a ticket.
+    to audit what can change a ticket or a page.
     """
-    if not url_is_absolute(path):
-        path = f'{base_url()}{path}'
-
     body = json.dumps(payload).encode('utf-8')
-    req = urllib.request.Request(path, data=body, method=method, headers={
-        'Authorization': f'Bearer {_token()}',
-        'Accept': 'application/json',
-        'Content-Type': 'application/json',
-    })
-
-    try:
-        ctx = ssl.create_default_context()
-        with urllib.request.urlopen(req, context=ctx, timeout=timeout) as r:
-            raw = r.read()
-            _reject_sso_page(r.geturl(), raw, 'application/json')
-            if not raw.strip():
-                return None
-            return json.loads(raw)
-    except urllib.error.HTTPError as e:
-        try:
-            detail = e.read().decode('utf-8', 'replace')[:400]
-        except Exception:
-            detail = ''
-        if e.code == 401:
-            die('HTTP 401 — JIRA_PERSONAL_TOKEN was rejected. It has probably expired; '
-                'create a fresh one in Jira.', EXIT_HTTP)
-        if e.code == 403:
-            die(f'HTTP 403 — the token is valid but this account may not change '
-                f'{path}. {detail}', EXIT_FORBIDDEN)
-        if e.code == 404:
-            die(f'HTTP 404 — not found: {path}', EXIT_NOTFOUND)
-        # 400 on a write usually means a field the screen does not accept, and the
-        # body says which — so pass it through rather than flattening it.
-        die(f'HTTP {e.code} — {detail}', EXIT_HTTP)
-    except urllib.error.URLError as e:
-        die(f'cannot reach {path} ({e.reason}). Is the host right, and are you on '
-            f'the network or VPN it sits behind?', EXIT_NETWORK)
-
-
-def url_is_absolute(value):
-    return value.startswith('http://') or value.startswith('https://')
-
-
-def parse_key(arg):
-    """Extract a ticket key from a browse URL, an issue URL, or a bare key."""
-    arg = arg.strip()
-    if re.fullmatch(r'[A-Za-z][A-Za-z0-9_]*-\d+', arg):
-        return arg.upper()
-
-    match = re.search(r'/browse/([A-Za-z][A-Za-z0-9_]*-\d+)', arg)
-    if match:
-        return match.group(1).upper()
-
-    parsed = urllib.parse.urlparse(arg if '://' in arg else f'https://{arg}')
-    query = urllib.parse.parse_qs(parsed.query)
-    for name in ('selectedIssue', 'issueKey', 'key'):
-        if name in query:
-            return query[name][0].upper()
-
-    match = re.search(r'([A-Za-z][A-Za-z0-9_]*-\d+)', arg)
-    if match:
-        return match.group(1).upper()
-
-    die(f'could not find a ticket key in {arg!r}. Pass a key like PROJ-1234 or a '
-        f'/browse/ URL.')
-
-
-def browse_url(key):
-    return f'{base_url()}/browse/{key}'
+    raw = _request(absolute(path), 'application/json', data=body, method=method,
+                   timeout=timeout)
+    return json.loads(raw) if raw.strip() else None

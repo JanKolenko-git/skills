@@ -40,7 +40,7 @@ In `read` mode, a **Ticket Summary** with these named fields:
 | `ticket.external_links` | Non-Jira URLs, not fetched |
 | `ticket.reporter` / `ticket.assignee` | Display names |
 
-A write mode returns the one-line confirmation the script prints.
+A write mode returns the one-line confirmation the command prints.
 
 ## Environment
 
@@ -52,21 +52,24 @@ Access Tokens) and export it, then stop.
 
 ## Scripts
 
-Stdlib-only Python 3, each with `--help`. Exit codes: `1` setup or bad input, `2` HTTP or
-auth, `3` forbidden, `4` not found, `5` network unreachable. There is no delete script.
+One stdlib-only Python 3 command; `--help` on it and on every subcommand. Exit codes: `1`
+setup or bad input, `2` HTTP or auth, `3` forbidden, `4` not found, `5` network
+unreachable. There is no delete subcommand.
 
 ```bash
-python3 ${CLAUDE_SKILL_DIR}/fetch_ticket.py <key-or-url> [--comments 5 | --no-comments | --json]
-python3 ${CLAUDE_SKILL_DIR}/search_issues.py "checkout timeout" --project PROJ --limit 20
-python3 ${CLAUDE_SKILL_DIR}/search_issues.py 'project = PROJ AND status = "In Review"'
-python3 ${CLAUDE_SKILL_DIR}/download_attachment.py <content-url> "$TMPDIR/screenshot.png"
-python3 ${CLAUDE_SKILL_DIR}/get_transitions.py <key-or-url>
+python3 ${CLAUDE_SKILL_DIR}/jira.py fetch <key-or-url> [--comments 5 | --no-comments | --json]
+python3 ${CLAUDE_SKILL_DIR}/jira.py search "checkout timeout" --project PROJ --limit 20
+python3 ${CLAUDE_SKILL_DIR}/jira.py search 'project = PROJ AND status = "In Review"'
+python3 ${CLAUDE_SKILL_DIR}/jira.py transitions <key-or-url>
+python3 ${CLAUDE_SKILL_DIR}/jira.py download <content-url> "$TMPDIR/screenshot.png"
 ```
 
 ## Step 1 — Fetch the ticket
 
-`fetch_ticket.py` renders wiki markup to Markdown. `--json` exposes fields the Markdown view
-omits. A non-zero exit → surface its stderr and stop. Never fabricate contents or a status.
+`fetch` prints the description and comments as Jira wiki markup. Render them as Markdown in
+the report. Ignore the `{}` Jira pads `{{monospace}}` with. `--json` exposes fields the
+summary omits. A non-zero exit → surface its stderr and stop. Never fabricate contents or a
+status.
 
 ## Step 2 — Attachments
 
@@ -102,6 +105,6 @@ Done when: every Output field is filled or marked empty.
 > ask through `AskUserQuestion` whether to act — options **do it**, **ignore**.
 
 Reading never triggers a write. Read `${CLAUDE_SKILL_DIR}/reference/writes.md` when `mode`
-is not `read`, or the user asks to update a ticket. It holds the four write scripts, how a
+is not `read`, or the user asks to update a ticket. It holds the four write subcommands, how a
 transition resolves, comment markup, what "update the ticket" covers, a new ticket's
 layout, and why a refused write is not fatal to a flow.

@@ -43,27 +43,27 @@ menu → Personal Access Tokens) and export it, then stop.
 
 ## Scripts
 
-Stdlib-only Python 3, each with `--help`. Exit codes: `1` setup or bad input, `2` HTTP or
-auth, `3` forbidden, `4` not found, `5` network unreachable. There is no delete script.
+One stdlib-only Python 3 command; `--help` on it and on every subcommand. Exit codes: `1`
+setup or bad input, `2` HTTP or auth, `3` forbidden, `4` not found, `5` network
+unreachable. There is no delete subcommand.
 
 ```bash
-python3 ${CLAUDE_SKILL_DIR}/fetch_page.py <page-url-or-id> [--json | --format storage]
-python3 ${CLAUDE_SKILL_DIR}/search_pages.py "checkout tech spec" --space ENG --limit 10
-python3 ${CLAUDE_SKILL_DIR}/list_attachments.py <page-url-or-id>
-python3 ${CLAUDE_SKILL_DIR}/download_attachment.py <download-url> "$TMPDIR/diagram.png"
+python3 ${CLAUDE_SKILL_DIR}/confluence.py fetch <page-url-or-id> [--json | --format storage]
+python3 ${CLAUDE_SKILL_DIR}/confluence.py search "checkout tech spec" --space ENG --limit 10
+python3 ${CLAUDE_SKILL_DIR}/confluence.py download <download-url> "$TMPDIR/diagram.png"
 ```
 
 ## Step 1 — Fetch the page
 
-A page named without a link is found with `search_pages.py` first. The default `view` body
+A page named without a link is found with `confluence.py search` first. The default `view` body
 has macros expanded; `--format storage` only when the rendered output loses something. A
 non-zero exit → surface its stderr and stop. A `403` → `page.access = no access`, no retry,
 no other route. Never fabricate page contents: a caller records what comes back as fact.
 
 ## Step 2 — Attachments, when they matter
 
-When the metadata header lists attachments and the text leans on them ("see the diagram
-below"), download the images and view them with the Read tool. Skip videos and decorative
+The metadata header lists each attachment with its download URL. When the text leans on
+one ("see the diagram below"), `download` it and view it with the Read tool. Skip videos and decorative
 images. A failed download is noted ("Could not access attachment: `<filename>`") and the
 run continues.
 
@@ -88,4 +88,4 @@ Done when: every Output field is filled or marked empty.
 
 Reading never triggers a write. Read `${CLAUDE_SKILL_DIR}/reference/writes.md` when `mode`
 is `update_section`: storage format, the marker-delimited update with `--dry-run` first, the
-three cases `update_page.py` refuses, and why a refused write is not fatal to a flow.
+three cases `update-section` refuses, and why a refused write is not fatal to a flow.

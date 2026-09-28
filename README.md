@@ -96,7 +96,7 @@ that owes a decision stops and names `architect`.
 - Every stop for approval asks through Claude Code's `AskUserQuestion` tool, which ends the
   turn. The push gate lives in the same skill as the push, so nothing composes around it,
   and it repeats every round of changes.
-- Confluence edits are section-scoped: `update_page.py` writes only between its own markers,
+- Confluence edits are section-scoped: `confluence.py update-section` writes only between its own markers,
   refuses when the page moved under it, and shows a `--dry-run` first.
 - These are advisory controls that hold while a skill runs, read in the diff before a
   version ships.
@@ -172,11 +172,10 @@ test PR 123 by hand
 what changed on this branch, and how do I try each change?
 ```
 
-The scripts are stdlib-only Python 3 and every one takes `--help`, so they run on their own
-too:
+The commands are stdlib-only Python 3 and take `--help`, so they run on their own too:
 
 ```bash
-python3 ~/.claude/plugins/**/atlassian-jira/fetch_ticket.py PROJ-1155
+python3 ~/.claude/plugins/**/atlassian-jira/jira.py fetch PROJ-1155
 ```
 
 ## Requirements
@@ -195,7 +194,7 @@ python3 ~/.claude/plugins/**/atlassian-jira/fetch_ticket.py PROJ-1155
 | `CONFLUENCE_PERSONAL_TOKEN is not set` | Token exported in `~/.zshrc` instead of `~/.zshenv`, or the terminal predates the change |
 | `HTTP 401 — token was rejected` | Token expired, or a Jira token is being used against Confluence |
 | `HTTP 403` | The account lacks access to that ticket or space, or, on a write, permission to change it |
-| `no transition leads to …` | The workflow does not allow that status from the current one; `get_transitions.py` lists what it does allow |
+| `no transition leads to …` | The workflow does not allow that status from the current one; `jira.py transitions` lists what it does allow |
 | `JIRA_URL is not set` | The instance URL was never exported |
 | `cannot reach ...` | Wrong host, or not on the network or VPN it sits behind |
 | `git-find-repository` finds nothing | The repo sits outside the common roots; give its path, or run from inside it |
