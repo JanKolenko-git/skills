@@ -51,8 +51,8 @@ Spend the effort here. In order of preference:
 4. For a "sometimes wrong" bug, a loop of random inputs.
 5. For a bug between two known states, a `git bisect run` harness or a differential run of
    the two versions.
-6. Last, a human driving the steps through
-   `${CLAUDE_SKILL_DIR}/scripts/hitl-loop.template.sh`.
+6. Last, a human driving the steps: one `AskUserQuestion` per step, asking what they saw.
+   A sign-in stays a step they do, never a question: the reply lands in the transcript.
 
 A flaky bug first gets a higher reproduction rate: loop the trigger, add stress, narrow the
 timing window.
@@ -61,7 +61,7 @@ Done when one command, already run once with its redacted output shown:
 
 - drives the real code path and asserts the user's exact symptom, not "did not crash",
 - gives the same verdict every run: pin time, seed randomness, freeze the network,
-- finishes in seconds, unrelated setup skipped, and runs unattended.
+- finishes in seconds, unrelated setup skipped, and runs unattended, option 6 aside.
 
 No such command: stop, list what was tried, and ask for an environment, a redacted artefact
 or permission to instrument. No loop, no Step 3.
