@@ -25,8 +25,9 @@ from pathlib import Path
 from _client import EXIT_NOTFOUND, EXIT_SETUP, base_url, die, fetch, get_json, send_json
 from _markdown import html_to_markdown
 
-EXPAND = ('body.view,body.storage,version,space,ancestors,'
-          'children.attachment,metadata.labels')
+# One body format per request: the other is fetched only when the first comes back
+# empty, so a large page costs one body, not two.
+EXPAND = 'version,space,ancestors,children.attachment,metadata.labels'
 
 
 # -- targets ---------------------------------------------------------------------
@@ -101,20 +102,24 @@ def _size(num):
 
 # -- fetch -----------------------------------------------------------------------
 
+def _body(page, fmt):
+    return ((page.get('body') or {}).get(fmt) or {}).get('value', '')
+
+
 def cmd_fetch(args):
     page_id = resolve_page_id(args.target)
-    page = get_json(f'/rest/api/content/{page_id}?expand={EXPAND}')
+    page = get_json(f'/rest/api/content/{page_id}?expand=body.{args.format},{EXPAND}')
 
     if args.json:
         print(json.dumps(page, indent=2))
         return
 
-    body = ((page.get('body') or {}).get(args.format) or {}).get('value', '')
+    body = _body(page, args.format)
     fallback_used = False
     used_format = args.format
     if not body.strip():
         other = 'storage' if args.format == 'view' else 'view'
-        body = ((page.get('body') or {}).get(other) or {}).get('value', '')
+        body = _body(get_json(f'/rest/api/content/{page_id}?expand=body.{other}'), other)
         fallback_used = bool(body.strip())
         if fallback_used:
             used_format = other
@@ -314,7 +319,8 @@ def build_parser():
                    help='view = macros rendered, converted to Markdown (default); '
                         'storage = raw storage-format XHTML, printed unconverted')
     p.add_argument('--json', action='store_true',
-                   help='print the raw REST response instead of Markdown')
+                   help='print the raw REST response (its body in --format) instead of '
+                        'Markdown')
     p.add_argument('--body-only', action='store_true', help='omit the metadata header')
     p.set_defaults(run=cmd_fetch, parser=p)
 
