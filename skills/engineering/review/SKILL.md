@@ -44,8 +44,8 @@ Done when: the file exists and the touched files are listed with their line coun
 
 ## Step 2 — State the fan-out, then run the workflow
 
-Print one line before anything runs: `3 seats + <files> verifiers, haiku, sonnet, opus,
-read-only, ≈ <estimate>`, at about 50K tokens of boot per agent plus what it reads. Then
+Print one line before anything runs: `3 seats + <files> verifiers: haiku, sonnet, opus,
+read-only, ≈ <(3 + files) × 50K + reads>K`, `reads` the diff's bytes divided by four. Then
 run the workflow by name through the `Workflow` tool: `name: jankolenko-skills:review-panel`,
 `args: { diffPath, repo, base, focus, models }`. It seats the panel, merges by agreement
 and verifies. The script owns the how. `/workflows` shows tokens per agent while it runs.

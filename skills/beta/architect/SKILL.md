@@ -21,6 +21,8 @@ change the code. This skill decides which way, and why, before a plan depends on
   learned.
 - `destination` — `adr` (default: the repository's ADR folder, else `docs/adr/`),
   `confluence` with a `page_url`, or `chat`.
+- `panel` — optional. Defaults to `fable, opus`: two seats compare the options at Step 2.
+  `none` compares alone.
 
 ## Output
 
@@ -54,9 +56,26 @@ Name at least two options that differ in mechanism, the user's and yours. Compar
 what decides the case, not on a feature list: fit with the stack already in use (reuse
 beats a new dependency), the failure modes each carries, the cost to reverse, who has to
 maintain it. Check an assumption now when it is cheap, a build, a query plan, a benchmark.
-A claim about a library comes from its documentation, read now, not from memory. Take the
-simplest option that fully meets the constraints. Done when: `decision.choice` and every
-`decision.rejected` entry name the deciding fact.
+A claim about a library comes from its documentation, read now, not from memory.
+
+With `panel`, seat it before you compare. Save each named option's documentation to the
+scratchpad, so every seat reads the same bytes without web tools. Print `2 agents: fable,
+opus, read-only, ≈ <2 × 50K + reads>K`, `reads` the bytes saved divided by four. Then one
+`Agent` call per model in a single message, `subagent_type: jankolenko-skills:panelist`,
+`model` set per call, one brief: `decision`, `constraints` with Step 1's answers folded in,
+`options`, the paths to the code that bears on it and to the saved documentation. The ask:
+per option its mechanism, failure modes, cost to reverse and maintainer. Then one choice,
+the fact that decides it and the check that would refute it, every fact cited as
+`path:line` or a documentation URL, unread claims listed.
+
+Both seats on one choice for one fact is the recommendation, and their other options go to
+`decision.rejected` with the fact that ruled each out. A split turns the disputed facts
+into checks, run now when cheap, else a question at Step 1's gate with both cases on
+screen. Unresolved, `decision.open` holds both choices. Without a `model` parameter, seat
+one on the session's model. Without `Agent`, compare alone. Say so once either way.
+
+Take the simplest option that fully meets the constraints. Done when: `decision.choice` and
+every `decision.rejected` entry name the deciding fact.
 
 ## Step 3 — Record it
 

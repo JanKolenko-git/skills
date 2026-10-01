@@ -15,8 +15,9 @@ instrumentation only consume it.
   the error, the wrong output, the timing, the steps.
 - `repro` — optional. A test, command, request or recording that already shows it.
 - `constraints` — optional. Environments you may touch, what is already ruled out.
-- `panel` — optional. Off by default. `haiku, sonnet, opus` when the user asks for a panel,
-  several models or a second opinion: three agents rank the hypotheses at Step 4.
+- `panel` — optional. Off by default, and `none` keeps even a stuck run alone. `haiku,
+  sonnet, opus` when the user asks for a panel, several models or a second opinion: three
+  agents rank the hypotheses at Step 4.
 
 ## Output
 
@@ -81,20 +82,8 @@ symptom: "the value is null here" is what you saw, and why it is null is the hyp
 Show the ranked list to the user and continue, since they often re-rank it. When the bug
 appeared between two known states, bisect history first.
 
-With `panel`, seat it here. Print `3 agents: haiku, sonnet, opus, read-only, ≈ <estimate>`,
-at about 50K tokens of boot per agent plus what it reads. Then one `Agent` call per model
-in a single message, `subagent_type: jankolenko-skills:panelist`, `model` set per call, all
-on the same brief:
-
-- The three symptom lines.
-- The loop command with its red output.
-- The minimised repro and the files it touches.
-- The ask: three to five ranked, falsifiable hypotheses, each with its refuting experiment.
-
-Merge into one list, a hypothesis two models name ahead of one only one names. Each seat
-opens with the model it runs on. Two the same is one model twice, not a panel, so say so.
-An `Agent` tool without a `model` parameter: say so once and continue alone. Instrumenting
-and the fix stay in the session.
+Seat the panel when `panel` is set, or once, unasked, when Step 5 has refuted every
+hypothesis of a list ranked without one. Read `reference/panel.md` first.
 
 Done when: each hypothesis names the experiment that would refute it.
 
@@ -103,8 +92,9 @@ Done when: each hypothesis names the experiment that would refute it.
 A breakpoint beats ten logs, and targeted logs at the boundaries that separate two
 hypotheses beat logging everything. Tag every log with one prefix, `[DEBUG-a4f2]`, so
 cleanup is one grep. For a performance regression, measure a baseline first and bisect on
-the number. A refuted hypothesis is discarded with its change. A confirmed one is the
-cause. Done when: `bug.cause` names the evidence.
+the number. A refuted hypothesis is discarded with its change. Every one refuted sends the
+run back to Step 4, where the panel seats itself once. A confirmed one is the cause. Done
+when: `bug.cause` names the evidence.
 
 ## Step 6 — Fix at the root, with a test
 

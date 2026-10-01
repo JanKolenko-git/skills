@@ -18,6 +18,8 @@ commits later.
   change". They enter Step 3 as entries, never as the decision.
 - `constraints` — what earlier runs learned, house rules, anything ruled out.
 - `repo.path` — optional. Defaults to the current repository.
+- `panel` — optional. `none` compares alone. A list of models seats one each. Default: one
+  seat when Step 1's trigger holds.
 
 A caller holding ticket data passes `goal` and `criteria` from it. This skill fetches
 nothing.
@@ -40,6 +42,10 @@ nothing.
 
 Ground the plan in the code as it is: what is there, why it got that way, and the
 boundaries it already draws.
+
+When `candidates` names a mechanism that changes shared code, start the seat in
+`reference/second-approach.md` now, briefed without `candidates`. It reads while you do
+Step 2.
 
 ## Step 2 — Decide whether there is anything to build
 
