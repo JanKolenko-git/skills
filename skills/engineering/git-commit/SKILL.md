@@ -1,6 +1,6 @@
 ---
 name: git-commit
-description: Stage and commit the work with a conventional message: reviews the diff first, stages by path, keeps unrelated changes and secrets out, follows the repository's commit rules. Use for every commit, including 'commit and push', 'commit this' and 'commit to the branch', rather than committing through git directly. Pushing is git-pr-push-and-open.
+description: "Stage and commit the work with a conventional message: reviews the diff first, stages by path, keeps unrelated changes and secrets out, follows the repository's commit rules. Use for every commit, including 'commit and push', 'commit this' and 'commit to the branch', rather than committing through git directly. Pushing is git-pr-push-and-open."
 allowed-tools: Bash(git status*), Bash(git diff*), Bash(git log*), Bash(git rev-parse*), Bash(git config core.hooksPath), Bash(git add *), Bash(git commit *)
 ---
 

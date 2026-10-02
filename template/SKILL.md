@@ -1,6 +1,6 @@
 ---
 name: template-skill
-description: <What the skill does, in the third person>. Use when <the phrases users type>. <One near-miss, if a competing skill exists: "Pushing is git-pr-push-and-open".>
+description: "<What the skill does, in the third person>. Use when <the phrases users type>. <One near-miss, if a competing skill exists: 'Pushing is git-pr-push-and-open'.>"
 argument-hint: <required> [optional]
 ---
 

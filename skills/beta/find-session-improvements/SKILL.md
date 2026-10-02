@@ -2,7 +2,7 @@
 name: find-session-improvements
 description: Sweep this session's transcript for what the skill layer should learn and route each finding to improve-skill or record-engineering-rule behind one triage gate.
 disable-model-invocation: true
-argument-hint: [optional focus — a skill name, or an area to concentrate on]
+argument-hint: "[optional focus — a skill name, or an area to concentrate on]"
 ---
 
 # Find Session Improvements

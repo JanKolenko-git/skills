@@ -1,7 +1,7 @@
 ---
 name: walkthrough
-description: Get a branch or PR running, then hand over what changed against the base branch: per change, before and after, how the code did it and the steps to test it there. Use when the user wants to test a PR or branch by hand, prepare it for testing, asks what changed and how to test it, or wants a branch running. Automated evidence is check.
-argument-hint: [branch | pr-url | pr-number] [base] [scope=full|environment]
+description: "Get a branch or PR running, then hand over what changed against the base branch: per change, before and after, how the code did it and the steps to test it there. Use when the user wants to test a PR or branch by hand, prepare it for testing, asks what changed and how to test it, or wants a branch running. Automated evidence is check."
+argument-hint: "[branch | pr-url | pr-number] [base] [scope=full|environment]"
 ---
 
 # Walkthrough

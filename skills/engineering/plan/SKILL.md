@@ -1,6 +1,6 @@
 ---
 name: plan
-description: Turn a goal into an implementation plan grounded in the code: files, steps, risks, lanes, whether any change is warranted; settles facts from the code and asks the user one decision at a time when the goal is vague. Use when the user asks to plan a change, how to approach it, what needs changing, or to clarify requirements before building.
+description: "Turn a goal into an implementation plan grounded in the code: files, steps, risks, lanes, whether any change is warranted; settles facts from the code and asks the user one decision at a time when the goal is vague. Use when the user asks to plan a change, how to approach it, what needs changing, or to clarify requirements before building."
 ---
 
 # Plan

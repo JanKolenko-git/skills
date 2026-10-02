@@ -1,6 +1,6 @@
 ---
 name: git-create-branch
-description: Create a branch named the way the repository names branches, from a clean default branch: its own convention if stated, else feature/, bugfix/ or hotfix/ plus ticket key and slug. Use when the user asks for a branch, starts work on a ticket, or is about to change code with no branch yet.
+description: "Create a branch named the way the repository names branches, from a clean default branch: its own convention if stated, else feature/, bugfix/ or hotfix/ plus ticket key and slug. Use when the user asks for a branch, starts work on a ticket, or is about to change code with no branch yet."
 ---
 
 # Git Create Branch

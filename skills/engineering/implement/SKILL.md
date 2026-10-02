@@ -1,6 +1,6 @@
 ---
 name: implement
-description: Implement a Jira ticket end to end: fetch it and its specs, find the repo, plan, branch, build with tests, check against plan and base, stop for human review, then push, open the PR and move it to In Review. Use when the user asks to implement, solve, work on or take to in review a ticket by key or URL. Reading a ticket is atlassian-jira.
+description: "Implement a Jira ticket end to end: fetch it and its specs, find the repo, plan, branch, build with tests, check against plan and base, stop for human review, then push, open the PR and move it to In Review. Use when the user asks to implement, solve, work on or take to in review a ticket by key or URL. Reading a ticket is atlassian-jira."
 argument-hint: <ticket-key | jira-url> [repo] [push=ask|waived]
 ---
 

@@ -1,6 +1,6 @@
 ---
 name: check
-description: Confirm a change does what it was meant to and breaks nothing else: the diff against its plan or ticket, the changed behaviour run for evidence, the same surfaces compared with the base branch. Use when the user asks whether the implementation matches the plan, whether it works or regresses anything, or before a PR. Bugs are /code-review.
+description: "Confirm a change does what it was meant to and breaks nothing else: the diff against its plan or ticket, the changed behaviour run for evidence, the same surfaces compared with the base branch. Use when the user asks whether the implementation matches the plan, whether it works or regresses anything, or before a PR. Bugs are /code-review."
 context: fork
 ---
 

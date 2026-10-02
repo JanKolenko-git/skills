@@ -1,6 +1,6 @@
 ---
 name: git-find-repository
-description: Find the git repository a task belongs to, from a ticket key, package name or keywords: searches the usual code folders, checks package.json names and remotes, refuses to guess between two matches. Use when the user asks which repo something is about or which repo owns or consumes a package, or work must start with no repo named.
+description: "Find the git repository a task belongs to, from a ticket key, package name or keywords: searches the usual code folders, checks package.json names and remotes, refuses to guess between two matches. Use when the user asks which repo something is about or which repo owns or consumes a package, or work must start with no repo named."
 ---
 
 # Git Find Repository

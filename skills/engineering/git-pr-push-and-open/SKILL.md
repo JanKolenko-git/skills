@@ -1,6 +1,6 @@
 ---
 name: git-pr-push-and-open
-description: Push a branch and open its pull request after showing the finished diff and stopping for approval, with a concise title and body linking the ticket. Use whenever a branch is to be pushed or a PR opened or raised, however small the change: 'push and open PR', 'ship it', 'open a PR', 'push to the branch'. The review gate before pushing lives here.
+description: "Push a branch and open its pull request after showing the finished diff and stopping for approval, with a concise title and body linking the ticket. Use whenever a branch is to be pushed or a PR opened or raised, however small the change: 'push and open PR', 'ship it', 'open a PR', 'push to the branch'. The review gate before pushing lives here."
 ---
 
 # Git PR — Push and Open

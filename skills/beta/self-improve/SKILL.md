@@ -2,7 +2,7 @@
 name: self-improve
 description: Compare this plugin with Anthropic's current Claude Code and platform docs, category by category, and write a priced plan of what to change, this skill's own categories included.
 disable-model-invocation: true
-argument-hint: [since=<date|Nd>] [focus=<category or doc page>]
+argument-hint: "[since=<date|Nd>] [focus=<category or doc page>]"
 ---
 
 # Self-Improve

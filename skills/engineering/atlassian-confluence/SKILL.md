@@ -1,6 +1,6 @@
 ---
 name: atlassian-confluence
-description: Read and update Confluence Server/Data Center pages over REST: fetch as Markdown, search by title or text, get attachments, add or update one delimited section. Use when a Confluence URL or page id appears, even in passing, a spec is named by title, or a report or status is to be written onto a page. Not Confluence Cloud.
+description: "Read and update Confluence Server/Data Center pages over REST: fetch as Markdown, search by title or text, get attachments, add or update one delimited section. Use when a Confluence URL or page id appears, even in passing, a spec is named by title, or a report or status is to be written onto a page. Not Confluence Cloud."
 argument-hint: <page-url | page-id | page title>
 ---
 

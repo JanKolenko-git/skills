@@ -1,6 +1,6 @@
 ---
 name: debug
-description: Find and fix a bug's root cause through a diagnosis loop: a feedback loop that goes red on the exact symptom, reproduce and minimise, rank hypotheses, instrument one variable at a time, fix at the root with a regression test. Use when the user says debug or diagnose this, or reports something broken, throwing, failing, flaky or slow.
+description: "Find and fix a bug's root cause through a diagnosis loop: a feedback loop that goes red on the exact symptom, reproduce and minimise, rank hypotheses, instrument one variable at a time, fix at the root with a regression test. Use when the user says debug or diagnose this, or reports something broken, throwing, failing, flaky or slow."
 ---
 
 # Debug
