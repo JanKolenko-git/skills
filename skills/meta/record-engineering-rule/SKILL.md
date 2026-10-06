@@ -21,7 +21,7 @@ session, so the default answer is **no rule**.
 
 | Field | Contents |
 | --- | --- |
-| `rule.verdict` | `added` / `sharpened` / `promoted` / `routed-elsewhere` / `no-rule` |
+| `rule.verdict` | `added` / `sharpened` / `routed-elsewhere` / `no-rule` |
 | `rule.destination` | The owner, when it routes elsewhere |
 | `rule.diff` | The exact change, when there is one |
 
@@ -41,29 +41,29 @@ for, and a general rule buried in one repository's file is re-learned everywhere
 
 ## Step 2 — Apply the bar
 
-1. **Provenance, one of two.** A real run failed for want of it (→ **Rules**). Or a named
-   source outside this file believes it (→ **Baseline**): Power of 10, a published style
-   guide, a convention a large codebase visibly holds. "Tidier" is neither.
+1. **Provenance, one of two.** A real run failed for want of it, or a named source outside
+   this file believes it: Power of 10, a published style guide, a convention a large codebase
+   visibly holds. "Tidier" is neither.
 2. **The scope survives the wording.** Write the rule as a sentence: still true in the next
    repo, in a language this one has not touched? True only with a repository's name in it
    → back to Step 1.
 3. **No existing rule covers it.** Read `ENGINEERING.md` in full, and sharpen a near rule
    rather than add a second.
 
-A Baseline entry a run was bitten by moves to Rules (`promoted`). A rule that proved wrong
-is narrowed or deleted (`sharpened`). No source and no run → name it to the user, add
-nothing.
+A rule that proved wrong is narrowed or deleted (`sharpened`). No source and no run → name
+it to the user, add nothing.
 
 ## Step 3 — Draft the minimal change
 
-Write the entry in the file's own voice, under the section test 1 chose:
+Write the entry in the file's own voice:
 
 - A `##` heading stating the rule as a sentence.
-- A short yes/no code example.
-- One sentence of why.
-- The exception. A rule with none is ignored the first time it is inconvenient.
+- One paragraph: one or two sentences of why, then the exception as `Except: …`. A rule
+  with no exception is ignored the first time it is inconvenient.
+- No code block and no list of examples; the rule says what to do and the reader finds the
+  instances.
 
-The example and the commit message name the shape of the run or the citation, never a
+The entry and the commit message name the shape of the run or the citation, never a
 repository, ticket, PR, commit, person or private package: the repository is public.
 
 Done when: the entry reads the same to someone who has never seen the repository it came
@@ -98,3 +98,9 @@ git -C ~/Developer/skills commit -m "docs(engineering): <the rule, in one line>"
 - One rule per invocation. This skill owns `ENGINEERING.md` and nothing else.
 - Most runs produce no durable rule. Say so and stop. A rule invented to justify the
   invocation is the one failure this skill cannot recover from.
+- Owned elsewhere, so never added here: test structure (`test`), commit messages
+  (`git-commit`), branch naming (`git-create-branch`), whether a change should exist (`plan`,
+  `check`).
+- Considered and rejected, so not re-proposed: declare at narrowest scope (the linter covers
+  it), formatting (Prettier enforces it), thread a cancellation signal (promote it if a run
+  gets bitten), make invalid states unrepresentable.
