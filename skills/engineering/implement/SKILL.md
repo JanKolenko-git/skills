@@ -20,8 +20,9 @@ goes next.
 ## Output
 
 One short paragraph: what was done, the PR link, the ticket's new status, warnings and
-skipped steps, unresolved review findings, and whether the run was re-planned and why. When
-`branch.path` is a worktree, it ends with the command that removes it.
+skipped steps, unresolved review findings, and whether the run was re-planned and why. It
+ends with the command that removes the worktree, when `branch.path` is one, and the URL and
+stop command of any dev server still running.
 
 ## The pipeline
 
@@ -41,7 +42,7 @@ nothing refetches. `ticket.*` and `plan.*` stay in context for the whole run.
 | 8b | `/code-review` (`jankolenko-skills:review` when the user asked for a panel), `/simplify` | findings → 6, up to three rounds; what is left goes into the PR and the gate summary |
 | 9 | `jankolenko-skills:git-commit` | `ticket.key` → `ticket_key`; `plan.summary` → `subject`; `Bug` → `fix`, else `feat` |
 | 10 | `jankolenko-skills:git-pr-push-and-open` | `<ticket.key>: <ticket.title>` → `title`, under 70 characters; `summary_points` from the run; 🛑 its gate |
-| 11 | `jankolenko-skills:atlassian-jira` | `In Review` (`Code Review` is a fine match); then comment `PR opened: <pr.url>. <one sentence>.` |
+| 11 | `jankolenko-skills:atlassian-jira` | `In Review` (`Code Review` is a fine match); then comment `PR opened: <pr.url>. <the PR body's Evidence line>.` |
 | 12 | `jankolenko-skills:record-learnings` | the run's surprises, `destination = repo`; most runs have nothing durable, skip quietly |
 
 `/code-review` and `/simplify` are used if installed, else done inline with their angles

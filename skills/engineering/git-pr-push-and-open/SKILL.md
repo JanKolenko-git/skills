@@ -84,6 +84,9 @@ gh pr create --base <base> --title "<title>" --body "<body>"
 ## Summary
 - <what changed, 1-3 bullets>
 
+## Evidence
+- <before → after, measured in the running app, or `not measured` and why>
+
 ## Ticket
 <ticket_url>
 

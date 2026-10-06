@@ -1,8 +1,8 @@
 ---
 name: find-session-improvements
-description: Sweep this session's transcript for what the skill layer should learn and route each finding to improve-skill or record-engineering-rule behind one triage gate.
+description: Sweep this session's transcript, or every session since a date, for what the skill layer should learn and route each finding to improve-skill or record-engineering-rule behind one triage gate.
 disable-model-invocation: true
-argument-hint: [optional focus — a skill name, or an area to concentrate on]
+argument-hint: [since=<date>] [focus — a skill name, or an area to concentrate on]
 ---
 
 # Find Session Improvements
@@ -16,7 +16,8 @@ re-derives the findings from the record.
 ## Inputs
 
 - `focus` — optional. A skill name or an area to concentrate on. Default: everything.
-- The session is always this one.
+- `since` — optional. A date. Sweeps every session after it, across projects, in place of
+  this one.
 
 ## Output
 
@@ -34,12 +35,14 @@ The live context covers everything still in the window. The early turns of a lon
 are compacted, and they are usually where the friction is. Recover them from the transcript:
 
 ```bash
-"${CLAUDE_SKILL_DIR}/session-spine.sh" <session-id>   # get_session("self") gives the id
+"${CLAUDE_SKILL_DIR}/session-spine.sh" <session-id>    # get_session("self") gives the id
+"${CLAUDE_SKILL_DIR}/session-spine.sh" --since <date>  # every project's sessions after a date
 ```
 
 It prints the user's turns, which skills ran and how often, and where the run was
-interrupted. Each interruption is a redirection worth reading around. `list_events`
-refuses the current session by design, so the transcript is the only route.
+interrupted, one spine per session with `since`. Each interruption is a redirection worth
+reading around. `list_events` refuses the current session by design, so the transcript is
+the only route.
 
 ## Step 2 — Sweep for the marks friction leaves
 
@@ -113,6 +116,6 @@ plugin touched, in `session.version`.
 
 ## Notes
 
-- This session only, after the work is finished. Mid-session, the findings describe a run
-  that had not finished going wrong yet.
+- This session after the work is finished, or every session after `since`. Mid-session, the
+  findings describe a run that had not finished going wrong yet.
 - It never edits a skill or a rule, and never touches the work repo.
