@@ -143,4 +143,4 @@ Done when: each pursued finding has landed, been declined or been named.
 
 - No subagents. A run reads about 50,000 words in the session, and an agent costs about
   50,000 tokens before it reads anything. `focus` narrows a run that would not fit.
-- A month of sessions is swept by `jankolenko-skills:find-session-improvements`, not here.
+- A month of sessions is swept by `jankolenko-skills:reflect`, not here.

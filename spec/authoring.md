@@ -63,8 +63,8 @@ growing mechanics is telling you an atom is missing.
 
 The shape is `[<system>-]<verb>[-<object>]`. The object is dropped when the verb is unique in
 the plugin and still names the job alone: `plan`, `check`, `test`, `debug`, `implement`,
-`architect`, `document`, `explain`, `walkthrough`, `review`. A shared verb keeps its object
-(`git-find-repository`, `record-learnings`), and so does one that says too little alone
+`architect`, `document`, `explain`, `walkthrough`, `review`, `reflect`. A shared verb keeps its
+object (`git-find-repository`, `record-learnings`), and so does one that says too little alone
 (`draft-reply`, `improve-skill`).
 
 **A prefix names the system, forge or vendor the skill cannot run without. No binding, no
@@ -87,6 +87,7 @@ skill (`code-`) sorts nothing.
 | `review`                   | Find a diff's bugs, each with the failure it produces | no               |
 | `explain`                  | Teach until it is understood                          | no               |
 | `self-improve`             | Compare the plugin with the docs, plan the changes    | no               |
+| `reflect`                  | Sweep sessions for what the skill layer should learn  | no               |
 | `create`                   | Make a new named thing                                | yes              |
 | `test`                     | Write and run tests in the repository's own style     | yes              |
 | `debug`                    | Find and fix a bug's root cause                       | yes              |

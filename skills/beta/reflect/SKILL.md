@@ -1,11 +1,11 @@
 ---
-name: find-session-improvements
+name: reflect
 description: Sweep this session's transcript, or every session since a date, for what the skill layer should learn and route each finding to improve-skill or record-engineering-rule behind one triage gate.
 disable-model-invocation: true
 argument-hint: [since=<date>] [focus — a skill name, or an area to concentrate on]
 ---
 
-# Find Session Improvements
+# Reflect
 
 **An orchestrator.** `jankolenko-skills:improve-skill` and
 `jankolenko-skills:record-engineering-rule` each own a destination and its gate. This skill
