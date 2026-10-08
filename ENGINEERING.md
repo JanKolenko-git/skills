@@ -15,6 +15,13 @@ grows a special case per fix round is not earning its lines: find the angle wher
 keeps working, or take the part and its number to the user. Except: the simple code was wrong
 for every caller; fix it as its own change.
 
+## Finished means nothing more can be taken away
+
+The version that first passes carries the scaffolding of getting there, so it is the
+longest one that will. Once it works, reshape it until every line is load-bearing, running
+the tests after each cut, and stop at the pass that removes nothing. Except: a line kept
+for the reader; readability is the one reason a line may stay.
+
 ## Reuse the name a thing already has; give a new one meaning
 
 A renamed alias loses its documentation and a default export leaves every importer to invent
