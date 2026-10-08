@@ -78,15 +78,14 @@ other ([`spec/authoring.md`](./spec/authoring.md) § Layout).
 | Skill | What it does |
 | --- | --- |
 | [architect](./skills/beta/architect/SKILL.md) | Settle a decision that outlives one change, a provider, data model, pattern or stack, and record it as an ADR or a spec section; started by hand |
-| [document](./skills/beta/document/SKILL.md) | Write the prose about a change from its real diff: PR description, changelog entry, release notes, postmortem, ticket summary; started by hand |
 | [reflect](./skills/beta/reflect/SKILL.md) | Sweep a finished session, or every session since a date, for what the skill layer should learn and route each finding to its owner behind one triage gate |
 | [self-improve](./skills/beta/self-improve/SKILL.md) | Compare the skills with Anthropic's current docs by category, once a month, and route each gap to its owner behind one triage gate; each run also updates its own categories |
 
-`architect`, `document`, `reflect` and `self-improve` are started by hand
-(`/jankolenko-skills:architect <decision>`, `/jankolenko-skills:document pr`,
-`/jankolenko-skills:reflect`, `/jankolenko-skills:self-improve`); the model
-cannot invoke them, so their descriptions cost nothing in the skill listing, and a ticket run
-that owes a decision stops and names `architect`.
+`architect`, `reflect` and `self-improve` are started by hand
+(`/jankolenko-skills:architect <decision>`, `/jankolenko-skills:reflect`,
+`/jankolenko-skills:self-improve`); the model cannot invoke them, so their descriptions cost
+nothing in the skill listing, and a ticket run that owes a decision stops and names
+`architect`.
 
 ## Safety
 

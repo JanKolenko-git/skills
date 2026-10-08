@@ -1,6 +1,6 @@
 ---
 name: record-learnings
-description: Write what a run learned to where the next run reads it, a repo's CLAUDE.md, a Confluence spec section or a ticket comment, keeping only durable constraints. Use when the user asks to record, note, save or capture something for next time, to write a finding back to the spec, or runs /learn. How code should be written is record-engineering-rule.
+description: Write what a run learned to where the next run reads it, a repo's CLAUDE.md, a Confluence spec section or a ticket comment, keeping only durable constraints. Use when the user asks to record, note, save or capture something for next time, to write a finding back to the spec. How code should be written is record-engineering-rule.
 ---
 
 # Record Learnings

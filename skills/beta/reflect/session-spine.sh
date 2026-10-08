@@ -8,7 +8,7 @@ set -uo pipefail
 #
 # Usage: session-spine.sh <session-id> [project-dir]
 #        project-dir defaults to the current directory; the transcript lives at
-#        ~/.claude/projects/<project-dir with / replaced by ->/<session-id>.jsonl
+#        ~/.claude/projects/<project-dir, non-alphanumerics replaced by ->/<session-id>.jsonl
 #        session-spine.sh --since <date>
 #        one spine per session with turns on or after <date>, every project, oldest first
 
@@ -56,7 +56,7 @@ fi
 id="${1:-}"
 [ -n "$id" ] || { echo "usage: $(basename "$0") <session-id> [project-dir] | --since <date>" >&2; exit 1; }
 dir="${2:-$PWD}"
-slug="$(printf '%s' "$dir" | sed 's|/|-|g')"
+slug="$(printf '%s' "$dir" | sed 's|[^A-Za-z0-9]|-|g')"
 t="$HOME/.claude/projects/$slug/$id.jsonl"
 [ -f "$t" ] || { echo "no transcript at $t" >&2; exit 1; }
 spine "$t" ""

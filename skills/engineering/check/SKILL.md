@@ -2,6 +2,7 @@
 name: check
 description: Confirm a change does what it was meant to and breaks nothing else: the diff against its plan or ticket, the changed behaviour run for evidence, the same surfaces compared with the base branch. Use when the user asks whether the implementation matches the plan, whether it works or regresses anything, or before a PR. Bugs are /code-review.
 context: fork
+background: false
 ---
 
 # Check
@@ -55,7 +56,8 @@ nobody will merge into. Done when: every hunk has been read.
    plan step or leaves the diff.
 3. **Should each part exist?** Now that the code is real, ask it of every part of the diff,
    not once of the whole. Does the part's win, priced in the plan or measured here, pay for
-   its code? Does it sit where it belongs? Did building it surface something that makes the
+   its code? A win that is only a reading, with nothing the user got behind it, is a
+   finding. Does it sit where it belongs? Did building it surface something that makes the
    plan look wrong? Code outside the feature that grew to serve it is the tell. A faithful
    implementation of the wrong idea is the failure this seat exists to catch.
 4. **Does it hold under the plan's premise?** The plan named conditions: a device, a load,

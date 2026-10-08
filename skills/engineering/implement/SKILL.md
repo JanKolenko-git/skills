@@ -39,15 +39,16 @@ nothing refetches. `ticket.*` and `plan.*` stay in context for the whole run.
 | 6 | inline + `jankolenko-skills:test` | `plan.steps`/`plan.lanes`; `ticket.acceptance_criteria` → `criteria` |
 | 7 | `jankolenko-skills:test` | → `tests.result`; 🛑 three failed attempts → stop with the output; never weaken a test |
 | 8a | `jankolenko-skills:check` | `plan.*` (in full: it runs in its own context) + `criteria` + diff → `check.verdict` |
-| 8b | `/code-review` (`jankolenko-skills:review` when the user asked for a panel), `/simplify` | findings → 6, up to three rounds; what is left goes into the PR and the gate summary |
+| 8b | `/code-review` (`jankolenko-skills:review` when the user asked for a panel), `/simplify` | findings → 6, up to three rounds; `/simplify` runs again after its fixes until a pass changes nothing, three passes at most; what is left goes into the PR and the gate summary |
 | 9 | `jankolenko-skills:git-commit` | `ticket.key` → `ticket_key`; `plan.summary` → `subject`; `Bug` → `fix`, else `feat` |
 | 10 | `jankolenko-skills:git-pr-push-and-open` | `<ticket.key>: <ticket.title>` → `title`, under 70 characters; `summary_points` from the run; 🛑 its gate |
 | 11 | `jankolenko-skills:atlassian-jira` | `In Review` (`Code Review` is a fine match); then comment `PR opened: <pr.url>. <the PR body's Evidence line>.` |
 | 12 | `jankolenko-skills:record-learnings` | the run's surprises, `destination = repo`; most runs have nothing durable, skip quietly |
 
-`/code-review` and `/simplify` are used if installed, else done inline with their angles
-and noted once. `jankolenko-skills:atlassian-jira` is the hard dependency. Every stop
-states what blocks, what was tried, and what would unblock it.
+`/code-review` and `/simplify` are bundled with Claude Code. A session without them does
+the step inline with their angles and says so once. `jankolenko-skills:atlassian-jira` is
+the hard dependency. Every stop states what blocks, what was tried, and what would unblock
+it.
 
 ## Step 3 — Plan
 

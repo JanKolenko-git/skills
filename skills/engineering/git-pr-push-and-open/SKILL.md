@@ -69,9 +69,10 @@ Show `git diff <base>..HEAD`, then, compactly:
 > then this gate again. It repeats every round. stop → end with the branch local and
 > `pr.status = not created`.
 > Committing is local and reversible. A push puts the branch and the PR in front of
-> colleagues and cannot be quietly undone. If `Bash(git *)` is allow-listed the harness
-> will not prompt, so this gate is the only stop. Standing rule: writes only on the user's
-> word in chat. The user can waive it for one run by saying so up front, in chat.
+> colleagues and cannot be quietly undone. In auto mode, or with `Bash(git *)`
+> allow-listed, the harness will not prompt, so this gate is the only stop. Standing rule:
+> writes only on the user's word in chat. The user can waive it for one run by saying so up
+> front, in chat.
 
 ## Step 3 — Push and open
 

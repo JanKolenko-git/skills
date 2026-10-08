@@ -11,7 +11,8 @@ commits later.
 
 ## Inputs
 
-- `goal` — **required.** What needs to change and why.
+- `goal` — **required.** What needs to change and why, as what the user gets. A goal that
+  is only a reading is translated first.
 - `criteria` — acceptance criteria or a bug's reproduction, passed on to
   `jankolenko-skills:test`.
 - `candidates` — approaches somebody already proposed, such as a ticket's "proposed
@@ -72,9 +73,10 @@ Take the simplest approach that solves what is worth solving. Record the choice,
 rejected ones and the deciding fact in `plan.approach`. If nothing but the arriving approach
 fits, say so and why.
 
-Then price each part of that approach, each sub-goal and each mechanism. The win is a
-number, or the measurement that will produce one. The cost is the code: count the files
-outside the feature and the shared code it forces to change.
+Then price each part of that approach, each sub-goal and each mechanism. The win is what
+the user gets, with the number that shows it or the measurement that will produce one.
+The cost is the code: count the files outside the feature and the shared code it forces
+to change.
 
 Drop or defer a part that wins little next to its cost, recorded in `plan.approach` as
 `dropped: <part>, <win> vs <cost>`. A part `criteria` asked for is dropped only by the user,
